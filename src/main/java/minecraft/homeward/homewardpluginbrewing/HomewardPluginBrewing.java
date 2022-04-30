@@ -1,8 +1,10 @@
 package minecraft.homeward.homewardpluginbrewing;
 
 import me.mattstudios.mf.base.CommandManager;
+import minecraft.homeward.homewardpluginbrewing.commands.MainCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.util.logging.Level;
 
 public final class HomewardPluginBrewing extends JavaPlugin {
@@ -13,6 +15,8 @@ public final class HomewardPluginBrewing extends JavaPlugin {
 
     //全局plugin 无需再次初始化但是必须在插件注册前
     private static HomewardPluginBrewing plugin;
+    private static CommandManager commandManager;
+
 
     //覆写默认构造器
     public HomewardPluginBrewing() {
@@ -32,6 +36,11 @@ public final class HomewardPluginBrewing extends JavaPlugin {
         getLogger().log(Level.INFO, "嘻嘻");
 
         CommandManager commandManager = new CommandManager(this);
+        this.commandManager = commandManager;
+
+
+        // Registering multiple 注册指令
+        commandManager.register(new MainCommand());
 
     }
 
@@ -43,8 +52,11 @@ public final class HomewardPluginBrewing extends JavaPlugin {
 
     }
 
-    public static HomewardPluginBrewing getPlugin (){
+    public static HomewardPluginBrewing getPlugin() {
         return plugin;
     }
 
+    public static CommandManager getCommandManager() {
+        return commandManager;
+    }
 }

@@ -6,3 +6,8 @@ prefix: homeward journey brewing plugin
 authors: [ Baioretto ]
 description: homewardjourney's brewing plugin
 website: fantang.cc
+
+commands:
+  homewardbrewing:
+    description: 协调酿酒主要指令
+    usage: /<command>

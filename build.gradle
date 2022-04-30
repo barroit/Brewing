@@ -6,6 +6,15 @@ plugins {
 
 }
 
+//sourceSets {
+//    main {
+//        //if you truly want to override the defaults:
+//        output.resourcesDir = file('H:\\高版本服务器筹划\\未命名网络项目\\1.18 测试服务器\\plugins')
+//        // Compiled Java classes should use this directory
+//        java.destinationDirectory.set(file('H:\\高版本服务器筹划\\未命名网络项目\\1.18 测试服务器\\plugins'))
+//    }
+//}
+
 group = 'minecraft.homeward'
 
 repositories {
@@ -21,11 +30,12 @@ repositories {
 }
 //dependencies 要写多行
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
 }
 
 dependencies {
-    compileOnly "me.mattstudios.utils:matt-framework:1.4.6" // Replace version here
+    implementation "me.mattstudios.utils:matt-framework:1.4.6" // Replace version here
+
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
