@@ -1,5 +1,9 @@
 plugins {
     id 'java'
+    //shadow插件的id 和 版本
+    //https://github.com/johnrengelman/shadow
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+
 }
 
 group = 'minecraft.homeward'
@@ -15,17 +19,20 @@ repositories {
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
 }
-
+//dependencies 要写多行
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT'
-    //compile "me.mattstudios.utils:matt-framework:1.4.6" // Replace version here
 }
 
-//apply plugin: 'com.github.johnrengelman.shadow'
+dependencies {
+    compileOnly "me.mattstudios.utils:matt-framework:1.4.6" // Replace version here
+}
 
-//shadowJar {
-//    relocate 'me.mattstudios.mf', 'minecraft.homeward.mf'
-//}
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
+    relocate 'me.mattstudios.mf', 'minecraft.homeward.mf'
+}
 
 def targetJavaVersion = 17
 java {

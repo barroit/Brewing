@@ -1,5 +1,6 @@
 package minecraft.homeward.homewardpluginbrewing;
 
+import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Level;
@@ -30,7 +31,8 @@ public final class HomewardPluginBrewing extends JavaPlugin {
 
         getLogger().log(Level.INFO, "嘻嘻");
 
-        CommandManager commandManager = new CommandManager(yourPlugin);
+        CommandManager commandManager = new CommandManager(this);
+
     }
 
     /**
