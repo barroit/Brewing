@@ -9,8 +9,7 @@
 
 <p align="center">
 <a href="https://www.codefactor.io/repository/github/caishangqi/homeward-plugin-brewing"><img src="https://www.codefactor.io/repository/github/caishangqi/homeward-plugin-brewing/badge" alt="CodeFactor" /></a>
-<img alt="Lines of code" src="https://img.shields.io/tokei/lines/github/Ba1oretto/homeward-plugin-brewing
-">
+<img alt="Lines of code" src="https://img.shields.io/tokei/lines/github/Ba1oretto/homeward-plugin-brewing">
 <img alt="Lines of code" src="https://img.shields.io/badge/paper-1.18.2-green">
 <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/Caishangqi/Homeward-GemDeposit/master?label=build">
 <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/Ba1oretto/homeward-plugin-brewing">
