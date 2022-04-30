@@ -2,7 +2,6 @@ package minecraft.homeward.homewardpluginbrewing;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.logging.Level;
 
 public final class HomewardPluginBrewing extends JavaPlugin {
@@ -12,7 +11,7 @@ public final class HomewardPluginBrewing extends JavaPlugin {
     public final String VERSION = "1.0.0";
 
     //全局plugin 无需再次初始化但是必须在插件注册前
-    public static HomewardPluginBrewing plugin;
+    private static HomewardPluginBrewing plugin;
 
     //覆写默认构造器
     public HomewardPluginBrewing() {
@@ -39,4 +38,9 @@ public final class HomewardPluginBrewing extends JavaPlugin {
     public void onDisable() {
 
     }
+
+    public static HomewardPluginBrewing getPlugin (){
+        return plugin;
+    }
+
 }
