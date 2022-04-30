@@ -18,7 +18,14 @@ repositories {
 
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT'
+    //compile "me.mattstudios.utils:matt-framework:1.4.6" // Replace version here
 }
+
+//apply plugin: 'com.github.johnrengelman.shadow'
+
+//shadowJar {
+//    relocate 'me.mattstudios.mf', 'minecraft.homeward.mf'
+//}
 
 def targetJavaVersion = 17
 java {
