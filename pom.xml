@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>minecraft.homeward</groupId>
+    <groupId>minecraft.homeward.homewardpluginbrewing</groupId>
     <artifactId>homewardpluginbrewing</artifactId>
     <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -38,11 +38,11 @@
                     <relocations>
                         <relocation>
                             <pattern>me.mattstudios.mf</pattern>
-                            <shadedPattern>com.arcanetravel.mf</shadedPattern> <!-- Replace package here here -->
+                            <shadedPattern>minecraft.homeward.homewardpluginbrewing.mf</shadedPattern> <!-- Replace package here here -->
                         </relocation>
                         <relocation>
                             <pattern>dev.triumphteam.gui</pattern>
-                            <shadedPattern>com.arcanetravel.gui</shadedPattern> <!-- Replace package here here -->
+                            <shadedPattern>minecraft.homeward.homewardpluginbrewing.gui</shadedPattern> <!-- Replace package here here -->
                         </relocation>
                     </relocations>
 

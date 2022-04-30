@@ -29,6 +29,8 @@ public final class HomewardPluginBrewing extends JavaPlugin {
         config = getConfig();
 
         getLogger().log(Level.INFO, "嘻嘻");
+
+        CommandManager commandManager = new CommandManager(yourPlugin);
     }
 
     /**
