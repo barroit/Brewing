@@ -3,6 +3,7 @@ plugins {
     //shadow插件的id 和 版本
     //https://github.com/johnrengelman/shadow
     id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'java-library'
 
 }
 
@@ -28,17 +29,18 @@ repositories {
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
 }
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java-library'
+
 //dependencies 要写多行
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+    implementation "me.mattstudios.utils:matt-framework:1.4.6"
 }
 
-dependencies {
-    implementation "me.mattstudios.utils:matt-framework:1.4.6" // Replace version here
 
-}
 
-apply plugin: 'com.github.johnrengelman.shadow'
 
 shadowJar {
     relocate 'me.mattstudios.mf', 'minecraft.homeward.mf'
