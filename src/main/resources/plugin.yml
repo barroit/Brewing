@@ -1,4 +1,4 @@
-name: Homeward Plugin Brewing
+name: HomewardBrewing
 version: '${version}'
 main: minecraft.homeward.homewardpluginbrewing.HomewardPluginBrewing
 api-version: 1.18
