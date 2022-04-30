@@ -2,6 +2,7 @@ package minecraft.homeward.homewardpluginbrewing;
 
 import me.mattstudios.mf.base.CommandManager;
 import minecraft.homeward.homewardpluginbrewing.commands.MainCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -11,7 +12,7 @@ public final class HomewardPluginBrewing extends JavaPlugin {
 
     //常量部分
     public final String PLUGIN_NAME = "Homeward Brewing";
-    public final String VERSION = "1.0.0";
+    public final String VERSION = "1.0.2";
 
     //全局plugin 无需再次初始化但是必须在插件注册前
     private static HomewardPluginBrewing plugin;
@@ -33,14 +34,15 @@ public final class HomewardPluginBrewing extends JavaPlugin {
         saveDefaultConfig();
         config = getConfig();
 
-        getLogger().log(Level.INFO, "嘻嘻");
-
+        //注册插件指令中心
+        //来源 Matt's Framework https://mf.mattstudios.me/mf/mf-1/getting-started
         CommandManager commandManager = new CommandManager(this);
-        this.commandManager = commandManager;
+        HomewardPluginBrewing.commandManager = commandManager; //same with this
 
 
         // Registering multiple 注册指令
         commandManager.register(new MainCommand());
+        getLogger().info(ChatColor.translateAlternateColorCodes('&', "&7[&a+&7] 插件加载成功 版本" + "&6" + VERSION));
 
     }
 

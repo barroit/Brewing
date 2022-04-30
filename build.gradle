@@ -36,6 +36,8 @@ apply plugin: 'java-library'
 //dependencies 要写多行
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+    //这块出现的问题是gradle不会把lib库打包到插件里面 no class define error
+    //我是摆烂了 实在不会修，maven可以正常构建
     implementation "me.mattstudios.utils:matt-framework:1.4.6"
 }
 
