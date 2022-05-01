@@ -32,6 +32,10 @@ public final class HomewardPluginBrewing extends JavaPlugin {
         //注册默认Config,没有的话创建一个
         saveDefaultConfig();
         config = getConfig();
+        //注册自定义Config文件
+        this.saveResource("database.yml", false);
+        this.saveResource("message.yml", false);
+        this.saveResource("recipes.yml", false);
 
         //注册插件指令中心
         //来源 Matt's Framework https://mf.mattstudios.me/mf/mf-1/getting-started
