@@ -1,12 +1,11 @@
-package minecraft.homeward.homewardpluginbrewing.commands;
+package homeward.plugin.brewing.commands;
 
-import me.mattstudios.mf.annotations.Alias;
-import me.mattstudios.mf.annotations.Command;
-import me.mattstudios.mf.annotations.Default;
+import homeward.plugin.brewing.utils.ConfigurationUtil;
+import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 
 @Command("homewardbrewing")
 @Alias("hwb")
@@ -19,4 +18,12 @@ public class MainCommand extends CommandBase {
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&7输入&6/hwb help &7来获取所有指令帮助"));
     }
 
+    @Permission("homeward.admin")
+    @SubCommand("reload")
+    @Alias("r")
+    @WrongUsage("&c/hwb <option>")
+    public void reloadConfiguration(CommandSender commandSender) {
+        ConfigurationUtil.reload();
+        commandSender.sendMessage(ChatColor.GREEN + "homeward journey brewing plugin configurations reloaded");
+    }
 }

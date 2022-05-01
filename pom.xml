@@ -4,49 +4,100 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>minecraft.homeward</groupId>
-    <artifactId>HomewardBrewing</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <dependencies>
+        <!-- region Additional: ItemsAdder API -->
+        <dependency>
+            <groupId>com.github.LoneDev6</groupId>
+            <artifactId>api-itemsadder</artifactId>
+            <version>3.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- endregion -->
 
-    <name>HomewardBrewing</name>
+        <!-- region Additional: Junit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- endregion -->
 
-    <description>基于多配方的GUI酿酒系统</description>
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    <url>kkk.fantang.cc</url>
+        <!-- region Additional: Matt Framework -->
+        <dependency>
+            <groupId>me.mattstudios.utils</groupId>
+            <artifactId>matt-framework</artifactId>
+            <version>1.4.6</version>
+        </dependency>
+        <!-- endregion -->
+
+        <!-- region Additional: Matt Framework GUI -->
+        <dependency><groupId>dev.triumphteam</groupId>
+            <artifactId>triumph-gui</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+        <!-- endregion -->
+
+        <!-- region Default: Paper API -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.18.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- endregion -->
+    </dependencies>
+
+    <repositories>
+        <!-- region Additional: ItemsAdder -->
+        <repository>
+            <id>jitpack-repo</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <!-- endregion -->
+
+        <!-- region Additional: Matt Framework -->
+        <repository>
+            <id>repo</id>
+            <url>https://repo.mattstudios.me/artifactory/public/</url>
+        </repository>
+        <!-- endregion -->
+
+        <!-- region Default: Paper -->
+        <repository>
+            <id>papermc-repo</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
+        <!-- endregion -->
+
+        <!-- region Default -->
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+        <!-- endregion -->
+    </repositories>
 
     <build>
         <plugins>
-
+            <!-- region Additional: Package -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
+                <!-- 替换成自己的plugins文件夹 -->
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <outputDirectory>${output.baioretto}</outputDirectory>
+                    <!-- <outputDirectory>${output.caizii}</outputDirectory> -->
                 </configuration>
             </plugin>
+            <!-- endregion -->
+
+            <!-- region Default&Additional: Matt Framework -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
-                <configuration>
-                    <relocations>
-                        <relocation>
-                            <pattern>me.mattstudios.mf</pattern>
-                            <shadedPattern>minecraft.homeward.mf</shadedPattern> <!-- Replace package here here -->
-                        </relocation>
-                        <relocation>
-                            <pattern>dev.triumphteam.gui</pattern>
-                            <shadedPattern>minecraft.homeward.gui</shadedPattern> <!-- Replace package here here -->
-                        </relocation>
-                    </relocations>
-
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -59,80 +110,85 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- endregion -->
 
+            <!-- region !!!Default&Additional: Matt Framework -->
+            <!-- <plugin> -->
+            <!--     <groupId>org.apache.maven.plugins</groupId> -->
+            <!--     <artifactId>maven-shade-plugin</artifactId> -->
+            <!--     <version>3.2.4</version> -->
+            <!--     <configuration> -->
+            <!--         <relocations> -->
+            <!--             <relocation> -->
+            <!--                 <pattern>me.mattstudios.mf</pattern> -->
+            <!--                 <shadedPattern>homeward.plugin.brewing</shadedPattern> -->
+            <!--             </relocation> -->
+            <!--             <relocation> -->
+            <!--                 <pattern>dev.triumphteam.gui</pattern> -->
+            <!--                 <shadedPattern>homeward.plugin.brewing</shadedPattern> -->
+            <!--             </relocation> -->
+            <!--         </relocations> -->
+            <!--     </configuration> -->
+            <!--     <executions> -->
+            <!--         <execution> -->
+            <!--             <phase>package</phase> -->
+            <!--             <goals> -->
+            <!--                 <goal>shade</goal> -->
+            <!--             </goals> -->
+            <!--             &lt;!&ndash; <configuration> &ndash;&gt; -->
+            <!--             &lt;!&ndash;     <createDependencyReducedPom>false</createDependencyReducedPom> &ndash;&gt; -->
+            <!--             &lt;!&ndash; </configuration> &ndash;&gt; -->
+            <!--         </execution> -->
+            <!--     </executions> -->
+            <!-- </plugin> -->
+            <!-- endregion -->
+
+            <!-- region Additional: Surefire -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
-<!--                替换成自己的plugins文件夹-->
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
                 <configuration>
-                    <outputDirectory>H:\高版本服务器筹划\未命名网络项目\1.18 测试服务器\plugins</outputDirectory>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
+            <!-- endregion -->
+
+            <!-- region Default -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <!-- endregion -->
         </plugins>
         <resources>
+            <!-- region resource location -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <!-- endregion -->
         </resources>
     </build>
 
-    <repositories>
-        <repository>
-            <id>papermc-repo</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
-        </repository>
-        <repository>
-            <id>repo</id>
-            <url>https://repo.mattstudios.me/artifactory/public/</url>
-        </repository>
-        <repository>
-            <id>sonatype</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>
-        <!--        <repository>-->
-        <!--            <id>everything</id>-->
-        <!--            <url>https://repo.citizensnpcs.co/</url>-->
-        <!--        </repository>-->
-    </repositories>
+    <groupId>homeward.plugin</groupId>
+    <artifactId>brewing</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.papermc.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.18.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>dev.triumphteam</groupId>
-            <artifactId>triumph-gui</artifactId>
-            <version>3.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>me.mattstudios.utils</groupId>
-            <artifactId>matt-framework</artifactId>
-            <version>1.4.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.j256.ormlite</groupId>
-            <artifactId>ormlite-jdbc</artifactId>
-            <version>6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.8.0-beta4</version>
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>net.citizensnpcs</groupId>-->
-        <!--            <artifactId>citizens-main</artifactId>-->
-        <!--            <version>2.0.29-SNAPSHOT</version>-->
-        <!--        </dependency>-->
-    </dependencies>
+    <name>Brewing</name>
+    <description>基于多配方的GUI酿酒系统</description>
+    <url>https://fantang.cc</url>
+
+    <properties>
+        <java.version>17</java.version>
+        <output.baioretto>O:\Server\plugin-server-1.18.2\plugins</output.baioretto>
+        <output.caizii>H:\高版本服务器筹划\未命名网络项目\1.18 测试服务器\plugins</output.caizii>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>
