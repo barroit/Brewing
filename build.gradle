@@ -1,74 +1,74 @@
-plugins {
-    id 'java'
-    //shadow插件的id 和 版本
-    //https://github.com/johnrengelman/shadow
-    id "com.github.johnrengelman.shadow" version "7.1.2"
-    id 'java-library'
-
-}
-
-//sourceSets {
-//    main {
-//        //if you truly want to override the defaults:
-//        output.resourcesDir = file('H:\\高版本服务器筹划\\未命名网络项目\\1.18 测试服务器\\plugins')
-//        // Compiled Java classes should use this directory
-//        java.destinationDirectory.set(file('H:\\高版本服务器筹划\\未命名网络项目\\1.18 测试服务器\\plugins'))
+//plugins {
+//    id 'java'
+//    //shadow插件的id 和 版本
+//    //https://github.com/johnrengelman/shadow
+//    id "com.github.johnrengelman.shadow" version "7.1.2"
+//    id 'java-library'
+//
+//}
+//
+////sourceSets {
+////    main {
+////        //if you truly want to override the defaults:
+////        output.resourcesDir = file('H:\\高版本服务器筹划\\未命名网络项目\\1.18 测试服务器\\plugins')
+////        // Compiled Java classes should use this directory
+////        java.destinationDirectory.set(file('H:\\高版本服务器筹划\\未命名网络项目\\1.18 测试服务器\\plugins'))
+////    }
+////}
+//
+//group = 'minecraft.homeward'
+//
+//repositories {
+//    mavenCentral()
+//    maven {
+//        name = 'papermc-repo'
+//        url = 'https://papermc.io/repo/repository/maven-public/'
+//    }
+//    maven {
+//        name = 'sonatype'
+//        url = 'https://oss.sonatype.org/content/groups/public/'
 //    }
 //}
-
-group = 'minecraft.homeward'
-
-repositories {
-    mavenCentral()
-    maven {
-        name = 'papermc-repo'
-        url = 'https://papermc.io/repo/repository/maven-public/'
-    }
-    maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
-}
-
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java-library'
-
-//dependencies 要写多行
-dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
-    //这块出现的问题是gradle不会把lib库打包到插件里面 no class define error
-    //我是摆烂了 实在不会修，maven可以正常构建
-    implementation "me.mattstudios.utils:matt-framework:1.4.6"
-}
-
-
-
-
-shadowJar {
-    relocate 'me.mattstudios.mf', 'minecraft.homeward.mf'
-}
-
-def targetJavaVersion = 17
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release = targetJavaVersion
-    }
-}
-
-processResources {
-    def props = [version: version]
-    inputs.properties props
-    filteringCharset 'UTF-8'
-    filesMatching('plugin.yml') {
-        expand props
-    }
-}
+//
+//apply plugin: 'com.github.johnrengelman.shadow'
+//apply plugin: 'java-library'
+//
+////dependencies 要写多行
+//dependencies {
+//    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+//    //这块出现的问题是gradle不会把lib库打包到插件里面 no class define error
+//    //我是摆烂了 实在不会修，maven可以正常构建
+//    implementation "me.mattstudios.utils:matt-framework:1.4.6"
+//}
+//
+//
+//
+//
+//shadowJar {
+//    relocate 'me.mattstudios.mf', 'minecraft.homeward.mf'
+//}
+//
+//def targetJavaVersion = 17
+//java {
+//    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+//    sourceCompatibility = javaVersion
+//    targetCompatibility = javaVersion
+//    if (JavaVersion.current() < javaVersion) {
+//        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+//    }
+//}
+//
+//tasks.withType(JavaCompile).configureEach {
+//    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+//        options.release = targetJavaVersion
+//    }
+//}
+//
+//processResources {
+//    def props = [version: version]
+//    inputs.properties props
+//    filteringCharset 'UTF-8'
+//    filesMatching('plugin.yml') {
+//        expand props
+//    }
+//}
