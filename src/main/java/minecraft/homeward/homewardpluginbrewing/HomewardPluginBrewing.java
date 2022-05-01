@@ -18,7 +18,6 @@ public final class HomewardPluginBrewing extends JavaPlugin {
     private static HomewardPluginBrewing plugin;
     private static CommandManager commandManager;
 
-
     //覆写默认构造器
     public HomewardPluginBrewing() {
         plugin = this;
@@ -38,7 +37,6 @@ public final class HomewardPluginBrewing extends JavaPlugin {
         //来源 Matt's Framework https://mf.mattstudios.me/mf/mf-1/getting-started
         CommandManager commandManager = new CommandManager(this);
         HomewardPluginBrewing.commandManager = commandManager; //same with this
-
 
         // Registering multiple 注册指令
         commandManager.register(new MainCommand());
@@ -61,4 +59,5 @@ public final class HomewardPluginBrewing extends JavaPlugin {
     public static CommandManager getCommandManager() {
         return commandManager;
     }
+
 }
