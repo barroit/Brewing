@@ -1,20 +1,24 @@
 package homeward.plugin.brewing;
 
+import com.google.common.reflect.Reflection;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
+import homeward.plugin.brewing.listeners.BrewingBarrelListener;
 import homeward.plugin.brewing.utils.ConfigurationUtil;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.reflections.Reflections;
 
 import java.util.logging.Level;
 
 public final class Brewing extends JavaPlugin {
     private static Brewing plugin;
     private final CommandSender commandSender;
+    private final String packageName;
 
     /**
      *
@@ -33,6 +37,8 @@ public final class Brewing extends JavaPlugin {
         // register command here
         commandManager.register(new MainCommand());
 
+        this.registerListeners();
+
         this.onEnableMessage();
     }
 
@@ -40,12 +46,13 @@ public final class Brewing extends JavaPlugin {
         this.checkDepend();
         plugin = this;
         this.commandSender = super.getServer().getConsoleSender();
+        this.packageName = getClass().getPackageName();
         this.initializeConfiguration();
     }
 
     private void initializeConfiguration() {
         super.saveDefaultConfig();
-        new ConfigurationUtil(this, "data-resource", "recipes");
+        new ConfigurationUtil(this, "data-resource", "recipes", "block-surface");
     }
 
     private void onEnableMessage() {
@@ -59,5 +66,18 @@ public final class Brewing extends JavaPlugin {
             getLogger().log(Level.WARNING, "Could not find ItemsAdder! This plugin is required.");
             Bukkit.getPluginManager().disablePlugin(this);
         }
+    }
+
+    private void registerListeners() {
+        new Reflections(packageName + ".listeners").getSubTypesOf(Listener.class).forEach(v -> {
+            try {
+                if (v.getDeclaredConstructor().getParameterCount() == 0) {
+                    Listener listener = v.getDeclaredConstructor().newInstance();
+                    Bukkit.getServer().getPluginManager().registerEvents(listener, this);
+                }
+            } catch (Exception e) {
+                System.out.println("nothing happen");
+            }
+        });
     }
 }

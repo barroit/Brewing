@@ -5,6 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <dependencies>
+        <!-- region Additional: Reflections -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+        <!-- endregion -->
+
         <!-- region Additional: ItemsAdder API -->
         <dependency>
             <groupId>com.github.LoneDev6</groupId>

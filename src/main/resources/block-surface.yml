@@ -1,0 +1,6 @@
+brewing_barrel:
+  namespace: homeward
+  north: brewing_barrel_north
+  south: brewing_barrel_south
+  east: brewing_barrel_east
+  west: brewing_barrel_west
