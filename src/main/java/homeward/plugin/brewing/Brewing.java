@@ -1,9 +1,7 @@
 package homeward.plugin.brewing;
 
-import com.google.common.reflect.Reflection;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
-import homeward.plugin.brewing.listeners.BrewingBarrelListener;
 import homeward.plugin.brewing.utils.ConfigurationUtil;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;

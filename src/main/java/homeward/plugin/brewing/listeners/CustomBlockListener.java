@@ -10,12 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.util.concurrent.atomic.AtomicReference;
-
-public class BrewingBarrelListener implements Listener {
+public class CustomBlockListener implements Listener {
 
     @EventHandler
-    public void onBarrelPlaced(CustomBlockPlaceEvent event) {
+    public void onBlockPlaced(CustomBlockPlaceEvent event) {
         FileConfiguration configuration = ConfigurationUtil.get("block-surface");
 
         String currentBlock = null;
