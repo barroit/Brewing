@@ -26,4 +26,5 @@ public class MainCommand extends CommandBase {
         ConfigurationUtil.reload();
         commandSender.sendMessage(ChatColor.GREEN + "homeward journey brewing plugin configurations reloaded");
     }
+
 }

@@ -40,7 +40,8 @@
         <!-- endregion -->
 
         <!-- region Additional: Matt Framework GUI -->
-        <dependency><groupId>dev.triumphteam</groupId>
+        <dependency>
+            <groupId>dev.triumphteam</groupId>
             <artifactId>triumph-gui</artifactId>
             <version>3.1.2</version>
         </dependency>
@@ -52,6 +53,14 @@
             <artifactId>paper-api</artifactId>
             <version>1.18.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- endregion -->
+
+        <!-- region Default: NBT API -->
+        <dependency>
+            <groupId>de.tr7zw</groupId>
+            <artifactId>item-nbt-api-plugin</artifactId>
+            <version>2.9.2</version>
         </dependency>
         <!-- endregion -->
     </dependencies>
@@ -83,7 +92,18 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+
+
         <!-- endregion -->
+
+        <!-- region Default: NBT API -->
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <layout>default</layout>
+        </repository>
+        <!-- endregion -->
+
     </repositories>
 
     <build>
@@ -95,14 +115,15 @@
                 <version>2.3.1</version>
                 <!-- 替换成自己的plugins文件夹 -->
                 <configuration>
-                    <outputDirectory>${output.baioretto}</outputDirectory>
-                    <!-- <outputDirectory>${output.caizii}</outputDirectory> -->
+                    <!--                    <outputDirectory>${output.baioretto}</outputDirectory>-->
+                    <outputDirectory>${output.caizii}</outputDirectory>
                 </configuration>
             </plugin>
             <!-- endregion -->
 
             <!-- region Default&Additional: Matt Framework -->
             <plugin>
+                <!--                默认shaded了，如果不shaded需要提供指定scope-->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>

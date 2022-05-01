@@ -8,12 +8,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 public class CustomBlockListener implements Listener {
 
     @EventHandler
     public void onBlockPlaced(CustomBlockPlaceEvent event) {
+
         FileConfiguration configuration = ConfigurationUtil.get("block-surface");
 
         String currentBlock = null;
