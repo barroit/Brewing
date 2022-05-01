@@ -14,7 +14,8 @@ public final class Brewing extends JavaPlugin {
 
     /**
      *
-     * Get current plugin instance
+     * <h3>Get current plugin instance</h3>
+     * <h2>Can only be used after the plugin main class instantiated</h2>
      *
      * @return plugin instance
      */
@@ -25,6 +26,7 @@ public final class Brewing extends JavaPlugin {
     @Override
     public void onEnable() {
         CommandManager commandManager = new CommandManager(this);
+        // register command here
         commandManager.register(new MainCommand());
 
         this.onEnableMessage();
@@ -42,6 +44,7 @@ public final class Brewing extends JavaPlugin {
     }
 
     private void onEnableMessage() {
+        // change on loaded message here
         String message = String.format("&7[&a+&7] 「%s」loaded, version: &6%s", BaseInfo.PLUGIN_NAME, BaseInfo.PLUGIN_VERSION);
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
