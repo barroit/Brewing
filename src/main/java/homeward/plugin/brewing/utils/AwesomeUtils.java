@@ -24,8 +24,6 @@ public class AwesomeUtils {
      * @param event drag event
      */
     public static void cancelDrag(final InventoryDragEvent event) {
-        if (!(event.getInventory().getHolder() instanceof GuiBase guiBase)) return;
-
         Set<Integer> rawSlots = event.getRawSlots();
 
         Integer min = Collections.min(rawSlots);

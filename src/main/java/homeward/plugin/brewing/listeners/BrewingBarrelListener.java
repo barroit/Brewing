@@ -61,6 +61,7 @@ public class BrewingBarrelListener implements Listener {
 
     @EventHandler
     public void onPlayerDragEvent(InventoryDragEvent event) {
+        if (!(event.getInventory().getHolder() instanceof GuiBase)) return;
         AwesomeUtils.cancelDrag(event);
     }
 }
