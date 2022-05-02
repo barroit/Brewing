@@ -2,10 +2,12 @@ package homeward.plugin.brewing.commands;
 
 import de.tr7zw.nbtapi.NBTFile;
 import homeward.plugin.brewing.data.BrewingData;
+import homeward.plugin.brewing.guis.BarrelGUI;
 import homeward.plugin.brewing.utils.ConfigurationUtil;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.ChatColor;
+import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -86,6 +88,11 @@ public class MainCommand extends CommandBase {
         }
     }
 
+    @SubCommand("gui")
+    public void openTestBarrelGUI(CommandSender commandSender) {
+        Player player = (Player) commandSender;
+        BarrelGUI.renderBarrelInterface().open(player);
+    }
 
     @Permission("homeward.admin")
     @SubCommand("reload")
