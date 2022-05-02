@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class SimpleTest {
     @Test
@@ -21,5 +23,15 @@ public class SimpleTest {
             System.out.println(v.matches("([\\w-]*)\\.yml|yaml$"));
             System.out.println(v.replaceAll("([\\w-]*)\\.yml|yaml$", "$1") + ".yml");
         });
+    }
+
+    @Test
+    void testContinue() {
+        List<Integer> no = new ArrayList<>(Arrays.asList(2, 11, 20));
+
+        for (int i = 0; i < 27; i++) {
+            if (no.contains(i)) continue;
+            System.out.println(i);
+        }
     }
 }

@@ -37,12 +37,6 @@ public final class Brewing extends JavaPlugin {
         this.registerListeners();
 
         this.onEnableMessage();
-
-
-    }
-
-    public void onLoad() {
-
     }
 
     public Brewing() {
