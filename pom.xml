@@ -92,8 +92,6 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-
-
         <!-- endregion -->
 
         <!-- region Default: NBT API -->
@@ -103,7 +101,6 @@
             <layout>default</layout>
         </repository>
         <!-- endregion -->
-
     </repositories>
 
     <build>
@@ -115,15 +112,15 @@
                 <version>2.3.1</version>
                 <!-- 替换成自己的plugins文件夹 -->
                 <configuration>
-                    <!--                    <outputDirectory>${output.baioretto}</outputDirectory>-->
-                    <outputDirectory>${output.caizii}</outputDirectory>
+                    <outputDirectory>${output.baioretto}</outputDirectory>
+                    <!-- <outputDirectory>${output.caizii}</outputDirectory> -->
                 </configuration>
             </plugin>
             <!-- endregion -->
 
             <!-- region Default&Additional: Matt Framework -->
             <plugin>
-                <!--                默认shaded了，如果不shaded需要提供指定scope-->
+                <!-- 默认shaded了，如果不shaded需要提供指定scope -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
@@ -139,37 +136,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- endregion -->
-
-            <!-- region !!!Default&Additional: Matt Framework -->
-            <!-- <plugin> -->
-            <!--     <groupId>org.apache.maven.plugins</groupId> -->
-            <!--     <artifactId>maven-shade-plugin</artifactId> -->
-            <!--     <version>3.2.4</version> -->
-            <!--     <configuration> -->
-            <!--         <relocations> -->
-            <!--             <relocation> -->
-            <!--                 <pattern>me.mattstudios.mf</pattern> -->
-            <!--                 <shadedPattern>homeward.plugin.brewing</shadedPattern> -->
-            <!--             </relocation> -->
-            <!--             <relocation> -->
-            <!--                 <pattern>dev.triumphteam.gui</pattern> -->
-            <!--                 <shadedPattern>homeward.plugin.brewing</shadedPattern> -->
-            <!--             </relocation> -->
-            <!--         </relocations> -->
-            <!--     </configuration> -->
-            <!--     <executions> -->
-            <!--         <execution> -->
-            <!--             <phase>package</phase> -->
-            <!--             <goals> -->
-            <!--                 <goal>shade</goal> -->
-            <!--             </goals> -->
-            <!--             &lt;!&ndash; <configuration> &ndash;&gt; -->
-            <!--             &lt;!&ndash;     <createDependencyReducedPom>false</createDependencyReducedPom> &ndash;&gt; -->
-            <!--             &lt;!&ndash; </configuration> &ndash;&gt; -->
-            <!--         </execution> -->
-            <!--     </executions> -->
-            <!-- </plugin> -->
             <!-- endregion -->
 
             <!-- region Additional: Surefire -->
