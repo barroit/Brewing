@@ -11,17 +11,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.InventoryView;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class BrewingBarrelListener implements Listener {
     private final Map<Location, GuiBase> barrelGUIMap;
+    private final Set<Integer> manipulativeList;
 
     {
         barrelGUIMap = new HashMap<>();
+        manipulativeList = new HashSet<>(Arrays.asList(2, 11, 20));
     }
 
     @EventHandler
@@ -47,16 +46,24 @@ public class BrewingBarrelListener implements Listener {
     public void onPlayerClickEvent(InventoryClickEvent event) {
         if (event.getClickedInventory() == null) return;
 
-        // prevent shift+click
-        if (event.getView().getTopInventory().getHolder() instanceof GuiBase && event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-            event.setCancelled(true);
+        // prevent shift+click and double click
+        if (event.getView().getTopInventory().getHolder() instanceof GuiBase) {
+            if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+                event.setCancelled(true);
+            }
+            if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                if (event.getCursor() == null) return;
+                if (event.getView().getTopInventory().contains(event.getCursor().getType())) {
+                    event.setCancelled(true);
+                }
+            }
         }
 
-        InventoryHolder holder = event.getClickedInventory().getHolder();
-        if (!(holder instanceof GuiBase guiBase)) return;
+        if (!(event.getClickedInventory().getHolder() instanceof GuiBase guiBase)) return;
+
         event.setCancelled(true);
 
-        guiBase.handleClick(event);
+        if (manipulativeList.contains(event.getSlot())) guiBase.handleClick(event);
     }
 
     @EventHandler

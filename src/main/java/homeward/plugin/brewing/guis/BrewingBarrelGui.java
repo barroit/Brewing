@@ -25,6 +25,7 @@ public class BrewingBarrelGui extends GuiBase {
     public void handleClick(InventoryClickEvent event) {
         if (event.getCurrentItem() == null) return;
 
+
     }
 
     @Override
@@ -42,18 +43,18 @@ public class BrewingBarrelGui extends GuiBase {
         inventory.setItem(2, substrateSlot);
 
         ItemStack restrictionSlot = new ItemStack(Material.PAPER);
-        ItemMeta restrictionSlotItemMeta = substrateSlot.getItemMeta();
+        ItemMeta restrictionSlotItemMeta = restrictionSlot.getItemMeta();
         restrictionSlotItemMeta.displayName(Component.text("抑制剂 Restriction", NamedTextColor.YELLOW));
         restrictionSlot.setItemMeta(restrictionSlotItemMeta);
 
         inventory.setItem(11, restrictionSlot);
 
-        ItemStack yestSlot = new ItemStack(Material.PAPER);
-        ItemMeta yestSlotItemMeta = yestSlot.getItemMeta();
-        yestSlotItemMeta.displayName(Component.text("酵母 Yeast", NamedTextColor.YELLOW));
-        yestSlot.setItemMeta(yestSlotItemMeta);
+        ItemStack yeastSlot = new ItemStack(Material.PAPER);
+        ItemMeta yeastSlotItemMeta = yeastSlot.getItemMeta();
+        yeastSlotItemMeta.displayName(Component.text("酵母 Yeast", NamedTextColor.YELLOW));
+        yeastSlot.setItemMeta(yeastSlotItemMeta);
 
-        inventory.setItem(20, yestSlot);
+        inventory.setItem(20, yeastSlot);
 
         ItemStack isBrewSlot = new ItemStack(Material.PAPER);
         ItemMeta isBrewItemMeta = isBrewSlot.getItemMeta();
@@ -72,17 +73,17 @@ public class BrewingBarrelGui extends GuiBase {
         inventory.setItem(6, substrateStateSlot);
 
         ItemStack restrictionStateSlot = new ItemStack(Material.PAPER);
-        ItemMeta restrictionStateSlotItemMeta = substrateStateSlot.getItemMeta();
+        ItemMeta restrictionStateSlotItemMeta = restrictionStateSlot.getItemMeta();
         restrictionStateSlotItemMeta.displayName(Component.text("是否添加抑制剂", NamedTextColor.YELLOW));
         restrictionStateSlot.setItemMeta(restrictionStateSlotItemMeta);
 
         inventory.setItem(15, restrictionStateSlot);
 
-        ItemStack yestStateSlot = new ItemStack(Material.PAPER);
-        ItemMeta yestStateSlotItemMeta = yestSlot.getItemMeta();
-        yestStateSlotItemMeta.displayName(Component.text("是否添加酵母", NamedTextColor.YELLOW));
-        yestStateSlot.setItemMeta(yestStateSlotItemMeta);
+        ItemStack yeastStateSlot = new ItemStack(Material.PAPER);
+        ItemMeta yeastStateSlotItemMeta = yeastStateSlot.getItemMeta();
+        yeastStateSlotItemMeta.displayName(Component.text("是否添加酵母", NamedTextColor.YELLOW));
+        yeastStateSlot.setItemMeta(yeastStateSlotItemMeta);
 
-        inventory.setItem(24, yestStateSlot);
+        inventory.setItem(24, yeastStateSlot);
     }
 }
