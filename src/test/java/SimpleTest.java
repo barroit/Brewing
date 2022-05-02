@@ -1,8 +1,7 @@
+import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class SimpleTest {
     @Test
@@ -33,5 +32,21 @@ public class SimpleTest {
             if (no.contains(i)) continue;
             System.out.println(i);
         }
+    }
+
+    @Test
+    void testCompare() {
+        Set<Integer> rawSlots = new HashSet<>(Arrays.asList(32, 33, 34, 36, 38, 39, 40, 41, 42, 43, 45, 46, 47, 52, 53, 27, 28, 29, 62, 30, 31));
+        // [27, 28, 29, 30, 31, 32, 33, 34, 36, 38, 39, 40, 41, 42, 43, 45, 46, 47, 52, 53, 62]
+
+        Integer min = Collections.min(rawSlots);
+
+        if (min == InventoryView.OUTSIDE || min == -1) {
+            return;
+        }
+
+        Integer max = Collections.max(rawSlots);
+
+        System.out.println(max);
     }
 }
