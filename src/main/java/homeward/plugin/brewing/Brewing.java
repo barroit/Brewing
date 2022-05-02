@@ -1,6 +1,5 @@
 package homeward.plugin.brewing;
 
-import de.tr7zw.nbtinjector.NBTInjector;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.utils.ConfigurationUtil;
@@ -20,7 +19,6 @@ public final class Brewing extends JavaPlugin {
     private final String packageName;
 
     /**
-     *
      * <h3>Get current plugin instance</h3>
      * <h2>Can only be used after the plugin main class instantiated</h2>
      *
@@ -43,8 +41,8 @@ public final class Brewing extends JavaPlugin {
 
     }
 
-    public  void  onLoad() {
-        NBTInjector.inject();
+    public void onLoad() {
+
     }
 
     public Brewing() {
