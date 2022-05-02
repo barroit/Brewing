@@ -23,8 +23,10 @@ public class BrewingBarrelGui extends GuiBase {
 
     @Override
     public void handleClick(InventoryClickEvent event) {
-        if (event.getCurrentItem() == null) return;
+        if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
 
+        int eventSlot = event.getSlot();
+        event.getClickedInventory().setItem(eventSlot, event.getCursor());
 
     }
 
@@ -35,26 +37,9 @@ public class BrewingBarrelGui extends GuiBase {
 
     @Override
     public void setGuiItems() {
-        ItemStack substrateSlot = new ItemStack(Material.PAPER);
-        ItemMeta substrateSlotItemMeta = substrateSlot.getItemMeta();
-        substrateSlotItemMeta.displayName(Component.text("底物 Substrate", NamedTextColor.YELLOW));
-        substrateSlot.setItemMeta(substrateSlotItemMeta);
-
-        inventory.setItem(2, substrateSlot);
-
-        ItemStack restrictionSlot = new ItemStack(Material.PAPER);
-        ItemMeta restrictionSlotItemMeta = restrictionSlot.getItemMeta();
-        restrictionSlotItemMeta.displayName(Component.text("抑制剂 Restriction", NamedTextColor.YELLOW));
-        restrictionSlot.setItemMeta(restrictionSlotItemMeta);
-
-        inventory.setItem(11, restrictionSlot);
-
-        ItemStack yeastSlot = new ItemStack(Material.PAPER);
-        ItemMeta yeastSlotItemMeta = yeastSlot.getItemMeta();
-        yeastSlotItemMeta.displayName(Component.text("酵母 Yeast", NamedTextColor.YELLOW));
-        yeastSlot.setItemMeta(yeastSlotItemMeta);
-
-        inventory.setItem(20, yeastSlot);
+        spawnSubstrateSlot();
+        spawnRestrictionSlot();
+        spawnYeastSlot();
 
         ItemStack isBrewSlot = new ItemStack(Material.PAPER);
         ItemMeta isBrewItemMeta = isBrewSlot.getItemMeta();
@@ -85,5 +70,29 @@ public class BrewingBarrelGui extends GuiBase {
         yeastStateSlot.setItemMeta(yeastStateSlotItemMeta);
 
         inventory.setItem(24, yeastStateSlot);
+    }
+
+    private void spawnSubstrateSlot() {
+        ItemStack substrateSlot = new ItemStack(Material.PAPER);
+        ItemMeta substrateSlotItemMeta = substrateSlot.getItemMeta();
+        substrateSlotItemMeta.displayName(Component.text("底物 Substrate", NamedTextColor.YELLOW));
+        substrateSlot.setItemMeta(substrateSlotItemMeta);
+        inventory.setItem(2, substrateSlot);
+    }
+
+    private void spawnRestrictionSlot() {
+        ItemStack restrictionSlot = new ItemStack(Material.PAPER);
+        ItemMeta restrictionSlotItemMeta = restrictionSlot.getItemMeta();
+        restrictionSlotItemMeta.displayName(Component.text("抑制剂 Restriction", NamedTextColor.YELLOW));
+        restrictionSlot.setItemMeta(restrictionSlotItemMeta);
+        inventory.setItem(11, restrictionSlot);
+    }
+
+    private void spawnYeastSlot() {
+        ItemStack yeastSlot = new ItemStack(Material.PAPER);
+        ItemMeta yeastSlotItemMeta = yeastSlot.getItemMeta();
+        yeastSlotItemMeta.displayName(Component.text("酵母 Yeast", NamedTextColor.YELLOW));
+        yeastSlot.setItemMeta(yeastSlotItemMeta);
+        inventory.setItem(20, yeastSlot);
     }
 }
