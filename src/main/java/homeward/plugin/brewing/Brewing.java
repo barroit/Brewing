@@ -2,7 +2,7 @@ package homeward.plugin.brewing;
 
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
-import homeward.plugin.brewing.utils.ConfigurationUtil;
+import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -49,7 +49,7 @@ public final class Brewing extends JavaPlugin {
 
     private void initializeConfiguration() {
         super.saveDefaultConfig();
-        new ConfigurationUtil(this, "data-resource", "recipes", "block-surface");
+        new ConfigurationUtils(this, "data-resource", "recipes", "block-surface");
     }
 
     private void onEnableMessage() {

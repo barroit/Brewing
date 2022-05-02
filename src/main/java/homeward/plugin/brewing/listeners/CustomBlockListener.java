@@ -2,21 +2,20 @@ package homeward.plugin.brewing.listeners;
 
 import dev.lone.itemsadder.api.CustomBlock;
 import dev.lone.itemsadder.api.Events.CustomBlockPlaceEvent;
-import homeward.plugin.brewing.utils.ConfigurationUtil;
+import homeward.plugin.brewing.utils.ConfigurationUtils;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.MainHand;
 
 public class CustomBlockListener implements Listener {
 
     @EventHandler
     public void onBlockPlaced(CustomBlockPlaceEvent event) {
 
-        FileConfiguration configuration = ConfigurationUtil.get("block-surface");
+        FileConfiguration configuration = ConfigurationUtils.get("block-surface");
 
         String currentBlock = null;
 

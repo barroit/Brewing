@@ -13,7 +13,7 @@ import java.util.*;
  * @author Baioretto
  * @version 1.0.0
  */
-public class ConfigurationUtil {
+public class ConfigurationUtils {
     private static Map<String, File> fileMap;
     private static Map<String, FileConfiguration> fileConfigurationMap;
 
@@ -25,7 +25,7 @@ public class ConfigurationUtil {
      * @param plugin the plugin instance
      * @param configname your config name without extension
      */
-    public ConfigurationUtil(@NotNull Brewing plugin, @NotNull String ...configname) {
+    public ConfigurationUtils(@NotNull Brewing plugin, @NotNull String ...configname) {
         fileMap = new HashMap<>();
         fileConfigurationMap = new HashMap<>();
         this.setValue(plugin, configname);

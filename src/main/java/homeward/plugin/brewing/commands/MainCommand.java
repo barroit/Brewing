@@ -1,6 +1,6 @@
 package homeward.plugin.brewing.commands;
 
-import homeward.plugin.brewing.utils.ConfigurationUtil;
+import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.ChatColor;
@@ -84,7 +84,7 @@ public class MainCommand extends CommandBase {
     @Alias("r")
     @WrongUsage("&c/hwb <option>")
     public void reloadConfiguration(CommandSender commandSender) {
-        ConfigurationUtil.reload();
+        ConfigurationUtils.reload();
         commandSender.sendMessage(ChatColor.GREEN + "homeward journey brewing plugin configurations reloaded");
     }
 

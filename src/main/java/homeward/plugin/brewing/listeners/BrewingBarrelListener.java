@@ -3,6 +3,7 @@ package homeward.plugin.brewing.listeners;
 import dev.lone.itemsadder.api.Events.CustomBlockInteractEvent;
 import homeward.plugin.brewing.guis.GuiBase;
 import homeward.plugin.brewing.guis.BrewingBarrelGui;
+import homeward.plugin.brewing.utils.AwesomeUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -60,19 +61,6 @@ public class BrewingBarrelListener implements Listener {
 
     @EventHandler
     public void onPlayerDragEvent(InventoryDragEvent event) {
-        if (!(event.getInventory().getHolder() instanceof GuiBase guiBase)) return;
-
-        Set<Integer> rawSlots = event.getRawSlots();
-
-        Integer min = Collections.min(rawSlots);
-        if (min == InventoryView.OUTSIDE || min == -1) return;
-
-        Integer max = Collections.max(rawSlots);
-        int size = event.getView().getTopInventory().getSize();
-        if (max < size) {
-            event.setCancelled(true);
-        } else if (max >= size && min < size) {
-            event.setCancelled(true);
-        }
+        AwesomeUtils.cancelDrag(event);
     }
 }
