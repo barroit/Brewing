@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.MainHand;
 
 public class CustomBlockListener implements Listener {
 
@@ -50,11 +51,22 @@ public class CustomBlockListener implements Listener {
             customBlock = CustomBlock.getInstance(namespace + ":" + section.getString("east"));
         }
 
-        event.setCancelled(true);
-
         customBlock.place(location);
         customBlock.playPlaceSound();
-        player.swingMainHand();
+
+        int mainHandAmount = player.getInventory().getItemInMainHand().getAmount();
+        int offHandAmount = player.getInventory().getItemInOffHand().getAmount();
+
+        if (mainHandAmount == 0) {
+            player.getInventory().getItemInOffHand().setAmount(offHandAmount - 1);
+            player.swingOffHand();
+        }
+        else {
+            player.getInventory().getItemInMainHand().setAmount(mainHandAmount - 1);
+            player.swingMainHand();
+        }
+
+        event.setCancelled(true);
     }
 
     private Boolean inRange(Integer target, Integer begin, Integer end) {
