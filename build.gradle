@@ -1,0 +1,92 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java'
+}
+
+group = 'homeward.plugin'
+
+configurations {
+    testImplementation.extendsFrom compileOnly
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name 'codemc-repo'
+        url 'https://repo.codemc.org/repository/maven-public/'
+    }
+    maven {
+        name 'jitpack-repo'
+        url 'https://jitpack.io'
+    }
+    maven {
+        name 'papermc-repo'
+        url 'https://papermc.io/repo/repository/maven-public/'
+    }
+    maven {
+        name 'sonatype'
+        url 'https://oss.sonatype.org/content/groups/public/'
+    }
+}
+
+dependencies {
+    // NBT API
+    compileOnly 'de.tr7zw:item-nbt-api-plugin:2.9.2'
+
+    // Reflections
+    implementation 'org.reflections:reflections:0.10.2'
+
+    // ItemsAdder API
+    compileOnly 'com.github.LoneDev6:API-ItemsAdder:3.1.0b'
+
+    // Junit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+    // Matt Framework
+    implementation "me.mattstudios.utils:matt-framework:1.4.6"
+
+    // Paper Minecraft
+    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+shadowJar {
+    minimize()
+    archiveBaseName.set('HomewardBrewing')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+    options.encoding = "UTF-8"
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+tasks.withType(Jar) {
+    def serverDir = serverDirectory.toString()
+    if (!(serverDir == null || serverDir.isBlank())) {
+        destinationDirectory.set(file(serverDir))
+    } else {
+        System.err.println("you may need to set the server plugin directory in gradle.properties")
+    }
+}

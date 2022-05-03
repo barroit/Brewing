@@ -1,5 +1,5 @@
 name: Brewing
-version: '${project.version}'
+version: 1.1.0
 main: homeward.plugin.brewing.Brewing
 api-version: 1.18
 prefix: hwb
@@ -9,7 +9,7 @@ website: https://fantang.cc
 
 depend:
   - ItemsAdder
-#  - NBTAPI
+  - NBTAPI
 
 commands:
   homewardbrewing:
