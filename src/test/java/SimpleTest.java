@@ -25,6 +25,12 @@ public class SimpleTest {
     }
 
     @Test
+    void testRegularExpressionV3() {
+        String s = "plugins\\Br\\e\\wing";
+        System.out.println(s.replaceAll("\\\\", "//"));
+    }
+
+    @Test
     void testContinue() {
         List<Integer> no = new ArrayList<>(Arrays.asList(2, 11, 20));
 

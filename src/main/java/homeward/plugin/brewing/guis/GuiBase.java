@@ -1,5 +1,6 @@
 package homeward.plugin.brewing.guis;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -10,10 +11,15 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class GuiBase implements InventoryHolder {
     protected Inventory inventory;
-    protected Player player;
+    private Player player;
+    private final Component title;
 
-    public String getGuiName() {
-        return null;
+    public GuiBase(Component title) {
+        this.title = title;
+    }
+
+    public Component getTitle() {
+        return title;
     }
 
     public abstract int getSlots();
@@ -25,7 +31,7 @@ public abstract class GuiBase implements InventoryHolder {
     public abstract void setGuiItems();
 
     public void initialize() {
-        inventory = Bukkit.createInventory(this, getSlots());
+        inventory = Bukkit.createInventory(this, getSlots(), getTitle());
         this.setGuiItems();
     }
 

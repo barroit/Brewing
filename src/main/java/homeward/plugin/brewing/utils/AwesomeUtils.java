@@ -1,8 +1,6 @@
 package homeward.plugin.brewing.utils;
 
-import homeward.plugin.brewing.guis.GuiBase;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.InventoryView;
 
 import java.util.Collections;
