@@ -5,10 +5,6 @@ plugins {
 
 group = 'homeward.plugin'
 
-configurations {
-    testImplementation.extendsFrom compileOnly
-}
-
 repositories {
     mavenCentral()
     maven {
@@ -31,7 +27,7 @@ repositories {
 
 dependencies {
     // NBT API
-    compileOnly 'de.tr7zw:item-nbt-api-plugin:2.9.2'
+    implementation 'de.tr7zw:item-nbt-api-plugin:2.9.2'
 
     // Reflections
     implementation 'org.reflections:reflections:0.10.2'
@@ -47,6 +43,10 @@ dependencies {
 
     // Paper Minecraft
     compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+}
+
+configurations {
+    testImplementation.extendsFrom compileOnly
 }
 
 def targetJavaVersion = 17

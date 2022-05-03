@@ -9,7 +9,6 @@ website: https://fantang.cc
 
 depend:
   - ItemsAdder
-  - NBTAPI
 
 commands:
   homewardbrewing:
