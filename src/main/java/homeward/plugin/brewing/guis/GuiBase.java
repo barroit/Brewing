@@ -12,13 +12,15 @@ public abstract class GuiBase implements InventoryHolder {
     protected Inventory inventory;
     protected Player player;
 
-    public abstract String getGuiName();
+    public String getGuiName() {
+        return null;
+    }
 
     public abstract int getSlots();
 
     public abstract void handleClick(InventoryClickEvent event);
 
-    public abstract void handleDrag(InventoryDragEvent event);
+    public void handleDrag(InventoryDragEvent event) {}
 
     public abstract void setGuiItems();
 

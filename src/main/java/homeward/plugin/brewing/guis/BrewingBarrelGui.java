@@ -1,20 +1,18 @@
 package homeward.plugin.brewing.guis;
 
+import de.tr7zw.nbtapi.NBTItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class BrewingBarrelGui extends GuiBase {
-
-    @Override
-    public String getGuiName() {
-        return "Confirm: Kill yourself?";
-    }
+    private final ItemStack air = new ItemStack(Material.AIR);
 
     @Override
     public int getSlots() {
@@ -23,16 +21,33 @@ public class BrewingBarrelGui extends GuiBase {
 
     @Override
     public void handleClick(InventoryClickEvent event) {
-        if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
+        Inventory clickedInventory = event.getClickedInventory();
+        ItemStack cursor = event.getCursor();
+        if (cursor == null || clickedInventory == null) return;
 
+        boolean cursorIsAir = cursor.getType() == Material.AIR;
         int eventSlot = event.getSlot();
-        event.getClickedInventory().setItem(eventSlot, event.getCursor());
+        HumanEntity player = event.getWhoClicked();
 
-    }
+        ItemStack rawItem = clickedInventory.getItem(event.getSlot());
+        NBTItem rawNbtItem = new NBTItem(rawItem);
 
-    @Override
-    public void handleDrag(InventoryDragEvent event) {
-
+        if (rawNbtItem.getBoolean("default")) {
+            clickedInventory.setItem(eventSlot, cursor);
+            player.setItemOnCursor(air);
+        } else if (cursorIsAir) {
+            player.setItemOnCursor(clickedInventory.getItem(eventSlot));
+            switch (eventSlot) {
+                case 2 -> this.spawnSubstrateSlot();
+                case 11 -> this.spawnRestrictionSlot();
+                case 20 -> this.spawnYeastSlot();
+            }
+        } else {
+            ItemStack itemInInventory = clickedInventory.getItem(eventSlot);
+            ItemStack itemOnCursor = player.getItemOnCursor();
+            player.setItemOnCursor(itemInInventory);
+            clickedInventory.setItem(eventSlot, itemOnCursor);
+        }
     }
 
     @Override
@@ -77,7 +92,9 @@ public class BrewingBarrelGui extends GuiBase {
         ItemMeta substrateSlotItemMeta = substrateSlot.getItemMeta();
         substrateSlotItemMeta.displayName(Component.text("底物 Substrate", NamedTextColor.YELLOW));
         substrateSlot.setItemMeta(substrateSlotItemMeta);
-        inventory.setItem(2, substrateSlot);
+        NBTItem nbtItem = new NBTItem(substrateSlot);
+        nbtItem.setBoolean("default", true);
+        inventory.setItem(2, nbtItem.getItem());
     }
 
     private void spawnRestrictionSlot() {
@@ -85,7 +102,9 @@ public class BrewingBarrelGui extends GuiBase {
         ItemMeta restrictionSlotItemMeta = restrictionSlot.getItemMeta();
         restrictionSlotItemMeta.displayName(Component.text("抑制剂 Restriction", NamedTextColor.YELLOW));
         restrictionSlot.setItemMeta(restrictionSlotItemMeta);
-        inventory.setItem(11, restrictionSlot);
+        NBTItem nbtItem = new NBTItem(restrictionSlot);
+        nbtItem.setBoolean("default", true);
+        inventory.setItem(11, nbtItem.getItem());
     }
 
     private void spawnYeastSlot() {
@@ -93,6 +112,8 @@ public class BrewingBarrelGui extends GuiBase {
         ItemMeta yeastSlotItemMeta = yeastSlot.getItemMeta();
         yeastSlotItemMeta.displayName(Component.text("酵母 Yeast", NamedTextColor.YELLOW));
         yeastSlot.setItemMeta(yeastSlotItemMeta);
-        inventory.setItem(20, yeastSlot);
+        NBTItem nbtItem = new NBTItem(yeastSlot);
+        nbtItem.setBoolean("default", true);
+        inventory.setItem(20, nbtItem.getItem());
     }
 }
