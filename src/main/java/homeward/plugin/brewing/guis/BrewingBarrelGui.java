@@ -1,34 +1,29 @@
 package homeward.plugin.brewing.guis;
 
-import de.tr7zw.nbtapi.NBTFile;
 import de.tr7zw.nbtapi.NBTItem;
 import homeward.plugin.brewing.constants.BaseInfo;
-import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.enumerates.EnumBase;
-import homeward.plugin.brewing.utils.CommonUtils;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import static homeward.plugin.brewing.listeners.BrewingBarrelListener.getBarrelLocationMap;
 import static homeward.plugin.brewing.utils.InventoryUtils.generateSlotItem;
 
 public class BrewingBarrelGui extends GuiBase {
     private final ItemStack air = new ItemStack(Material.AIR);
 
-    public BrewingBarrelGui(EnumBase enumBase) {
-        super(enumBase);
+    public BrewingBarrelGui(EnumBase enumBase, int slot) {
+        super(enumBase.getComponent(), slot);
     }
 
-    @Override
-    public int getSlots() {
-        return 27;
+    {
+        setGuiItems();
     }
 
     @Override
@@ -56,33 +51,7 @@ public class BrewingBarrelGui extends GuiBase {
             clickedInventory.setItem(eventSlot, cursor);
             player.setItemOnCursor(air);
 
-            if (getBarrelLocationMap().containsKey(player)) {
-                Location barrelLocation = getBarrelLocationMap().get(player);
-                NBTFile file;
 
-                int blockX = barrelLocation.getBlockX();
-                int blockY = barrelLocation.getBlockY();
-                int blockZ = barrelLocation.getBlockZ();
-
-                String key = "" + blockX + blockY + blockZ;
-
-                try {
-                    file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                BrewingBarrelData data = new BrewingBarrelData();
-                data.setSubstrate(cursor);
-
-                file.setObject(key, data);
-
-                try {
-                    file.save();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
 
             return;
         }
@@ -99,7 +68,6 @@ public class BrewingBarrelGui extends GuiBase {
         }
 
         if (!isDescription) {
-
             ItemStack itemInInventory = clickedInventory.getItem(eventSlot);
             ItemStack itemOnCursor = player.getItemOnCursor();
             player.setItemOnCursor(itemInInventory);
@@ -107,20 +75,20 @@ public class BrewingBarrelGui extends GuiBase {
         }
     }
 
-    @Override
-    public void setGuiItems() {
-        inventory.setItem(2, utils.substrateSlot);
-        inventory.setItem(11, utils.restrictionSlot);
-        inventory.setItem(20, utils.yeastSlot);
+    private void setGuiItems() {
+        Map<Integer, ItemStack> items = new LinkedHashMap<>();
 
-        inventory.setItem(4, utils.barrelSlot);
-        inventory.setItem(13, utils.barrelSlot);
-        inventory.setItem(22, utils.barrelSlot);
+        items.put(2, utils.substrateSlot);
+        items.put(11, utils.restrictionSlot);
+        items.put(20, utils.yeastSlot);
+        items.put(4, utils.barrelSlot);
+        items.put(13, utils.barrelSlot);
+        items.put(22, utils.barrelSlot);
+        items.put(6, utils.substrateSlotState);
+        items.put(15, utils.restrictionSlotState);
+        items.put(24, utils.yeastSlotState);
 
-
-        inventory.setItem(6, utils.substrateSlotState);
-        inventory.setItem(15, utils.restrictionSlotState);
-        inventory.setItem(24, utils.yeastSlotState);
+        setItem(items);
     }
 
     private static class utils {

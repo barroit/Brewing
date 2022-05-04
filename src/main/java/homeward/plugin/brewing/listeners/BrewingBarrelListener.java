@@ -20,18 +20,7 @@ import java.util.*;
 import static homeward.plugin.brewing.constants.BaseInfo.BARREL_DESCRIPTION_MANIPULATIVE_LIST;
 
 public class BrewingBarrelListener implements Listener {
-    private final Map<Location, GuiBase> barrelGUIMap;
-    private static final Map<Location, Set<Player>> whoIsViewing;
-    private static final Map<HumanEntity, Location> barrelLocationMap;
-
-    static {
-        whoIsViewing = new HashMap<>();
-        barrelLocationMap = new HashMap<>();
-    }
-
-    {
-        barrelGUIMap = new HashMap<>();
-    }
+    private static final Map<Location, GuiBase> barrelGUIMap = new HashMap<>();;
 
     @EventHandler
     public void onPlayerInteract(CustomBlockInteractEvent event) {
@@ -40,26 +29,14 @@ public class BrewingBarrelListener implements Listener {
         Location barrelLocation = event.getBlockClicked().getLocation();
         Player player = event.getPlayer();
 
-        if (!whoIsViewing.containsKey(barrelLocation)) {
-            Set<Player> playerSet = new HashSet<>();
-            playerSet.add(player);
-            whoIsViewing.put(barrelLocation, playerSet);
-        } else {
-            Set<Player> playerSet = whoIsViewing.get(barrelLocation);
-            playerSet.add(player);
-        }
-
         if (barrelGUIMap.containsKey(barrelLocation)) {
-            barrelGUIMap.get(barrelLocation).setPlayer(player).open();
+            barrelGUIMap.get(barrelLocation).open(player);
             return;
         }
 
-        BrewingBarrelGui brewingBarrelGui = new BrewingBarrelGui(ComponentEnum.BARREL_TITLE);
-        brewingBarrelGui.initialize();
+        BrewingBarrelGui brewingBarrelGui = new BrewingBarrelGui(ComponentEnum.BARREL_TITLE, 27);
         barrelGUIMap.put(barrelLocation, brewingBarrelGui);
-        barrelLocationMap.put(player, barrelLocation);
-
-        brewingBarrelGui.setPlayer(player).open();
+        brewingBarrelGui.open(player);
     }
 
     @EventHandler
@@ -96,14 +73,6 @@ public class BrewingBarrelListener implements Listener {
     public void onPlayerCloseInventoryEvent(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof GuiBase)) return;
 
-        HumanEntity player = event.getPlayer();
-        if (barrelLocationMap.containsKey(player)) return;
-        Location barrelLocation = barrelLocationMap.get(player);
-
-        if (whoIsViewing.containsKey(barrelLocation)) {
-            whoIsViewing.get(barrelLocation).remove((Player) player);
-        }
-
 
         // Arrays.stream(event.getInventory().getStorageContents()).toList().forEach(v -> {
         //     if (v == null || BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST.contains(new NBTItem(v).getInteger("CustomModelData"))) return;
@@ -119,11 +88,7 @@ public class BrewingBarrelListener implements Listener {
         // } catch (IOException ignore) {}
     }
 
-    public static Map<Location, Set<Player>> getWhoIsViewing() {
-        return whoIsViewing;
-    }
-
-    public static Map<HumanEntity, Location> getBarrelLocationMap() {
-        return barrelLocationMap;
+    public static Map<Location, GuiBase> getBarrelGUIMap() {
+        return barrelGUIMap;
     }
 }

@@ -3,41 +3,54 @@ package homeward.plugin.brewing.guis;
 import homeward.plugin.brewing.enumerates.EnumBase;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public abstract class GuiBase implements InventoryHolder {
     protected Inventory inventory;
-    private Player player;
     private Component title;
+    private final Map<Integer, ItemStack> guiItems;
+    private final int slots;
 
-    public GuiBase(EnumBase enumBase) {
-        this.title = enumBase.getComponent();
+    public GuiBase(Component title, int slots) {
+        this.slots = slots;
+        this.title = title;
+        guiItems = new LinkedHashMap<>();
+        inventory = Bukkit.createInventory(this, this.slots, title);
     }
 
-    public abstract int getSlots();
-
-    public abstract void handleClick(InventoryClickEvent event);
-
-    public void handleDrag(InventoryDragEvent event) {}
-
-    public abstract void setGuiItems();
-
-    public void initialize() {
-        inventory = Bukkit.createInventory(this, getSlots(), getTitle());
-        this.setGuiItems();
+    public void setItem(Map<Integer, ItemStack> items) {
+        guiItems.putAll(items);
     }
 
-    public void preInitialize() {
-        inventory = Bukkit.createInventory(this, getSlots(), getTitle());
-        this.setGuiItems();
+    public void setItem(Integer slot, ItemStack item) {
+        inventory.setItem(slot, item);
+        guiItems.put(slot, item);
     }
 
-    public void open() {
+    public void removeItem(Integer slot) {
+        inventory.clear(slot);
+        guiItems.remove(slot);
+    }
+
+    private void generateItemSlot() {
+        guiItems.entrySet().forEach((Map.Entry<Integer, ItemStack> entry) -> {
+            inventory.setItem(entry.getKey(), entry.getValue());
+        });
+    }
+
+    public void open(HumanEntity player) {
+        if (player.isSleeping()) return;
+
+        inventory.clear();
+        generateItemSlot();
         player.openInventory(inventory);
     }
 
@@ -47,17 +60,11 @@ public abstract class GuiBase implements InventoryHolder {
         return inventory;
     }
 
-    public GuiBase setPlayer(Player player) {
-        this.player = player;
+    public GuiBase setTitle(EnumBase enumBase) {
+        title = enumBase.getComponent();
         return this;
     }
 
-    public Component getTitle() {
-        return title;
-    }
 
-    public Component setTitle(EnumBase enumBase) {
-        title = enumBase.getComponent();
-        return title;
-    }
+    public abstract void handleClick(InventoryClickEvent event);
 }
