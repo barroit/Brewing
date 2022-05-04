@@ -4,8 +4,11 @@ import de.tr7zw.nbtapi.NBTItem;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.enumerates.EnumBase;
+import homeward.plugin.brewing.utils.InventoryTitleUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -47,10 +50,17 @@ public class BrewingBarrelGui extends GuiBase {
 
         if (!isDescription && cursorIsAir) {
             player.setItemOnCursor(clickedInventory.getItem(eventSlot));
-            switch (eventSlot) {
-                case 2 -> inventory.setItem(2, utils.substrateSlot);
-                case 11 -> inventory.setItem(11, utils.restrictionSlot);
-                case 20 -> inventory.setItem(20, utils.yeastSlot);
+            try {
+                switch (eventSlot) {
+                    case 2 -> {
+                        InventoryTitleUtils.changeTitle((Player) player, ComponentEnum.BARREL_TITLE);
+                        inventory.setItem(2, utils.substrateSlot);
+                    }
+                    case 11 -> inventory.setItem(11, utils.restrictionSlot);
+                    case 20 -> inventory.setItem(20, utils.yeastSlot);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
             return;
         }

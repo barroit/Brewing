@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public enum ComponentEnum implements EnumBase {
-    BARREL_TITLE(Component.text( "\uF808").append(Component.text("\uF001", NamedTextColor.WHITE))),
+    BARREL_TITLE(Component.text("\uF808" + "\uF001", NamedTextColor.WHITE)),
     SLOT_SUBSTRATE(Component.text("底物 Substrate", NamedTextColor.YELLOW)),
     SLOT_RESTRICTION(Component.text("抑制剂 Restriction", NamedTextColor.YELLOW)),
     SLOT_YEAST(Component.text("酵母 Yeast", NamedTextColor.YELLOW)),

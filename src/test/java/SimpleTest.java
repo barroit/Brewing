@@ -1,7 +1,12 @@
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.List;
 
 public class SimpleTest {
     @Test
@@ -54,5 +59,13 @@ public class SimpleTest {
         Integer max = Collections.max(rawSlots);
 
         System.out.println(max);
+    }
+
+    @Test
+    void testComponent() {
+        TextComponent text = Component.text("\uF808" + "\uF001", NamedTextColor.WHITE);
+        System.out.println(text.content());
+        System.out.println(text.style().color());
+        System.out.println(ChatColor.translateAlternateColorCodes('&', "&atest"));
     }
 }
