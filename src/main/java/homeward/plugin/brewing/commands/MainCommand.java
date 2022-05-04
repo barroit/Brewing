@@ -3,6 +3,7 @@ package homeward.plugin.brewing.commands;
 import de.tr7zw.nbtapi.NBTFile;
 import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
+import homeward.plugin.brewing.utils.ItemStackUtils;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.Bukkit;
@@ -35,11 +36,7 @@ public class MainCommand extends CommandBase {
         Player player = (Player) commandSender;
         Block targetBlock = player.getTargetBlock(5);
 
-        int blockX = targetBlock.getLocation().getBlockX();
-        int blockY = targetBlock.getLocation().getBlockY();
-        int blockZ = targetBlock.getLocation().getBlockZ();
-
-        String key = "" + blockX + blockY + blockZ;
+        if (targetBlock == null) return;
 
         NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
         //file.hasKey(key)
@@ -47,9 +44,9 @@ public class MainCommand extends CommandBase {
         BrewingBarrelData thisBlockBrewingData = new BrewingBarrelData();
         thisBlockBrewingData.setSubstrate(new ItemStack(Material.GOLD_INGOT));
 
-        file.setObject(key, thisBlockBrewingData);
+        file.setObject(targetBlock.getLocation() + "", thisBlockBrewingData);
         file.save();
-        player.sendMessage(String.valueOf(file.getObject(key, BrewingBarrelData.class).getSubstrate().getType()));
+        player.sendMessage(String.valueOf(file.getObject(targetBlock.getLocation() + "", BrewingBarrelData.class).getSubstrate().getType()));
 
     }
 
@@ -97,20 +94,19 @@ public class MainCommand extends CommandBase {
      * @throws IOException
      */
     @SubCommand("getnbt")
-    public void getNBT(final CommandSender commandSender) throws IOException {
+    public void getNBT(final CommandSender commandSender) throws Exception {
         Player player = (Player) commandSender;
         Block targetBlock = player.getTargetBlock(5);
 
-        int blockX = targetBlock.getLocation().getBlockX();
-        int blockY = targetBlock.getLocation().getBlockY();
-        int blockZ = targetBlock.getLocation().getBlockZ();
-
-        String key = "" + blockX + blockY + blockZ;
+        if (targetBlock == null) return;
 
         NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
-        if (file.hasKey(key)) {
-            BrewingBarrelData object = file.getObject(key, BrewingBarrelData.class);
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&2i&7] 当前方块数据为" + object.getSubstrate()));
+        if (file.hasKey(targetBlock.getLocation() + "")) {
+            String object = file.getString(targetBlock.getLocation() + "");
+
+            BrewingBarrelData o = (BrewingBarrelData) ItemStackUtils.writeDecodedObject(object);
+
+            System.out.println(o.getSubstrate());
         } else {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6!&7] 当前方块没有储存任何数据"));
         }
