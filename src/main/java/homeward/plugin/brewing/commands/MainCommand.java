@@ -6,9 +6,11 @@ import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,6 +87,32 @@ public class MainCommand extends CommandBase {
     //         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6!&7] 当前方块没有储存任何数据"));
     //     }
     // }
+
+
+    //不要删除 测试用的
+    @SubCommand("storagedata")
+    @Alias("sd")
+    public void storageData(CommandSender commandSender) throws IOException {
+        Player player = (Player) commandSender;
+        Block targetBlock = player.getTargetBlock(5);
+
+        int blockX = targetBlock.getLocation().getBlockX();
+        int blockY = targetBlock.getLocation().getBlockY();
+        int blockZ = targetBlock.getLocation().getBlockZ();
+
+        String key = "" + blockX + blockY + blockZ;
+
+        NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+        //file.hasKey(key)
+
+        BrewingData thisBlockBrewingData = new BrewingData();
+        thisBlockBrewingData.setSubstrate(new ItemStack(Material.GOLD_INGOT));
+
+        file.setObject(key, thisBlockBrewingData);
+        file.save();
+        player.sendMessage(String.valueOf(file.getObject(key, BrewingData.class).getSubstrate().getType()));
+
+    }
 
     @Permission("homeward.admin")
     @SubCommand("reload")
