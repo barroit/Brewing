@@ -1,7 +1,7 @@
 package homeward.plugin.brewing.commands;
 
 import de.tr7zw.nbtapi.NBTFile;
-import homeward.plugin.brewing.data.BrewingData;
+import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
@@ -25,6 +25,32 @@ public class MainCommand extends CommandBase {
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7基于GUI界面的多材料酿酒系统"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7输入&6/hwb help &7来获取所有指令帮助"));
     }
+
+    //不要删除 测试用的
+    @SubCommand("storagedata")
+    @Alias("sd")
+    public void storageData(CommandSender commandSender) throws IOException {
+        Player player = (Player) commandSender;
+        Block targetBlock = player.getTargetBlock(5);
+
+        int blockX = targetBlock.getLocation().getBlockX();
+        int blockY = targetBlock.getLocation().getBlockY();
+        int blockZ = targetBlock.getLocation().getBlockZ();
+
+        String key = "" + blockX + blockY + blockZ;
+
+        NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+        //file.hasKey(key)
+
+        BrewingBarrelData thisBlockBrewingData = new BrewingBarrelData();
+        thisBlockBrewingData.setSubstrate(new ItemStack(Material.GOLD_INGOT));
+
+        file.setObject(key, thisBlockBrewingData);
+        file.save();
+        player.sendMessage(String.valueOf(file.getObject(key, BrewingBarrelData.class).getSubstrate().getType()));
+
+    }
+
 
     // /**
     //  * 设置你指向的方块指定字符串
@@ -63,36 +89,13 @@ public class MainCommand extends CommandBase {
     //
     // }
 
-    // /**
-    //  * 获取当前方块的nbt字符串
-    //  * @param commandSender
-    //  * @throws IOException
-    //  */
-    // @SubCommand("getnbt")
-    // public void getNBT(final CommandSender commandSender) throws IOException {
-    //     Player player = (Player) commandSender;
-    //     Block targetBlock = player.getTargetBlock(5);
-    //
-    //     int blockX = targetBlock.getLocation().getBlockX();
-    //     int blockY = targetBlock.getLocation().getBlockY();
-    //     int blockZ = targetBlock.getLocation().getBlockZ();
-    //
-    //     String key = "" + blockX + blockY + blockZ;
-    //
-    //     NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
-    //     if (file.hasKey(key)) {
-    //         BrewingData object = file.getObject(key, BrewingData.class);
-    //         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&2i&7] 当前方块数据为" + object.info));
-    //     } else {
-    //         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6!&7] 当前方块没有储存任何数据"));
-    //     }
-    // }
-
-
-    //不要删除 测试用的
-    @SubCommand("storagedata")
-    @Alias("sd")
-    public void storageData(CommandSender commandSender) throws IOException {
+    /**
+     * 获取当前方块的nbt字符串
+     * @param commandSender
+     * @throws IOException
+     */
+    @SubCommand("getnbt")
+    public void getNBT(final CommandSender commandSender) throws IOException {
         Player player = (Player) commandSender;
         Block targetBlock = player.getTargetBlock(5);
 
@@ -103,15 +106,12 @@ public class MainCommand extends CommandBase {
         String key = "" + blockX + blockY + blockZ;
 
         NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
-        //file.hasKey(key)
-
-        BrewingData thisBlockBrewingData = new BrewingData();
-        thisBlockBrewingData.setSubstrate(new ItemStack(Material.GOLD_INGOT));
-
-        file.setObject(key, thisBlockBrewingData);
-        file.save();
-        player.sendMessage(String.valueOf(file.getObject(key, BrewingData.class).getSubstrate().getType()));
-
+        if (file.hasKey(key)) {
+            BrewingBarrelData object = file.getObject(key, BrewingBarrelData.class);
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&2i&7] 当前方块数据为" + object.getSubstrate()));
+        } else {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6!&7] 当前方块没有储存任何数据"));
+        }
     }
 
     @Permission("homeward.admin")

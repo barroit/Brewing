@@ -1,9 +1,6 @@
 package homeward.plugin.brewing.listeners;
 
-import de.tr7zw.nbtapi.NBTFile;
-import de.tr7zw.nbtapi.NBTItem;
 import dev.lone.itemsadder.api.Events.CustomBlockInteractEvent;
-import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.guis.GuiBase;
 import homeward.plugin.brewing.guis.BrewingBarrelGui;
@@ -18,20 +15,22 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
-import static homeward.plugin.brewing.constants.BaseInfo.BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST;
 import static homeward.plugin.brewing.constants.BaseInfo.BARREL_DESCRIPTION_MANIPULATIVE_LIST;
 
 public class BrewingBarrelListener implements Listener {
     private final Map<Location, GuiBase> barrelGUIMap;
-    private final Map<HumanEntity, Location> barrelLocationMap;
+    private static final Map<Location, Set<Player>> whoIsViewing;
+    private static final Map<HumanEntity, Location> barrelLocationMap;
+
+    static {
+        whoIsViewing = new HashMap<>();
+        barrelLocationMap = new HashMap<>();
+    }
 
     {
         barrelGUIMap = new HashMap<>();
-        barrelLocationMap = new HashMap<>();
     }
 
     @EventHandler
@@ -40,6 +39,15 @@ public class BrewingBarrelListener implements Listener {
 
         Location barrelLocation = event.getBlockClicked().getLocation();
         Player player = event.getPlayer();
+
+        if (!whoIsViewing.containsKey(barrelLocation)) {
+            Set<Player> playerSet = new HashSet<>();
+            playerSet.add(player);
+            whoIsViewing.put(barrelLocation, playerSet);
+        } else {
+            Set<Player> playerSet = whoIsViewing.get(barrelLocation);
+            playerSet.add(player);
+        }
 
         if (barrelGUIMap.containsKey(barrelLocation)) {
             barrelGUIMap.get(barrelLocation).setPlayer(player).open();
@@ -88,21 +96,34 @@ public class BrewingBarrelListener implements Listener {
     public void onPlayerCloseInventoryEvent(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof GuiBase)) return;
 
-        Arrays.stream(event.getInventory().getStorageContents()).toList().forEach(v -> {
-            if (v == null || BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST.contains(new NBTItem(v).getInteger("CustomModelData"))) return;
-            // do something here
-        });
-
         HumanEntity player = event.getPlayer();
-
-        if (!barrelLocationMap.containsKey(player)) return;
+        if (barrelLocationMap.containsKey(player)) return;
         Location barrelLocation = barrelLocationMap.get(player);
 
-        try {
-            NBTFile nbtFile = new NBTFile(new File(BaseInfo.PLUGIN_PATH + "nbt", barrelLocation.getWorld().getName() + "-barrel.nbt"));
-            // nbtFile.setObject();
-            // do something here
-            nbtFile.save();
-        } catch (IOException ignore) {}
+        if (whoIsViewing.containsKey(barrelLocation)) {
+            whoIsViewing.get(barrelLocation).remove((Player) player);
+        }
+
+
+        // Arrays.stream(event.getInventory().getStorageContents()).toList().forEach(v -> {
+        //     if (v == null || BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST.contains(new NBTItem(v).getInteger("CustomModelData"))) return;
+        //     // do something here
+        // });
+        //
+        //
+        // try {
+        //     NBTFile nbtFile = new NBTFile(new File(BaseInfo.PLUGIN_PATH + "nbt", barrelLocation.getWorld().getName() + "-barrel.nbt"));
+        //     // nbtFile.setObject();
+        //     // do something here
+        //     nbtFile.save();
+        // } catch (IOException ignore) {}
+    }
+
+    public static Map<Location, Set<Player>> getWhoIsViewing() {
+        return whoIsViewing;
+    }
+
+    public static Map<HumanEntity, Location> getBarrelLocationMap() {
+        return barrelLocationMap;
     }
 }

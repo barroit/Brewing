@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
 
-public class BrewingData implements Serializable {
+public class BrewingBarrelData implements Serializable {
 
     //左三
     private ItemStack substrate;
@@ -31,12 +31,6 @@ public class BrewingData implements Serializable {
     private Integer storageOutPutItems;
     //酿造完成后 酒桶内部储存的产出物品类型
     private Object outPutItems;
-
-    public BrewingData() {
-        super();
-    }
-
-
 
     public ItemStack getSubstrate() {
         return substrate;

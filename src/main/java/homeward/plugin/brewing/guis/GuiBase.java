@@ -32,6 +32,11 @@ public abstract class GuiBase implements InventoryHolder {
         this.setGuiItems();
     }
 
+    public void preInitialize() {
+        inventory = Bukkit.createInventory(this, getSlots(), getTitle());
+        this.setGuiItems();
+    }
+
     public void open() {
         player.openInventory(inventory);
     }

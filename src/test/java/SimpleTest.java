@@ -2,6 +2,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.Test;
 
@@ -67,5 +70,18 @@ public class SimpleTest {
         System.out.println(text.content());
         System.out.println(text.style().color());
         System.out.println(ChatColor.translateAlternateColorCodes('&', "&atest"));
+    }
+
+    @Test
+    void testMap() {
+        Map<String, List<Integer>> whoIsViewing = new HashMap<>();
+        List<Integer> list = new ArrayList<>();
+        list.add(1);
+        list.add(2);
+        whoIsViewing.put("test", list);
+        List<Integer> integerList = whoIsViewing.get("test");
+        integerList.add(3);
+        List<Integer> integerList1 = whoIsViewing.get("test");
+        System.out.println(integerList1);
     }
 }

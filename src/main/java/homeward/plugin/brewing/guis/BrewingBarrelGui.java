@@ -1,16 +1,22 @@
 package homeward.plugin.brewing.guis;
 
+import de.tr7zw.nbtapi.NBTFile;
 import de.tr7zw.nbtapi.NBTItem;
 import homeward.plugin.brewing.constants.BaseInfo;
+import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.enumerates.EnumBase;
+import homeward.plugin.brewing.utils.CommonUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.*;
+
+import static homeward.plugin.brewing.listeners.BrewingBarrelListener.getBarrelLocationMap;
 import static homeward.plugin.brewing.utils.InventoryUtils.generateSlotItem;
 
 public class BrewingBarrelGui extends GuiBase {
@@ -40,19 +46,49 @@ public class BrewingBarrelGui extends GuiBase {
 
         boolean isDescription = BaseInfo.BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST.contains(new NBTItem(rawItem).getInteger("CustomModelData"));
 
-        // switch (eventSlot) {
-        //     case 2 -> InventoryTitleUtil.changeTitle((Player) player, ComponentEnum.BARREL_TITLE_WITH_SUBSTRATE);
-        //     case 11 -> InventoryTitleUtil.changeTitle((Player) player, ComponentEnum.BARREL_TITLE_WITH_RESTRICTION);
-        //     case 20 -> InventoryTitleUtil.changeTitle((Player) player, ComponentEnum.BARREL_TITLE_WITH_YEAST);
-        // }
+        switch (eventSlot) {
+            case 2 -> setTitle(ComponentEnum.BARREL_TITLE_WITH_SUBSTRATE);
+            case 11 -> setTitle(ComponentEnum.BARREL_TITLE_WITH_RESTRICTION);
+            case 20 -> setTitle(ComponentEnum.BARREL_TITLE_WITH_YEAST);
+        }
 
         if (isDescription && !cursorIsAir) {
             clickedInventory.setItem(eventSlot, cursor);
             player.setItemOnCursor(air);
+
+            if (getBarrelLocationMap().containsKey(player)) {
+                Location barrelLocation = getBarrelLocationMap().get(player);
+                NBTFile file;
+
+                int blockX = barrelLocation.getBlockX();
+                int blockY = barrelLocation.getBlockY();
+                int blockZ = barrelLocation.getBlockZ();
+
+                String key = "" + blockX + blockY + blockZ;
+
+                try {
+                    file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                BrewingBarrelData data = new BrewingBarrelData();
+                data.setSubstrate(cursor);
+
+                file.setObject(key, data);
+
+                try {
+                    file.save();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             return;
         }
 
         if (!isDescription && cursorIsAir) {
+
             player.setItemOnCursor(clickedInventory.getItem(eventSlot));
             switch (eventSlot) {
                 case 2 -> inventory.setItem(2, utils.substrateSlot);
@@ -63,6 +99,7 @@ public class BrewingBarrelGui extends GuiBase {
         }
 
         if (!isDescription) {
+
             ItemStack itemInInventory = clickedInventory.getItem(eventSlot);
             ItemStack itemOnCursor = player.getItemOnCursor();
             player.setItemOnCursor(itemInInventory);
