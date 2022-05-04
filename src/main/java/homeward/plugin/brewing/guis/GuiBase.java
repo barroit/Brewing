@@ -1,5 +1,6 @@
 package homeward.plugin.brewing.guis;
 
+import homeward.plugin.brewing.enumerates.EnumBase;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,8 +15,8 @@ public abstract class GuiBase implements InventoryHolder {
     private Player player;
     private final Component title;
 
-    public GuiBase(Component title) {
-        this.title = title;
+    public GuiBase(EnumBase enumBase) {
+        this.title = enumBase.getComponent();
     }
 
     public Component getTitle() {

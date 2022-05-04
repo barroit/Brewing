@@ -1,21 +1,22 @@
 package homeward.plugin.brewing.guis;
 
 import de.tr7zw.nbtapi.NBTItem;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import homeward.plugin.brewing.constants.BaseInfo;
+import homeward.plugin.brewing.enumerates.ComponentEnum;
+import homeward.plugin.brewing.enumerates.EnumBase;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+
+import static homeward.plugin.brewing.utils.InventoryUtils.generateSlotItem;
 
 public class BrewingBarrelGui extends GuiBase {
     private final ItemStack air = new ItemStack(Material.AIR);
 
-    public BrewingBarrelGui(Component title) {
-        super(title);
+    public BrewingBarrelGui(EnumBase enumBase) {
+        super(enumBase);
     }
 
     @Override
@@ -35,9 +36,8 @@ public class BrewingBarrelGui extends GuiBase {
 
         ItemStack rawItem = clickedInventory.getItem(event.getSlot());
         if (rawItem == null) return;
-        NBTItem rawNbtItem = new NBTItem(rawItem);
 
-        Boolean isDescription = rawNbtItem.getBoolean("barrel_function_description");
+        boolean isDescription = BaseInfo.BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST.contains(new NBTItem(rawItem).getInteger("CustomModelData"));
 
         if (isDescription && !cursorIsAir) {
             clickedInventory.setItem(eventSlot, cursor);
@@ -48,9 +48,9 @@ public class BrewingBarrelGui extends GuiBase {
         if (!isDescription && cursorIsAir) {
             player.setItemOnCursor(clickedInventory.getItem(eventSlot));
             switch (eventSlot) {
-                case 2 -> this.spawnSubstrateSlot();
-                case 11 -> this.spawnRestrictionSlot();
-                case 20 -> this.spawnYeastSlot();
+                case 2 -> inventory.setItem(2, utils.substrateSlot);
+                case 11 -> inventory.setItem(11, utils.restrictionSlot);
+                case 20 -> inventory.setItem(20, utils.yeastSlot);
             }
             return;
         }
@@ -65,88 +65,29 @@ public class BrewingBarrelGui extends GuiBase {
 
     @Override
     public void setGuiItems() {
-        this.spawnSubstrateSlot();
-        this.spawnRestrictionSlot();
-        this.spawnYeastSlot();
+        inventory.setItem(2, utils.substrateSlot);
+        inventory.setItem(11, utils.restrictionSlot);
+        inventory.setItem(20, utils.yeastSlot);
 
-        this.spawnIsBrewSlot();
+        inventory.setItem(4, utils.barrelSlot);
+        inventory.setItem(13, utils.barrelSlot);
+        inventory.setItem(22, utils.barrelSlot);
 
-        this.spawnSubstrateStateSlot();
-        this.spawnRestrictionStateSlot();
-        this.spawnYeastStateSlot();
+
+        inventory.setItem(6, utils.substrateSlotState);
+        inventory.setItem(15, utils.restrictionSlotState);
+        inventory.setItem(24, utils.yeastSlotState);
     }
 
-    // region Define Description Spawner
-    private void spawnSubstrateSlot() {
-        ItemStack substrateSlot = new ItemStack(Material.PAPER);
-        ItemMeta substrateSlotItemMeta = substrateSlot.getItemMeta();
-        substrateSlotItemMeta.displayName(Component.text("底物 Substrate", NamedTextColor.YELLOW));
-        substrateSlot.setItemMeta(substrateSlotItemMeta);
-        NBTItem nbtItem = new NBTItem(substrateSlot);
-        nbtItem.setBoolean("barrel_function_description", true);
-        inventory.setItem(2, nbtItem.getItem());
-    }
+    private static class utils {
+        static ItemStack substrateSlot = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_SUBSTRATE, 4501);
+        static ItemStack restrictionSlot = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_RESTRICTION, 4502);
+        static ItemStack yeastSlot = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_YEAST, 4503);
 
-    private void spawnRestrictionSlot() {
-        ItemStack restrictionSlot = new ItemStack(Material.PAPER);
-        ItemMeta restrictionSlotItemMeta = restrictionSlot.getItemMeta();
-        restrictionSlotItemMeta.displayName(Component.text("抑制剂 Restriction", NamedTextColor.YELLOW));
-        restrictionSlot.setItemMeta(restrictionSlotItemMeta);
-        NBTItem nbtItem = new NBTItem(restrictionSlot);
-        nbtItem.setBoolean("barrel_function_description", true);
-        inventory.setItem(11, nbtItem.getItem());
-    }
+        static ItemStack barrelSlot = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_BARREL, 4500);
 
-    private void spawnYeastSlot() {
-        ItemStack yeastSlot = new ItemStack(Material.PAPER);
-        ItemMeta yeastSlotItemMeta = yeastSlot.getItemMeta();
-        yeastSlotItemMeta.displayName(Component.text("酵母 Yeast", NamedTextColor.YELLOW));
-        yeastSlot.setItemMeta(yeastSlotItemMeta);
-        NBTItem nbtItem = new NBTItem(yeastSlot);
-        nbtItem.setBoolean("barrel_function_description", true);
-        inventory.setItem(20, nbtItem.getItem());
+        static ItemStack substrateSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_SUBSTRATE_STATE, 4504);
+        static ItemStack restrictionSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_RESTRICTION_STATE, 4505);
+        static ItemStack yeastSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_YEAST_STATE, 4506);
     }
-
-    private void spawnIsBrewSlot() {
-        ItemStack isBrewSlot = new ItemStack(Material.PAPER);
-        ItemMeta isBrewItemMeta = isBrewSlot.getItemMeta();
-        isBrewItemMeta.displayName(Component.text("是否开始", NamedTextColor.YELLOW));
-        isBrewSlot.setItemMeta(isBrewItemMeta);
-        NBTItem nbtItem = new NBTItem(isBrewSlot);
-        nbtItem.setBoolean("barrel_function_description", true);
-        inventory.setItem(4, nbtItem.getItem());
-        inventory.setItem(13, nbtItem.getItem());
-        inventory.setItem(22, nbtItem.getItem());
-    }
-
-    private void spawnSubstrateStateSlot() {
-        ItemStack substrateStateSlot = new ItemStack(Material.PAPER);
-        ItemMeta substrateStateSlotItemMeta = substrateStateSlot.getItemMeta();
-        substrateStateSlotItemMeta.displayName(Component.text("是否添加底物", NamedTextColor.YELLOW));
-        substrateStateSlot.setItemMeta(substrateStateSlotItemMeta);
-        NBTItem nbtItem = new NBTItem(substrateStateSlot);
-        nbtItem.setBoolean("barrel_function_description", true);
-        inventory.setItem(6, nbtItem.getItem());
-    }
-
-    private void spawnRestrictionStateSlot() {
-        ItemStack restrictionStateSlot = new ItemStack(Material.PAPER);
-        ItemMeta restrictionStateSlotItemMeta = restrictionStateSlot.getItemMeta();
-        restrictionStateSlotItemMeta.displayName(Component.text("是否添加抑制剂", NamedTextColor.YELLOW));
-        restrictionStateSlot.setItemMeta(restrictionStateSlotItemMeta);
-        NBTItem nbtItem = new NBTItem(restrictionStateSlot);
-        nbtItem.setBoolean("barrel_function_description", true);
-        inventory.setItem(15, nbtItem.getItem());
-    }
-
-    private void spawnYeastStateSlot() {
-        ItemStack yeastStateSlot = new ItemStack(Material.PAPER);
-        ItemMeta yeastStateSlotItemMeta = yeastStateSlot.getItemMeta();
-        yeastStateSlotItemMeta.displayName(Component.text("是否添加酵母", NamedTextColor.YELLOW));
-        yeastStateSlot.setItemMeta(yeastStateSlotItemMeta);
-        NBTItem nbtItem = new NBTItem(yeastStateSlot);
-        nbtItem.setBoolean("barrel_function_description", true);
-        inventory.setItem(24, nbtItem.getItem());
-    }
-    // endregion
 }

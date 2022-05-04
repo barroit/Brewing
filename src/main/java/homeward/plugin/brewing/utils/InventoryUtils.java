@@ -1,7 +1,11 @@
 package homeward.plugin.brewing.utils;
 
+import homeward.plugin.brewing.enumerates.EnumBase;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Collections;
 import java.util.Set;
@@ -12,7 +16,7 @@ import java.util.Set;
  * @author Baioretto
  * @version 1.0.0
  */
-public class AwesomeUtils {
+public class InventoryUtils {
 
     /**
      * cancel drag event for your custom GUI.
@@ -34,5 +38,14 @@ public class AwesomeUtils {
         } else if (max >= size && min < size) {
             event.setCancelled(true);
         }
+    }
+
+    public static ItemStack generateSlotItem(Material material, EnumBase title , Integer customModelData) {
+        ItemStack slot = new ItemStack(material);
+        ItemMeta slotMeta = slot.getItemMeta();
+        slotMeta.displayName(title.getComponent());
+        slotMeta.setCustomModelData(customModelData);
+        slot.setItemMeta(slotMeta);
+        return slot;
     }
 }
