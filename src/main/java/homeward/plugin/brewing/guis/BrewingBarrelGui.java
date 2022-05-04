@@ -4,7 +4,6 @@ import de.tr7zw.nbtapi.NBTItem;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.enumerates.EnumBase;
-import homeward.plugin.brewing.utils.InventoryTitleUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -41,6 +40,12 @@ public class BrewingBarrelGui extends GuiBase {
 
         boolean isDescription = BaseInfo.BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST.contains(new NBTItem(rawItem).getInteger("CustomModelData"));
 
+        // switch (eventSlot) {
+        //     case 2 -> InventoryTitleUtil.changeTitle((Player) player, ComponentEnum.BARREL_TITLE_WITH_SUBSTRATE);
+        //     case 11 -> InventoryTitleUtil.changeTitle((Player) player, ComponentEnum.BARREL_TITLE_WITH_RESTRICTION);
+        //     case 20 -> InventoryTitleUtil.changeTitle((Player) player, ComponentEnum.BARREL_TITLE_WITH_YEAST);
+        // }
+
         if (isDescription && !cursorIsAir) {
             clickedInventory.setItem(eventSlot, cursor);
             player.setItemOnCursor(air);
@@ -49,17 +54,10 @@ public class BrewingBarrelGui extends GuiBase {
 
         if (!isDescription && cursorIsAir) {
             player.setItemOnCursor(clickedInventory.getItem(eventSlot));
-            try {
-                switch (eventSlot) {
-                    case 2 -> {
-                        InventoryTitleUtil.changeTitle((Player) player, ComponentEnum.BARREL_TITLE);
-                        inventory.setItem(2, utils.substrateSlot);
-                    }
-                    case 11 -> inventory.setItem(11, utils.restrictionSlot);
-                    case 20 -> inventory.setItem(20, utils.yeastSlot);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            switch (eventSlot) {
+                case 2 -> inventory.setItem(2, utils.substrateSlot);
+                case 11 -> inventory.setItem(11, utils.restrictionSlot);
+                case 20 -> inventory.setItem(20, utils.yeastSlot);
             }
             return;
         }
@@ -95,8 +93,8 @@ public class BrewingBarrelGui extends GuiBase {
 
         static ItemStack barrelSlot = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_BARREL, 4500);
 
-        static ItemStack substrateSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_SUBSTRATE_STATE, 4504);
-        static ItemStack restrictionSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_RESTRICTION_STATE, 4505);
-        static ItemStack yeastSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_YEAST_STATE, 4506);
+        static ItemStack substrateSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_SUBSTRATE_STATE, 4500);
+        static ItemStack restrictionSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_RESTRICTION_STATE, 4500);
+        static ItemStack yeastSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_YEAST_STATE, 4500);
     }
 }

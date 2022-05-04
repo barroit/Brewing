@@ -13,14 +13,10 @@ import org.jetbrains.annotations.NotNull;
 public abstract class GuiBase implements InventoryHolder {
     protected Inventory inventory;
     private Player player;
-    private final Component title;
+    private Component title;
 
     public GuiBase(EnumBase enumBase) {
         this.title = enumBase.getComponent();
-    }
-
-    public Component getTitle() {
-        return title;
     }
 
     public abstract int getSlots();
@@ -49,5 +45,14 @@ public abstract class GuiBase implements InventoryHolder {
     public GuiBase setPlayer(Player player) {
         this.player = player;
         return this;
+    }
+
+    public Component getTitle() {
+        return title;
+    }
+
+    public Component setTitle(EnumBase enumBase) {
+        title = enumBase.getComponent();
+        return title;
     }
 }
