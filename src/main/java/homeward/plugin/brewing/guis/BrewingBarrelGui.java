@@ -4,8 +4,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.enumerates.EnumBase;
-import homeward.plugin.brewing.utils.InventoryTitleUtils;
-import org.bukkit.ChatColor;
+import homeward.plugin.brewing.utils.InventoryTitleUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -53,7 +52,7 @@ public class BrewingBarrelGui extends GuiBase {
             try {
                 switch (eventSlot) {
                     case 2 -> {
-                        InventoryTitleUtils.changeTitle((Player) player, ComponentEnum.BARREL_TITLE);
+                        InventoryTitleUtil.changeTitle((Player) player, ComponentEnum.BARREL_TITLE);
                         inventory.setItem(2, utils.substrateSlot);
                     }
                     case 11 -> inventory.setItem(11, utils.restrictionSlot);

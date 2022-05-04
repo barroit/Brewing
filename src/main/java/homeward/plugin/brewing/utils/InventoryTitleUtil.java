@@ -16,8 +16,16 @@ import java.lang.reflect.Method;
  * @author Baioretto
  * @version 1.1.4
  */
-public class InventoryTitleUtils {
-    public static void changeTitle(Player player, EnumBase enumBase) throws Exception {
+public class InventoryTitleUtil {
+    public static void changeTitle(Player player, EnumBase enumBase) {
+        try {
+            generate(player, enumBase);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void generate(Player player, EnumBase enumBase) throws Exception {
         Method playerHandler = player.getClass().getMethod("getHandle");
 
         // net.minecraft.server.level.EntityPlayer
