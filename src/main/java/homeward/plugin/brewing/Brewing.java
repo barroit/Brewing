@@ -6,11 +6,15 @@ import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.reflections.Reflections;
 
+import java.util.List;
 import java.util.logging.Level;
 
 public final class Brewing extends JavaPlugin {
@@ -37,6 +41,24 @@ public final class Brewing extends JavaPlugin {
         this.registerListeners();
 
         this.onEnableMessage();
+
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                List<World> worlds = Bukkit.getServer().getWorlds();
+                for (World world : worlds) {
+
+                    if (world.getTime() == 1000) {
+                        Bukkit.getServer().broadcastMessage(world.getName() + "的周期+1, 当前世界时间为" + world.getTime());
+                        System.out.println(world.getName() + "的周期+1" + world.getTime());
+                    }
+                }
+            }
+        };
+
+        runnable.runTaskTimerAsynchronously(this, 10, 20);
+
     }
 
     public Brewing() {
