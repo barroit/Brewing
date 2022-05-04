@@ -1,5 +1,8 @@
 package homeward.plugin.brewing.utils;
 
+import dev.triumphteam.gui.components.ScrollType;
+import dev.triumphteam.gui.guis.*;
+import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.enumerates.EnumBase;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -18,29 +21,7 @@ import java.util.Set;
  */
 public class InventoryUtils {
 
-    /**
-     * cancel drag event for your custom GUI.
-     * this can prevent drag from top inventory
-     * and also prevent drag between the top and bottom inventory
-     *
-     * @param event drag event
-     */
-    public static void cancelDrag(final InventoryDragEvent event) {
-        Set<Integer> rawSlots = event.getRawSlots();
-
-        Integer min = Collections.min(rawSlots);
-        if (min == InventoryView.OUTSIDE || min == -1) return;
-
-        Integer max = Collections.max(rawSlots);
-        int size = event.getView().getTopInventory().getSize();
-        if (max < size) {
-            event.setCancelled(true);
-        } else if (max >= size && min < size) {
-            event.setCancelled(true);
-        }
-    }
-
-    public static ItemStack generateSlotItem(Material material, EnumBase title , Integer customModelData) {
+    public static ItemStack generateSlotItem(Material material, EnumBase title, Integer customModelData) {
         ItemStack slot = new ItemStack(material);
         ItemMeta slotMeta = slot.getItemMeta();
         slotMeta.displayName(title.getComponent());
@@ -48,4 +29,28 @@ public class InventoryUtils {
         slot.setItemMeta(slotMeta);
         return slot;
     }
+
+    public static Gui generateGui(int rows, EnumBase title) {
+        return Gui.gui().title(title.getComponent()).rows(rows).create();
+    }
+
+    public static StorageGui generateStorageGui(int rows, EnumBase title) {
+        return Gui.storage().title(title.getComponent()).rows(rows).create();
+    }
+
+    public static ScrollingGui generateScrollingGui(int rows, EnumBase title, int pageSize, ScrollType scrollType) {
+        return Gui.scrolling().title(title.getComponent()).rows(rows).pageSize(pageSize).scrollType(scrollType).create();
+    }
+
+    public static PaginatedGui generatePaginatedGui(int rows, EnumBase title, int pageSize, ScrollType scrollType) {
+        return Gui.paginated().title(title.getComponent()).rows(rows).pageSize(pageSize).create();
+    }
+
+    public static ItemStack substrateSlot = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_SUBSTRATE, 4501);
+    public static ItemStack restrictionSlot = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_RESTRICTION, 4502);
+    public static ItemStack yeastSlot = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_YEAST, 4503);
+    public static ItemStack barrelSlot = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_BARREL, 4500);
+    public static ItemStack substrateSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_SUBSTRATE_STATE, 4500);
+    public static ItemStack restrictionSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_RESTRICTION_STATE, 4500);
+    public static ItemStack yeastSlotState = generateSlotItem(Material.PAPER, ComponentEnum.SLOT_YEAST_STATE, 4500);
 }

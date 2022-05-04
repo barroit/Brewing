@@ -50,9 +50,6 @@ public class BrewingBarrelGui extends GuiBase {
         if (isDescription && !cursorIsAir) {
             clickedInventory.setItem(eventSlot, cursor);
             player.setItemOnCursor(air);
-
-
-
             return;
         }
 
@@ -68,6 +65,7 @@ public class BrewingBarrelGui extends GuiBase {
         }
 
         if (!isDescription) {
+
             ItemStack itemInInventory = clickedInventory.getItem(eventSlot);
             ItemStack itemOnCursor = player.getItemOnCursor();
             player.setItemOnCursor(itemInInventory);
@@ -89,6 +87,18 @@ public class BrewingBarrelGui extends GuiBase {
         items.put(24, utils.yeastSlotState);
 
         setItem(items);
+        // inventory.setItem(2, utils.substrateSlot);
+        // inventory.setItem(11, utils.restrictionSlot);
+        // inventory.setItem(20, utils.yeastSlot);
+        //
+        // inventory.setItem(4, utils.barrelSlot);
+        // inventory.setItem(13, utils.barrelSlot);
+        // inventory.setItem(22, utils.barrelSlot);
+        //
+        //
+        // inventory.setItem(6, utils.substrateSlotState);
+        // inventory.setItem(15, utils.restrictionSlotState);
+        // inventory.setItem(24, utils.yeastSlotState);
     }
 
     private static class utils {

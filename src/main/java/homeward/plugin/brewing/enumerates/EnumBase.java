@@ -12,4 +12,8 @@ public interface EnumBase {
     default Collection<?> getCollection() {
         return null;
     }
+
+    default String getString() {
+        return null;
+    }
 }
