@@ -55,6 +55,10 @@ public class BrewDataProcessEvent extends Event implements Cancellable {
 
     @Override
     public @NotNull HandlerList getHandlers() {
-        return null;
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList () {
+        return handlers;
     }
 }

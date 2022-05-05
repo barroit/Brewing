@@ -1,18 +1,21 @@
 package homeward.plugin.brewing.commands;
 
 import de.tr7zw.nbtapi.NBTFile;
+import homeward.plugin.brewing.Brewing;
+import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.data.BrewingBarrelData;
+import homeward.plugin.brewing.enumerates.BrewingType;
+import homeward.plugin.brewing.enumerates.OutputType;
+import homeward.plugin.brewing.utils.CommonUtils;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import homeward.plugin.brewing.utils.ItemStackUtils;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
@@ -27,6 +30,46 @@ public class MainCommand extends CommandBase {
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Homeward brewing (协调酿酒) version &61.0.2"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7基于GUI界面的多材料酿酒系统"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7输入&6/hwb help &7来获取所有指令帮助"));
+    }
+
+    @SubCommand("testBarrelInventoryData")
+    public void testBarrelInventoryData(CommandSender sender) {
+        Player player = (Player) sender;
+        Block targetBlock = player.getTargetBlock(5);
+        if (targetBlock == null) return;
+
+        BarrelInventoryData inventoryData = new BarrelInventoryData()
+                .setSubstrate(new ItemStack(Material.GREEN_WOOL))
+                .setRestriction(new ItemStack(Material.RED_WOOL))
+                .setYeast(new ItemStack(Material.PINK_WOOL))
+                .setBrewingType(BrewingType.WINE)
+                .setOutPutItems(OutputType.OLD_VINES)
+                .setExpectOutPut(4)
+                .setActualOutPut(3)
+                .setBrewingTime(5);
+        byte[] encodeObject = CommonUtils.encodeObject(inventoryData);
+
+        NBTFile file;
+
+        try {
+            file = new NBTFile(new File(player.getWorld().getName(), "brew.bnt"));
+            file.setByteArray(targetBlock.getLocation() + "", encodeObject);
+            file.save();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        byte[] dataNotDecode = file.getByteArray(targetBlock.getLocation() + "");
+        if (dataNotDecode == null) return;
+        BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeObject(dataNotDecode);
+
+        System.out.println(data.getSubstrate().getType());
     }
 
     //不要删除 测试用的
@@ -104,9 +147,9 @@ public class MainCommand extends CommandBase {
         if (file.hasKey(targetBlock.getLocation() + "")) {
             String object = file.getString(targetBlock.getLocation() + "");
 
-            BrewingBarrelData o = (BrewingBarrelData) ItemStackUtils.writeDecodedObject(object);
+            // BrewingBarrelData o = (BrewingBarrelData) ItemStackUtils.decodeObject(object);
 
-            System.out.println(o.getSubstrate());
+            // System.out.println(o.getSubstrate());
         } else {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6!&7] 当前方块没有储存任何数据"));
         }

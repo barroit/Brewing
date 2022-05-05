@@ -6,52 +6,86 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+/**
+ * @author caizii
+ */
 public class ItemStackUtils {
 
-    //编译OBJ序列化
-    public static String writeEncodedObject(Object object) {
-
+    /**
+     * 编译OBJ序列化
+     */
+    public static String encodeObject(Object object) {
         String encodeObject = null;
 
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        BukkitObjectOutputStream bukkitStream = null;
+
         try {
+            bukkitStream = new BukkitObjectOutputStream(byteStream);
+            bukkitStream.writeObject(object);
+            bukkitStream.flush();
 
-            ByteArrayOutputStream io = new ByteArrayOutputStream();
-
-            BukkitObjectOutputStream os = new BukkitObjectOutputStream(io);
-
-
-            os.writeObject(object);
-            os.flush();
-
-            byte[] serialized = io.toByteArray();
+            byte[] serialized = byteStream.toByteArray();
             encodeObject = Base64.getEncoder().encodeToString(serialized);
-
-            os.close();
-            io.close();
-
-        } catch (IOException exception) {
-            exception.printStackTrace();
+            // do not close stream here ×
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // close stream here √
+            if (bukkitStream != null) {
+                try {
+                    bukkitStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                byteStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return encodeObject;
     }
 
-    //编译OBJ反序列化
-    public static Object writeDecodedObject(String stringObject) throws IOException, ClassNotFoundException {
+    /**
+     * 编译OBJ反序列化
+     */
+    public static Object decodeObject(String stringObject) {
+        Object decodedObject = null;
 
-        byte[] serialized = Base64.getDecoder().decode(stringObject);
+        byte[] toBytes = Base64.getDecoder().decode(stringObject);
 
-        ByteArrayInputStream in = new ByteArrayInputStream(serialized);
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(toBytes);
+        BukkitObjectInputStream bukkitStream = null;
 
-        BukkitObjectInputStream bin = new BukkitObjectInputStream(in);
+        try {
+            bukkitStream = new BukkitObjectInputStream(byteStream);
+            decodedObject = bukkitStream.readObject();
+            byteStream.close();
+            bukkitStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                byteStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (bukkitStream != null) {
+                try {
+                    bukkitStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
-        Object o = bin.readObject();
-        bin.close();
-        in.close();
-        return o;
-
+        return decodedObject;
     }
 
 }

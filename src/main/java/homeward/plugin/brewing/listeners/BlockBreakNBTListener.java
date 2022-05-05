@@ -14,16 +14,30 @@ import java.io.IOException;
 public class BlockBreakNBTListener implements Listener {
 
     @EventHandler
-    public void onNBTBlockBreak(BlockBreakEvent event) throws IOException {
+    public void onNBTBlockBreak(BlockBreakEvent event) {
 
         Player player = event.getPlayer();
         Location location = event.getBlock().getLocation();
 
-        NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+        NBTFile file;
+
+
+        try {
+            file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
         if (!file.hasKey(location + "")) return;
 
         file.removeKey(location + "");
-        file.save();
+
+
+        try {
+            file.save();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

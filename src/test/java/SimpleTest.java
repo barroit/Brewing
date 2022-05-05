@@ -1,11 +1,18 @@
+import homeward.plugin.brewing.beans.BarrelInventoryData;
+import homeward.plugin.brewing.enumerates.BrewingType;
+import homeward.plugin.brewing.enumerates.OutputType;
+import homeward.plugin.brewing.utils.CommonUtils;
+import homeward.plugin.brewing.utils.ItemStackUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -83,5 +90,22 @@ public class SimpleTest {
         integerList.add(3);
         List<Integer> integerList1 = whoIsViewing.get("test");
         System.out.println(integerList1);
+    }
+
+    @Test
+    void testEncode() {
+        BarrelInventoryData inventoryData = new BarrelInventoryData()
+                .setSubstrate(null)
+                .setRestriction(null)
+                .setYeast(null)
+                .setBrewingType(BrewingType.WINE)
+                .setOutPutItems(OutputType.OLD_VINES)
+                .setExpectOutPut(4)
+                .setActualOutPut(3)
+                .setBrewingTime(5);
+        byte[] encodeObject = CommonUtils.encodeObject(inventoryData);
+
+        BarrelInventoryData o = (BarrelInventoryData) CommonUtils.decodeObject(encodeObject);
+        System.out.println(o.getBrewingType().getString());
     }
 }

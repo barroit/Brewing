@@ -50,6 +50,12 @@ dependencies {
 
     // Paper Minecraft
     compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 configurations {

@@ -3,6 +3,10 @@ package homeward.plugin.brewing;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
+import homeward.plugin.brewing.listeners.BlockBreakNBTListener;
+import homeward.plugin.brewing.listeners.BrewDataProcessListener;
+import homeward.plugin.brewing.listeners.BrewingBarrelListener;
+import homeward.plugin.brewing.listeners.CustomBlockListener;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
@@ -12,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.reflections.Reflections;
 
@@ -22,6 +27,7 @@ public final class Brewing extends JavaPlugin {
     private static Brewing plugin;
     private final CommandSender commandSender;
     private final String packageName;
+    private final BukkitScheduler scheduler;
 
     /**
      * <h3>Get current plugin instance</h3>
@@ -41,27 +47,9 @@ public final class Brewing extends JavaPlugin {
 
         this.registerListeners();
 
+        this.processFerment();
+
         this.onEnableMessage();
-
-        BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-
-                List<World> worlds = Bukkit.getServer().getWorlds();
-                for (World world : worlds) {
-
-                    if (world.getTime() == 1000) {
-                        Bukkit.getServer().broadcastMessage(world.getName() + "的周期+1, 当前世界时间为" + world.getTime());
-                        //触发事件处理事件，传入世界和世界文件夹
-                        Bukkit.getServer().getPluginManager().callEvent(new BrewDataProcessEvent(world, world.getWorldFolder()));
-
-                    }
-                }
-            }
-        };
-
-        runnable.runTaskTimerAsynchronously(this, 10, 20);
-
     }
 
     public Brewing() {
@@ -70,6 +58,7 @@ public final class Brewing extends JavaPlugin {
         this.commandSender = super.getServer().getConsoleSender();
         this.packageName = getClass().getPackageName();
         this.initializeConfiguration();
+        this.scheduler = Bukkit.getScheduler();
     }
 
     private void initializeConfiguration() {
@@ -98,8 +87,47 @@ public final class Brewing extends JavaPlugin {
                     Bukkit.getServer().getPluginManager().registerEvents(listener, this);
                 }
             } catch (Exception e) {
-                System.out.println("nothing happen");
+                e.printStackTrace();
+                Bukkit.getPluginManager().disablePlugin(this);
             }
         });
+    }
+
+    // private void processFerment() {
+    //     BukkitRunnable runnable = new BukkitRunnable() {
+    //         @Override
+    //         public void run() {
+    //             List<World> worlds = Bukkit.getServer().getWorlds();
+    //             worlds.forEach(world -> {
+    //                 if (world.getTime() == 1000) {
+    //                     commandSender.sendMessage(world.getName() + "的周期+1, 当前世界时间为" + world.getTime());
+    //                     //触发事件处理事件，传入世界和世界文件夹
+    //                     Bukkit.getServer().getPluginManager().callEvent(new BrewDataProcessEvent(world, world.getWorldFolder()));
+    //                 }
+    //             });
+    //         }
+    //     };
+    //     runnable.runTaskTimerAsynchronously(this, 0, 20);
+    // }
+
+    private void processFerment() {
+        World world = getServer().getWorld("world");
+        final Boolean[] shouldUpdate = {false};
+        if (world == null) return;
+
+        Runnable fermentLoop = () -> {
+            long time = world.getTime();
+            if (900L < time && time < 1100L) {
+                if (shouldUpdate[0]) {
+                    // do something here
+                    shouldUpdate[0] = false;
+                }
+            } else {
+                shouldUpdate[0] = true;
+            }
+        };
+
+        scheduler.scheduleSyncRepeatingTask(this, fermentLoop, 0L, 40L);
+        scheduler.getActiveWorkers().forEach(System.out::println);
     }
 }

@@ -31,7 +31,7 @@ public class BrewDataProcessListener implements Listener {
             Set<String> keys = file.getKeys();
             for (String key : keys) {
                 String stringObject = file.getObject(key, String.class);
-                BrewingBarrelData currentKeyData = (BrewingBarrelData) ItemStackUtils.writeDecodedObject(stringObject);
+                BrewingBarrelData currentKeyData = (BrewingBarrelData) ItemStackUtils.decodeObject(stringObject);
 
                 //TODO 如果当前Data在插件内存GUI种已经打开则需要把 BrewingBarrelData 发送给 GUI让GUI进行强制刷新 (@Ba1oretto)
 
@@ -58,7 +58,7 @@ public class BrewDataProcessListener implements Listener {
                     }
 
                     //操作数据完成最后存回去
-                    file.setObject(key, ItemStackUtils.writeEncodedObject(currentKeyData));
+                    file.setObject(key, ItemStackUtils.encodeObject(currentKeyData));
                     file.save();
 
                 }
@@ -67,8 +67,6 @@ public class BrewDataProcessListener implements Listener {
 
         } catch (IOException exception) {
             exception.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
 
     }
