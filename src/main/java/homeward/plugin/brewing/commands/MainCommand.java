@@ -3,8 +3,6 @@ package homeward.plugin.brewing.commands;
 import de.tr7zw.nbtapi.NBTFile;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.data.BrewingBarrelData;
-import homeward.plugin.brewing.enumerates.BrewingType;
-import homeward.plugin.brewing.enumerates.OutputType;
 import homeward.plugin.brewing.utils.CommonUtils;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.annotations.*;
@@ -40,18 +38,19 @@ public class MainCommand extends CommandBase {
                 .setSubstrate(new ItemStack(Material.GREEN_WOOL))
                 .setRestriction(new ItemStack(Material.RED_WOOL))
                 .setYeast(new ItemStack(Material.PINK_WOOL))
-                .setBrewingType(BrewingType.WINE)
-                .setOutPutItems(OutputType.OLD_VINES)
+                .setBrewingType("dark-wine")
+                .setOutPutItems("old vines")
                 .setExpectOutPut(4)
                 .setActualOutPut(3)
                 .setBrewingTime(5);
-        byte[] encodeObject = CommonUtils.encodeBukkitObject(inventoryData);
+        // byte[] encodeObject = CommonUtils.encodeBukkitObject(inventoryData);
 
         NBTFile file;
 
         try {
             file = new NBTFile(new File(player.getWorld().getName(), "brew.bnt"));
-            file.setByteArray(targetBlock.getLocation() + "", encodeObject);
+            // file.setByteArray(targetBlock.getLocation() + "", encodeObject);
+            file.setObject(targetBlock.getLocation() + "", inventoryData);
             file.save();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -63,11 +62,13 @@ public class MainCommand extends CommandBase {
             throw new RuntimeException(e);
         }
 
-        byte[] dataNotDecode = file.getByteArray(targetBlock.getLocation() + "");
-        if (dataNotDecode == null) return;
-        BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(dataNotDecode);
+        // byte[] dataNotDecode = file.getByteArray(targetBlock.getLocation() + "");
+        // if (dataNotDecode == null) return;
+        // BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(dataNotDecode);
 
-        System.out.println(data.getSubstrate().getType());
+        BarrelInventoryData object = file.getObject(targetBlock.getLocation() + "", BarrelInventoryData.class);
+
+        System.out.println(object.getSubstrate().getType());
     }
 
     //不要删除 测试用的
@@ -90,44 +91,6 @@ public class MainCommand extends CommandBase {
         player.sendMessage(String.valueOf(file.getObject(targetBlock.getLocation() + "", BrewingBarrelData.class).getSubstrate().getType()));
 
     }
-
-
-    // /**
-    //  * 设置你指向的方块指定字符串
-    //  * @param commandSender
-    //  * @param args
-    //  * @throws IOException
-    //  */
-    // @SubCommand("addnbt")
-    // public void addNBT(final CommandSender commandSender, final String[] args) throws IOException {
-    //
-    //     Player player = (Player) commandSender;
-    //
-    //     if (args.length == 1) {
-    //         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&c!&7] 你至少要提供一个字符串来储存 /hwb addnbt <>"));
-    //         return;
-    //     }
-    //
-    //
-    //     Block targetBlock = player.getTargetBlock(5);
-    //
-    //     NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
-    //     int blockX = targetBlock.getLocation().getBlockX();
-    //     int blockY = targetBlock.getLocation().getBlockY();
-    //     int blockZ = targetBlock.getLocation().getBlockZ();
-    //
-    //     String key = "" + blockX + blockY + blockZ;
-    //     BrewingData bd = new BrewingData(args[1]);
-    //     if (file.hasKey(key)) {
-    //         file.setObject(key, bd);
-    //     } else {
-    //         file.setObject(key, bd);
-    //         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&2+&7] 储存成功"));
-    //     }
-    //     file.save();
-    //
-    //
-    // }
 
     /**
      * 获取当前方块的nbt字符串

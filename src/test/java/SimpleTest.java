@@ -1,6 +1,4 @@
 import homeward.plugin.brewing.beans.BarrelInventoryData;
-import homeward.plugin.brewing.enumerates.BrewingType;
-import homeward.plugin.brewing.enumerates.OutputType;
 import homeward.plugin.brewing.utils.CommonUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -92,14 +90,14 @@ public class SimpleTest {
                 .setSubstrate(null)
                 .setRestriction(null)
                 .setYeast(null)
-                .setBrewingType(BrewingType.WINE)
-                .setOutPutItems(OutputType.OLD_VINES)
+                .setBrewingType("dark_vine")
+                .setOutPutItems("old_vines")
                 .setExpectOutPut(4)
                 .setActualOutPut(3)
                 .setBrewingTime(5);
         byte[] encodeObject = CommonUtils.encodeBukkitObject(inventoryData);
 
         BarrelInventoryData o = (BarrelInventoryData) CommonUtils.decodeBukkitObject(encodeObject);
-        System.out.println(o.getBrewingType().getString());
+        System.out.println(o.getBrewingType());
     }
 }
