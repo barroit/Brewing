@@ -52,6 +52,8 @@ public class BrewingBarrelData implements Serializable {
         return yest;
     }
 
+
+
     public void setYest(ItemStack yest) {
         this.yest = yest;
     }

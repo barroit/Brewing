@@ -112,6 +112,12 @@ public class MainCommand extends CommandBase {
         }
     }
 
+    @SubCommand("worldfile")
+    @Alias("wf")
+    public void worldFileManipulate(final CommandSender commandSender) throws Exception {
+        Player player = (Player) commandSender;
+    }
+
     @Permission("homeward.admin")
     @SubCommand("reload")
     @Alias("r")

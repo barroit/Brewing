@@ -2,6 +2,7 @@ package homeward.plugin.brewing;
 
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
+import homeward.plugin.brewing.events.BrewDataProcessEvent;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
@@ -51,7 +52,9 @@ public final class Brewing extends JavaPlugin {
 
                     if (world.getTime() == 1000) {
                         Bukkit.getServer().broadcastMessage(world.getName() + "的周期+1, 当前世界时间为" + world.getTime());
-                        System.out.println(world.getName() + "的周期+1" + world.getTime());
+                        //触发事件处理事件，传入世界和世界文件夹
+                        Bukkit.getServer().getPluginManager().callEvent(new BrewDataProcessEvent(world, world.getWorldFolder()));
+
                     }
                 }
             }
