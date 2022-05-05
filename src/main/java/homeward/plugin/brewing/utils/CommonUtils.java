@@ -2,6 +2,8 @@ package homeward.plugin.brewing.utils;
 
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.Base64;
@@ -68,7 +70,7 @@ public class CommonUtils {
         return o;
     }
 
-    public static byte[] encodeBukkitObject(Object object) {
+    public static byte[] encodeBukkitObject(@NotNull Object object) {
         byte[] encodeObject = null;
 
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -106,7 +108,8 @@ public class CommonUtils {
     /**
      * 编译OBJ反序列化
      */
-    public static Object decodeBukkitObject(byte[] bytes) {
+    public static @Nullable Object decodeBukkitObject(byte[] bytes) {
+        if (bytes == null) return null;
         Object decodedObject = null;
 
         byte[] toBytes = Base64.getDecoder().decode(bytes);

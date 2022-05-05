@@ -1,11 +1,9 @@
 package homeward.plugin.brewing.commands;
 
 import de.tr7zw.nbtapi.NBTFile;
+import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.data.BrewingBarrelData;
-import homeward.plugin.brewing.enumerates.BrewingType;
-import homeward.plugin.brewing.enumerates.OutputType;
-import homeward.plugin.brewing.utils.CommonUtils;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import homeward.plugin.brewing.utils.ItemStackUtils;
 import me.mattstudios.mf.annotations.*;
@@ -42,8 +40,8 @@ public class MainCommand extends CommandBase {
                 .setSubstrate(new ItemStack(Material.GREEN_WOOL))
                 .setRestriction(new ItemStack(Material.RED_WOOL))
                 .setYeast(new ItemStack(Material.PINK_WOOL))
-                .setBrewingType(BrewingType.WINE)
-                .setOutPutItems(OutputType.OLD_VINES)
+                .setBrewingType("dark vine")
+                .setOutPutItems("old_vines")
                 .setExpectOutPut(4)
                 .setActualOutPut(3)
                 .setBrewingTime(5);
@@ -164,6 +162,7 @@ public class MainCommand extends CommandBase {
     public void reloadConfiguration(CommandSender commandSender) {
         ConfigurationUtils.reload();
         commandSender.sendMessage(ChatColor.GREEN + "homeward journey brewing plugin configurations reloaded");
+        Brewing.getInstance().update();
     }
 
 }

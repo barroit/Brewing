@@ -23,6 +23,7 @@ public class BrewDataProcessEvent extends Event implements Cancellable {
     private File worldFile;
 
     public BrewDataProcessEvent(World world, File worldFile) {
+        super(true);
         this.world = world;
         this.worldFile = worldFile;
     }

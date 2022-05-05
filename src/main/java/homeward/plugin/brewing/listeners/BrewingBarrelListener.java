@@ -5,8 +5,8 @@ import dev.triumphteam.gui.guis.BaseGui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.StorageGui;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
-import homeward.plugin.brewing.guis.GuiBase;
 import org.bukkit.Location;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +22,8 @@ import java.util.Set;
 import static homeward.plugin.brewing.utils.InventoryUtils.*;
 
 public class BrewingBarrelListener implements Listener {
-    private static final Map<Location, BaseGui> barrelGUIMap = new HashMap<>();
+    private final Map<Location, BaseGui> barrelGUIMap = new HashMap<>();
+    private static final Map<HumanEntity, Location> barrelLocationMap = new HashMap<>();
 
     @EventHandler
     public void onPlayerInteract(CustomBlockInteractEvent event) {
@@ -33,6 +34,7 @@ public class BrewingBarrelListener implements Listener {
 
         if (barrelGUIMap.containsKey(barrelLocation)) {
             barrelGUIMap.get(barrelLocation).open(player);
+            barrelLocationMap.put(player, barrelLocation);
             return;
         }
 
@@ -66,5 +68,15 @@ public class BrewingBarrelListener implements Listener {
         } else if (max >= size && min < size) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onPlayerCloseInventoryEvent(InventoryCloseEvent event) {
+        HumanEntity player = event.getPlayer();
+        barrelLocationMap.remove(player);
+    }
+
+    public static Map<HumanEntity, Location> getBarrelLocationMap() {
+        return barrelLocationMap;
     }
 }

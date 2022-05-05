@@ -22,7 +22,7 @@ public class BrewDataProcessListener implements Listener {
      *
      * @param event 当前监听的事件
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    // @EventHandler(priority = EventPriority.HIGHEST)
     public void onDataProcess(BrewDataProcessEvent event) {
         try {
             //获取当前nbt文件

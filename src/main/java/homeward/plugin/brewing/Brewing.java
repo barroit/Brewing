@@ -3,31 +3,22 @@ package homeward.plugin.brewing;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
-import homeward.plugin.brewing.listeners.BlockBreakNBTListener;
-import homeward.plugin.brewing.listeners.BrewDataProcessListener;
-import homeward.plugin.brewing.listeners.BrewingBarrelListener;
-import homeward.plugin.brewing.listeners.CustomBlockListener;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import org.reflections.Reflections;
 
-import java.util.List;
 import java.util.logging.Level;
 
 public final class Brewing extends JavaPlugin {
     private static Brewing plugin;
     private final CommandSender commandSender;
     private final String packageName;
-    private final BukkitScheduler scheduler;
 
     /**
      * <h3>Get current plugin instance</h3>
@@ -58,7 +49,6 @@ public final class Brewing extends JavaPlugin {
         this.commandSender = super.getServer().getConsoleSender();
         this.packageName = getClass().getPackageName();
         this.initializeConfiguration();
-        this.scheduler = Bukkit.getScheduler();
     }
 
     private void initializeConfiguration() {
@@ -111,23 +101,28 @@ public final class Brewing extends JavaPlugin {
     // }
 
     private void processFerment() {
-        World world = getServer().getWorld("world");
-        final Boolean[] shouldUpdate = {false};
-        if (world == null) return;
-
-        Runnable fermentLoop = () -> {
-            long time = world.getTime();
-            if (900L < time && time < 1100L) {
-                if (shouldUpdate[0]) {
-                    // do something here
-                    shouldUpdate[0] = false;
+        getServer().getWorlds().forEach(world -> {
+            final Boolean[] shouldUpdate = {false};
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    long time = world.getTime();
+                    if (900L < time && time < 1100L) {
+                        if (shouldUpdate[0]) {
+                            // do something here
+                            Bukkit.getServer().getPluginManager().callEvent(new BrewDataProcessEvent(world, world.getWorldFolder()));
+                            shouldUpdate[0] = false;
+                        }
+                    } else {
+                        shouldUpdate[0] = true;
+                    }
                 }
-            } else {
-                shouldUpdate[0] = true;
-            }
-        };
+            }.runTaskTimerAsynchronously(this, 0L, 40L);
+        });
+    }
 
-        scheduler.scheduleSyncRepeatingTask(this, fermentLoop, 0L, 40L);
-        scheduler.getActiveWorkers().forEach(System.out::println);
+    public void update() {
+        Bukkit.getScheduler().cancelTasks(this);
+        processFerment();
     }
 }
