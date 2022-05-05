@@ -7,6 +7,7 @@ import homeward.plugin.brewing.enumerates.BrewingType;
 import homeward.plugin.brewing.enumerates.OutputType;
 import homeward.plugin.brewing.utils.CommonUtils;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
+import homeward.plugin.brewing.utils.ItemStackUtils;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.ChatColor;
@@ -31,7 +32,8 @@ public class MainCommand extends CommandBase {
     }
 
     @SubCommand("testBarrelInventoryData")
-    public void testBarrelInventoryData(CommandSender sender) {
+    public void testBarrelInventoryData(CommandSender sender) throws IOException {
+
         Player player = (Player) sender;
         Block targetBlock = player.getTargetBlock(5);
         if (targetBlock == null) return;
@@ -45,29 +47,24 @@ public class MainCommand extends CommandBase {
                 .setExpectOutPut(4)
                 .setActualOutPut(3)
                 .setBrewingTime(5);
-        byte[] encodeObject = CommonUtils.encodeBukkitObject(inventoryData);
 
-        NBTFile file;
+        String dataS = ItemStackUtils.encodeObject(inventoryData);
 
-        try {
-            file = new NBTFile(new File(player.getWorld().getName(), "brew.bnt"));
-            file.setByteArray(targetBlock.getLocation() + "", encodeObject);
-            file.save();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-        try {
-            Thread.sleep(2000L);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+//        file.setObject(targetBlock.getLocation() + "", dataS);
+        file.setObject(targetBlock.getLocation() + "", inventoryData);
 
-        byte[] dataNotDecode = file.getByteArray(targetBlock.getLocation() + "");
-        if (dataNotDecode == null) return;
-        BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(dataNotDecode);
+        file.save();
 
-        System.out.println(data.getSubstrate().getType());
+//        String object = file.getObject(targetBlock.getLocation() + "", String.class);
+//        BarrelInventoryData o = (BarrelInventoryData) ItemStackUtils.decodeObject(object);
+        BarrelInventoryData object = file.getObject(targetBlock.getLocation() + "", BarrelInventoryData.class);
+
+
+        System.out.println(object.getSubstrate().getType());
+
+
     }
 
     //不要删除 测试用的
@@ -131,6 +128,7 @@ public class MainCommand extends CommandBase {
 
     /**
      * 获取当前方块的nbt字符串
+     *
      * @param commandSender
      * @throws IOException
      */
