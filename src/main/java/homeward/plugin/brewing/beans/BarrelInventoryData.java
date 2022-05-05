@@ -1,12 +1,15 @@
 package homeward.plugin.brewing.beans;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
 @Accessors(chain = true)
 public class BarrelInventoryData implements Serializable {
     private ItemStack substrate;

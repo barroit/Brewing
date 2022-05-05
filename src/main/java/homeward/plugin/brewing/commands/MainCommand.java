@@ -3,8 +3,11 @@ package homeward.plugin.brewing.commands;
 import de.tr7zw.nbtapi.NBTFile;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.data.BrewingBarrelData;
+import homeward.plugin.brewing.enumerates.BrewingType;
+import homeward.plugin.brewing.enumerates.OutputType;
 import homeward.plugin.brewing.utils.CommonUtils;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
+import homeward.plugin.brewing.utils.ItemStackUtils;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.ChatColor;
@@ -29,7 +32,8 @@ public class MainCommand extends CommandBase {
     }
 
     @SubCommand("testBarrelInventoryData")
-    public void testBarrelInventoryData(CommandSender sender) {
+    public void testBarrelInventoryData(CommandSender sender) throws IOException {
+
         Player player = (Player) sender;
         Block targetBlock = player.getTargetBlock(5);
         if (targetBlock == null) return;
@@ -38,37 +42,29 @@ public class MainCommand extends CommandBase {
                 .setSubstrate(new ItemStack(Material.GREEN_WOOL))
                 .setRestriction(new ItemStack(Material.RED_WOOL))
                 .setYeast(new ItemStack(Material.PINK_WOOL))
-                .setBrewingType("dark-wine")
-                .setOutPutItems("old vines")
+                .setBrewingType(BrewingType.WINE)
+                .setOutPutItems(OutputType.OLD_VINES)
                 .setExpectOutPut(4)
                 .setActualOutPut(3)
                 .setBrewingTime(5);
-        // byte[] encodeObject = CommonUtils.encodeBukkitObject(inventoryData);
 
-        NBTFile file;
+        String dataS = ItemStackUtils.encodeObject(inventoryData);
 
-        try {
-            file = new NBTFile(new File(player.getWorld().getName(), "brew.bnt"));
-            // file.setByteArray(targetBlock.getLocation() + "", encodeObject);
-            file.setObject(targetBlock.getLocation() + "", inventoryData);
-            file.save();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-        try {
-            Thread.sleep(2000L);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+//        file.setObject(targetBlock.getLocation() + "", dataS);
+        file.setObject(targetBlock.getLocation() + "", inventoryData);
 
-        // byte[] dataNotDecode = file.getByteArray(targetBlock.getLocation() + "");
-        // if (dataNotDecode == null) return;
-        // BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(dataNotDecode);
+        file.save();
 
+//        String object = file.getObject(targetBlock.getLocation() + "", String.class);
+//        BarrelInventoryData o = (BarrelInventoryData) ItemStackUtils.decodeObject(object);
         BarrelInventoryData object = file.getObject(targetBlock.getLocation() + "", BarrelInventoryData.class);
 
+
         System.out.println(object.getSubstrate().getType());
+
+
     }
 
     //不要删除 测试用的
@@ -92,8 +88,47 @@ public class MainCommand extends CommandBase {
 
     }
 
+
+    // /**
+    //  * 设置你指向的方块指定字符串
+    //  * @param commandSender
+    //  * @param args
+    //  * @throws IOException
+    //  */
+    // @SubCommand("addnbt")
+    // public void addNBT(final CommandSender commandSender, final String[] args) throws IOException {
+    //
+    //     Player player = (Player) commandSender;
+    //
+    //     if (args.length == 1) {
+    //         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&c!&7] 你至少要提供一个字符串来储存 /hwb addnbt <>"));
+    //         return;
+    //     }
+    //
+    //
+    //     Block targetBlock = player.getTargetBlock(5);
+    //
+    //     NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+    //     int blockX = targetBlock.getLocation().getBlockX();
+    //     int blockY = targetBlock.getLocation().getBlockY();
+    //     int blockZ = targetBlock.getLocation().getBlockZ();
+    //
+    //     String key = "" + blockX + blockY + blockZ;
+    //     BrewingData bd = new BrewingData(args[1]);
+    //     if (file.hasKey(key)) {
+    //         file.setObject(key, bd);
+    //     } else {
+    //         file.setObject(key, bd);
+    //         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&2+&7] 储存成功"));
+    //     }
+    //     file.save();
+    //
+    //
+    // }
+
     /**
      * 获取当前方块的nbt字符串
+     *
      * @param commandSender
      * @throws IOException
      */
