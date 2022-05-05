@@ -2,17 +2,11 @@ import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.enumerates.BrewingType;
 import homeward.plugin.brewing.enumerates.OutputType;
 import homeward.plugin.brewing.utils.CommonUtils;
-import homeward.plugin.brewing.utils.ItemStackUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -103,9 +97,9 @@ public class SimpleTest {
                 .setExpectOutPut(4)
                 .setActualOutPut(3)
                 .setBrewingTime(5);
-        byte[] encodeObject = CommonUtils.encodeObject(inventoryData);
+        byte[] encodeObject = CommonUtils.encodeBukkitObject(inventoryData);
 
-        BarrelInventoryData o = (BarrelInventoryData) CommonUtils.decodeObject(encodeObject);
+        BarrelInventoryData o = (BarrelInventoryData) CommonUtils.decodeBukkitObject(encodeObject);
         System.out.println(o.getBrewingType().getString());
     }
 }

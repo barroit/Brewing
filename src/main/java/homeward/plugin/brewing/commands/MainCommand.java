@@ -1,14 +1,12 @@
 package homeward.plugin.brewing.commands;
 
 import de.tr7zw.nbtapi.NBTFile;
-import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.enumerates.BrewingType;
 import homeward.plugin.brewing.enumerates.OutputType;
 import homeward.plugin.brewing.utils.CommonUtils;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
-import homeward.plugin.brewing.utils.ItemStackUtils;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.ChatColor;
@@ -47,7 +45,7 @@ public class MainCommand extends CommandBase {
                 .setExpectOutPut(4)
                 .setActualOutPut(3)
                 .setBrewingTime(5);
-        byte[] encodeObject = CommonUtils.encodeObject(inventoryData);
+        byte[] encodeObject = CommonUtils.encodeBukkitObject(inventoryData);
 
         NBTFile file;
 
@@ -67,7 +65,7 @@ public class MainCommand extends CommandBase {
 
         byte[] dataNotDecode = file.getByteArray(targetBlock.getLocation() + "");
         if (dataNotDecode == null) return;
-        BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeObject(dataNotDecode);
+        BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(dataNotDecode);
 
         System.out.println(data.getSubstrate().getType());
     }

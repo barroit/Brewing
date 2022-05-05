@@ -68,7 +68,7 @@ public class CommonUtils {
         return o;
     }
 
-    public static byte[] encodeObject(Object object) {
+    public static byte[] encodeBukkitObject(Object object) {
         byte[] encodeObject = null;
 
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -106,10 +106,10 @@ public class CommonUtils {
     /**
      * 编译OBJ反序列化
      */
-    public static Object decodeObject(byte[] stringObject) {
+    public static Object decodeBukkitObject(byte[] bytes) {
         Object decodedObject = null;
 
-        byte[] toBytes = Base64.getDecoder().decode(stringObject);
+        byte[] toBytes = Base64.getDecoder().decode(bytes);
 
         ByteArrayInputStream byteStream = new ByteArrayInputStream(toBytes);
         BukkitObjectInputStream bukkitStream = null;
