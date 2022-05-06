@@ -41,7 +41,7 @@ public class BrewingBarrelListener implements Listener {
         }
 
         StorageGui storageGui = new GuiUtils().generateStorage();
-        this.initializeSlot(player, barrelLocation, storageGui);
+        initializeSlot(player, barrelLocation, storageGui);
 
         barrelGUIMap.put(barrelLocation, storageGui);
         barrelLocationMap.put(player, barrelLocation);
@@ -50,7 +50,7 @@ public class BrewingBarrelListener implements Listener {
     }
 
     @SneakyThrows
-    private void initializeSlot(@NotNull HumanEntity player, @NotNull Location location, @NotNull StorageGui gui) {
+    public static void initializeSlot(@NotNull HumanEntity player, @NotNull Location location, @NotNull StorageGui gui) {
         NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
         byte[] bytesData = file.getByteArray(location + "");
         BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(bytesData.length == 0 ? null : bytesData);
