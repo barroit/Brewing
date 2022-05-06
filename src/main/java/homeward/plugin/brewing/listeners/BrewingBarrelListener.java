@@ -1,29 +1,33 @@
 package homeward.plugin.brewing.listeners;
 
+import de.tr7zw.nbtapi.NBTFile;
 import dev.lone.itemsadder.api.Events.CustomBlockInteractEvent;
 import dev.triumphteam.gui.guis.BaseGui;
 import dev.triumphteam.gui.guis.StorageGui;
+import homeward.plugin.brewing.beans.BarrelInventoryData;
+import homeward.plugin.brewing.enumerates.ComponentEnum;
+import homeward.plugin.brewing.utils.CommonUtils;
 import homeward.plugin.brewing.utils.GuiUtils;
+import lombok.SneakyThrows;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.InventoryView;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+
+import static homeward.plugin.brewing.constants.BarrelConstants.*;
 
 public class BrewingBarrelListener implements Listener {
     private final Map<Location, BaseGui> barrelGUIMap = new HashMap<>();
     private static final Map<HumanEntity, Location> barrelLocationMap = new HashMap<>();
 
     @EventHandler
-    public void onPlayerInteract(CustomBlockInteractEvent event) {
+    public void onPlayerInteract(final CustomBlockInteractEvent event) {
         if (!event.getNamespacedID().contains("homeward:brewing_barrel_")) return;
 
         Location barrelLocation = event.getBlockClicked().getLocation();
@@ -36,6 +40,7 @@ public class BrewingBarrelListener implements Listener {
         }
 
         StorageGui storageGui = new GuiUtils().generateStorage();
+        this.initializeSlot(player, barrelLocation, storageGui);
 
         barrelGUIMap.put(barrelLocation, storageGui);
         barrelLocationMap.put(player, barrelLocation);
@@ -43,28 +48,37 @@ public class BrewingBarrelListener implements Listener {
         storageGui.open(player);
     }
 
-    @EventHandler
-    public void onPlayerDragEvent(InventoryDragEvent event) {
-        if (!(event.getInventory().getHolder() instanceof BaseGui)) return;
+    @SneakyThrows
+    private void initializeSlot(@NotNull HumanEntity player, @NotNull Location location, @NotNull StorageGui gui) {
+        NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+        byte[] bytesData = file.getByteArray(location + "");
+        BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(bytesData.length == 0 ? null : bytesData);
+        if (data == null || (data.getSubstrate() == null && data.getRestriction() == null && data.getYeast() == null)) return;
 
-        Set<Integer> rawSlots = event.getRawSlots();
-
-        Integer min = Collections.min(rawSlots);
-        if (min == InventoryView.OUTSIDE || min == -1) return;
-
-        Integer max = Collections.max(rawSlots);
-        int size = event.getView().getTopInventory().getSize();
-        if (max < size) {
-            event.setCancelled(true);
-        } else if (max >= size && min < size) {
-            event.setCancelled(true);
+        if (data.getSubstrate() != null) {
+            gui.updateItem(SUBSTRATE_SLOT, data.getSubstrate());
         }
-    }
+        if (data.getRestriction() != null) {
+            gui.updateItem(RESTRICTION_SLOT, data.getRestriction());
+        }
+        if (data.getYeast() != null) {
+            gui.updateItem(YEAST_SLOT, data.getYeast());
+        }
 
-    @EventHandler
-    public void onPlayerCloseInventoryEvent(InventoryCloseEvent event) {
-        // HumanEntity player = event.getPlayer();
-        // barrelLocationMap.remove(player);
+        if (data.isHasSubstrate()) {
+            GuiUtils.setTitle(ComponentEnum.BARREL_TITLE_WITH_SUBSTRATE, gui);
+        }
+        if (data.isHasRestriction()) {
+            GuiUtils.setTitle(ComponentEnum.BARREL_TITLE_WITH_RESTRICTION, gui);
+        }
+        if (data.isHasYeast()) {
+            GuiUtils.setTitle(ComponentEnum.BARREL_TITLE_WITH_YEAST, gui);
+        }
+        if (data.isBrewing()) {
+            player.sendMessage("barrel working fine");
+        }
+
+
     }
 
     public static Map<HumanEntity, Location> getBarrelLocationMap() {
