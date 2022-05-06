@@ -171,6 +171,4 @@ public class GuiUtils {
         itemNBT.removeKey("PublicBukkitValues");
         return itemNBT.getItem();
     }
-
-    // todo set last
 }
