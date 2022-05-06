@@ -1,8 +1,6 @@
 package homeward.plugin.brewing.beans;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.bukkit.inventory.ItemStack;
 

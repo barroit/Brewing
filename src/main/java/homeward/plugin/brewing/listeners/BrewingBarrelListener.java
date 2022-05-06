@@ -8,6 +8,7 @@ import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.utils.CommonUtils;
 import homeward.plugin.brewing.utils.GuiUtils;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
@@ -23,8 +24,8 @@ import java.util.Map;
 import static homeward.plugin.brewing.constants.BarrelConstants.*;
 
 public class BrewingBarrelListener implements Listener {
-    private final Map<Location, BaseGui> barrelGUIMap = new HashMap<>();
-    private static final Map<HumanEntity, Location> barrelLocationMap = new HashMap<>();
+    @Getter private static final Map<Location, BaseGui> barrelGUIMap = new HashMap<>();
+    @Getter private static final Map<HumanEntity, Location> barrelLocationMap = new HashMap<>();
 
     @EventHandler
     public void onPlayerInteract(final CustomBlockInteractEvent event) {
@@ -77,11 +78,5 @@ public class BrewingBarrelListener implements Listener {
         if (data.isBrewing()) {
             player.sendMessage("barrel working fine");
         }
-
-
-    }
-
-    public static Map<HumanEntity, Location> getBarrelLocationMap() {
-        return barrelLocationMap;
     }
 }
