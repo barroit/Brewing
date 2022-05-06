@@ -2,9 +2,8 @@ package homeward.plugin.brewing.listeners;
 
 import dev.lone.itemsadder.api.Events.CustomBlockInteractEvent;
 import dev.triumphteam.gui.guis.BaseGui;
-import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.StorageGui;
-import homeward.plugin.brewing.enumerates.ComponentEnum;
+import homeward.plugin.brewing.utils.GuiUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -18,8 +17,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import static homeward.plugin.brewing.utils.InventoryUtils.*;
 
 public class BrewingBarrelListener implements Listener {
     private final Map<Location, BaseGui> barrelGUIMap = new HashMap<>();
@@ -38,16 +35,10 @@ public class BrewingBarrelListener implements Listener {
             return;
         }
 
-        StorageGui storageGui = generateStorageGui(3, ComponentEnum.BARREL_TITLE);
-
-        storageGui.setItem(2, new GuiItem(substrateSlot));
-        storageGui.setItem(11, new GuiItem(restrictionSlot));
-        storageGui.setItem(20, new GuiItem(yeastSlot));
-        storageGui.setItem(6, new GuiItem(substrateSlotState));
-        storageGui.setItem(15, new GuiItem(restrictionSlotState));
-        storageGui.setItem(24, new GuiItem(yeastSlotState));
+        StorageGui storageGui = new GuiUtils().generateStorage();
 
         barrelGUIMap.put(barrelLocation, storageGui);
+        barrelLocationMap.put(player, barrelLocation);
 
         storageGui.open(player);
     }
@@ -72,8 +63,8 @@ public class BrewingBarrelListener implements Listener {
 
     @EventHandler
     public void onPlayerCloseInventoryEvent(InventoryCloseEvent event) {
-        HumanEntity player = event.getPlayer();
-        barrelLocationMap.remove(player);
+        // HumanEntity player = event.getPlayer();
+        // barrelLocationMap.remove(player);
     }
 
     public static Map<HumanEntity, Location> getBarrelLocationMap() {
