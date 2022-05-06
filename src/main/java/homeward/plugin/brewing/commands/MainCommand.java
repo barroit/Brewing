@@ -4,10 +4,12 @@ import de.tr7zw.nbtapi.NBTFile;
 import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.data.BrewingBarrelData;
+import homeward.plugin.brewing.events.BrewDataProcessEvent;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import homeward.plugin.brewing.utils.ItemStackUtils;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -24,9 +26,11 @@ public class MainCommand extends CommandBase {
 
     @Default
     public void defaultCommand(final CommandSender commandSender) {
+
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Homeward brewing (协调酿酒) version &61.0.2"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7基于GUI界面的多材料酿酒系统"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7输入&6/hwb help &7来获取所有指令帮助"));
+
     }
 
     @SubCommand("testBarrelInventoryData")
@@ -50,18 +54,11 @@ public class MainCommand extends CommandBase {
 
 
         NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
-//        file.setObject(targetBlock.getLocation() + "", dataS);
         file.setObject(targetBlock.getLocation() + "", inventoryData);
 
         file.save();
-
-//        String object = file.getObject(targetBlock.getLocation() + "", String.class);
-//        BarrelInventoryData o = (BarrelInventoryData) ItemStackUtils.decodeObject(object);
         BarrelInventoryData object = file.getObject(targetBlock.getLocation() + "", BarrelInventoryData.class);
-
-
         System.out.println(object.getSubstrate().getType());
-
 
     }
 
@@ -84,6 +81,15 @@ public class MainCommand extends CommandBase {
         file.save();
         player.sendMessage(String.valueOf(file.getObject(targetBlock.getLocation() + "", BrewingBarrelData.class).getSubstrate().getType()));
 
+    }
+
+    //不要删除 测试用的
+    @SubCommand("addstage")
+    @Alias("as")
+    public void addStage(CommandSender commandSender) throws IOException {
+        Player player = (Player) commandSender;
+        Bukkit.getServer().getPluginManager().callEvent(new BrewDataProcessEvent(player.getWorld(), player.getWorld().getWorldFolder()));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7增加了 &61 &7酿造周期"));
     }
 
 
