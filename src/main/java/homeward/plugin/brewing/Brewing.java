@@ -123,7 +123,7 @@ public final class Brewing extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        //TODO 必须关闭scheduler任务
+        Bukkit.getScheduler().cancelTasks(this);
     }
 
     public void update() {
