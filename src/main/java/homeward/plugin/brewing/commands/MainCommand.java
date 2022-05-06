@@ -118,47 +118,13 @@ public class MainCommand extends CommandBase {
     @Alias("as")
     public void addStage(CommandSender commandSender) throws IOException {
         Player player = (Player) commandSender;
-        Bukkit.getServer().getPluginManager().callEvent(new BrewDataProcessEvent(player.getWorld(), player.getWorld().getWorldFolder()));
+        new Thread() {
+            Runnable runnable = () -> {
+                Bukkit.getServer().getPluginManager().callEvent(new BrewDataProcessEvent(player.getWorld(), player.getWorld().getWorldFolder()));
+            };
+        }.start();
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7增加了 &61 &7酿造周期"));
     }
-
-
-    // /**
-    //  * 设置你指向的方块指定字符串
-    //  * @param commandSender
-    //  * @param args
-    //  * @throws IOException
-    //  */
-    // @SubCommand("addnbt")
-    // public void addNBT(final CommandSender commandSender, final String[] args) throws IOException {
-    //
-    //     Player player = (Player) commandSender;
-    //
-    //     if (args.length == 1) {
-    //         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&c!&7] 你至少要提供一个字符串来储存 /hwb addnbt <>"));
-    //         return;
-    //     }
-    //
-    //
-    //     Block targetBlock = player.getTargetBlock(5);
-    //
-    //     NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
-    //     int blockX = targetBlock.getLocation().getBlockX();
-    //     int blockY = targetBlock.getLocation().getBlockY();
-    //     int blockZ = targetBlock.getLocation().getBlockZ();
-    //
-    //     String key = "" + blockX + blockY + blockZ;
-    //     BrewingData bd = new BrewingData(args[1]);
-    //     if (file.hasKey(key)) {
-    //         file.setObject(key, bd);
-    //     } else {
-    //         file.setObject(key, bd);
-    //         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&2+&7] 储存成功"));
-    //     }
-    //     file.save();
-    //
-    //
-    // }
 
     /**
      * 获取当前方块的nbt字符串
