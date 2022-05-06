@@ -4,21 +4,26 @@ import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
+import lombok.Getter;
 import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 public final class Brewing extends JavaPlugin {
     private static Brewing plugin;
     private final CommandSender commandSender;
     private final String packageName;
+    @Getter private final static Map<String, World> worldMap = new LinkedHashMap<>();
 
     /**
      * <h3>Get current plugin instance</h3>
@@ -36,11 +41,13 @@ public final class Brewing extends JavaPlugin {
         // register command here
         commandManager.register(new MainCommand());
 
-        this.registerListeners();
+        registerListeners();
 
-        this.processFerment();
+        processFerment();
 
-        this.onEnableMessage();
+        setWorldMap();
+
+        onEnableMessage();
     }
 
     public Brewing() {
@@ -121,6 +128,11 @@ public final class Brewing extends JavaPlugin {
         });
     }
 
+    private void setWorldMap() {
+        worldMap.clear();
+        getServer().getWorlds().forEach(world -> worldMap.put(world.getName(), world));
+    }
+
     @Override
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
@@ -129,5 +141,6 @@ public final class Brewing extends JavaPlugin {
     public void update() {
         Bukkit.getScheduler().cancelTasks(this);
         processFerment();
+        setWorldMap();
     }
 }

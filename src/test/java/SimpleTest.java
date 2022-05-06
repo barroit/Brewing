@@ -1,3 +1,7 @@
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.utils.CommonUtils;
 import net.kyori.adventure.text.Component;
@@ -7,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.Test;
 
+import java.io.Reader;
 import java.util.*;
 import java.util.List;
 
@@ -98,6 +103,17 @@ public class SimpleTest {
         byte[] encodeObject = CommonUtils.encodeBukkitObject(inventoryData);
 
         BarrelInventoryData o = (BarrelInventoryData) CommonUtils.decodeBukkitObject(encodeObject);
+        if (o == null) return;
         System.out.println(o.getBrewingType());
+    }
+
+    @Test
+    void testGsonParser() {
+        String string = "Location{world=CraftWorld{name=world},x=1557.0,y=65.0,z=118.0,pitch=0.0,yaw=0.0}";
+        String jsonString = string.replaceAll(".*(\\{)(.+?)},?", "$1$2,").replaceAll("=", ":");
+        JsonElement jsonElement = JsonParser.parseString(jsonString);
+        JsonObject asJsonObject = jsonElement.getAsJsonObject();
+        JsonElement name = asJsonObject.get("name");
+        System.out.println(name.getAsString());
     }
 }

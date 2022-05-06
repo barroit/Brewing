@@ -41,7 +41,7 @@ public class BrewingBarrelListener implements Listener {
         }
 
         StorageGui storageGui = new GuiUtils().generateStorage();
-        initializeSlot(player, barrelLocation, storageGui);
+        initializeSlot(barrelLocation, storageGui);
 
         barrelGUIMap.put(barrelLocation, storageGui);
         barrelLocationMap.put(player, barrelLocation);
@@ -50,8 +50,8 @@ public class BrewingBarrelListener implements Listener {
     }
 
     @SneakyThrows
-    public static void initializeSlot(@NotNull HumanEntity player, @NotNull Location location, @NotNull StorageGui gui) {
-        NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
+    public static void initializeSlot(@NotNull Location location, @NotNull StorageGui gui) {
+        NBTFile file = new NBTFile(new File(location.getWorld().getName(), "brew.nbt"));
         byte[] bytesData = file.getByteArray(location + "");
         BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(bytesData.length == 0 ? null : bytesData);
         if (data == null || (data.getSubstrate() == null && data.getRestriction() == null && data.getYeast() == null)) return;
@@ -75,8 +75,8 @@ public class BrewingBarrelListener implements Listener {
         if (data.isHasYeast()) {
             GuiUtils.setTitle(ComponentEnum.BARREL_TITLE_WITH_YEAST, gui);
         }
-        if (data.isBrewing()) {
-            player.sendMessage("barrel working fine");
-        }
+        // if (data.isBrewing()) {
+        //
+        // }
     }
 }

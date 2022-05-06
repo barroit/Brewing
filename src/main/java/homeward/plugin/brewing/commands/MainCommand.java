@@ -1,22 +1,35 @@
 package homeward.plugin.brewing.commands;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import de.tr7zw.nbtapi.NBTFile;
 import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import homeward.plugin.brewing.utils.ItemStackUtils;
+import lombok.SneakyThrows;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Set;
 
 @Command("homewardbrewing")
 @Alias("hwb")
@@ -27,6 +40,23 @@ public class MainCommand extends CommandBase {
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Homeward brewing (协调酿酒) version &61.0.2"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7基于GUI界面的多材料酿酒系统"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7输入&6/hwb help &7来获取所有指令帮助"));
+    }
+
+    @SubCommand("testLocationCast")
+    public void testLocationCast(CommandSender sender) throws Exception {
+        NBTFile file = new NBTFile(new File(((Player) sender).getWorld().getName(), "brew.nbt"));
+        Set<String> barrelLocations = file.getKeys();
+        barrelLocations.forEach(v -> {
+            String jsonString = v.replaceAll(".*(\\{)(.+?)},?", "$1$2,").replaceAll("=", ":");
+            JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+            String worldName = jsonObject.get("name").getAsString();
+            float x = jsonObject.get("x").getAsFloat();
+            float y = jsonObject.get("y").getAsFloat();
+            float z = jsonObject.get("z").getAsFloat();
+            float pitch = jsonObject.get("pitch").getAsFloat();
+            float yaw = jsonObject.get("yaw").getAsFloat();
+            Location location = new Location(((Player) sender).getWorld(), x, y, z, yaw, pitch);
+        });
     }
 
     @SubCommand("testBarrelInventoryData")
@@ -126,9 +156,6 @@ public class MainCommand extends CommandBase {
 
     /**
      * 获取当前方块的nbt字符串
-     *
-     * @param commandSender
-     * @throws IOException
      */
     @SubCommand("getnbt")
     public void getNBT(final CommandSender commandSender) throws Exception {
@@ -147,12 +174,6 @@ public class MainCommand extends CommandBase {
         } else {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6!&7] 当前方块没有储存任何数据"));
         }
-    }
-
-    @SubCommand("worldfile")
-    @Alias("wf")
-    public void worldFileManipulate(final CommandSender commandSender) throws Exception {
-        Player player = (Player) commandSender;
     }
 
     @Permission("homeward.admin")
