@@ -121,6 +121,11 @@ public final class Brewing extends JavaPlugin {
         });
     }
 
+    @Override
+    public void onDisable() {
+        //TODO 必须关闭scheduler任务
+    }
+
     public void update() {
         Bukkit.getScheduler().cancelTasks(this);
         processFerment();
