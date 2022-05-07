@@ -1,6 +1,5 @@
 package homeward.plugin.brewing.utils;
 
-import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTFile;
 import de.tr7zw.nbtapi.NBTItem;
 import dev.triumphteam.gui.guis.GuiItem;
@@ -20,7 +19,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.common.value.qual.IntRange;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Map;
@@ -111,16 +109,18 @@ public class GuiUtils {
         ItemStack rawItem = gui.getInventory().getItem(eventSlot);
         if (rawItem == null) return;
         NBTItem nbtTags = new NBTItem(rawItem);
-        ItemStack itemInSlot = updateItem(rawItem, nbtTags);
-        if (itemInSlot == null) return;
 
-        if (data.getSubstrate() == null && nbtTags.getString("BrewingBarrel").equalsIgnoreCase("Substrate")) {
+        if (data.getSubstrate() == null && nbtTags.getString("BrewingBarrel").equalsIgnoreCase("Substrate") && !data.isHasSubstrate()) {
+            ItemStack itemInSlot = updateItem(rawItem, nbtTags);
+            if (itemInSlot == null) return;
             data.setSubstrate(itemInSlot).setHasSubstrate(true);
             updateItem(gui, itemInSlot, eventSlot, data);
             setTitle(ComponentEnum.BARREL_TITLE_WITH_SUBSTRATE, gui);
             if (gui.getInventory().getItem(eventSlot) == null) {
-
+                gui.updateItem(SUBSTRATE_SLOT, substrateSlot);
             }
+        } else {
+            data.setSubstrate(rawItem);
         }
 
         if (data.isHasSubstrate() && data.isHasRestriction() && data.isHasYeast()) {
@@ -136,7 +136,7 @@ public class GuiUtils {
         //     updateItem(gui, itemInSlot, eventSlot, data, ComponentEnum.BARREL_TITLE_WITH_YEAST);
         // }
 
-        // saveData(data);
+        saveData(data);
     }
 
     private ItemStack updateItem(ItemStack rawItem, NBTItem nbtTags) {

@@ -54,7 +54,7 @@ public class BrewingBarrelListener implements Listener {
         NBTFile file = new NBTFile(new File(location.getWorld().getName(), "brew.nbt"));
         byte[] bytesData = file.getByteArray(location + "");
         BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(bytesData.length == 0 ? null : bytesData);
-        if (data == null || (data.getSubstrate() == null && data.getRestriction() == null && data.getYeast() == null)) return;
+        if (data == null) return;
 
         if (data.getSubstrate() != null) {
             gui.updateItem(SUBSTRATE_SLOT, data.getSubstrate());
@@ -75,6 +75,7 @@ public class BrewingBarrelListener implements Listener {
         if (data.isHasYeast()) {
             GuiUtils.setTitle(ComponentEnum.BARREL_TITLE_WITH_YEAST, gui);
         }
+        System.out.println(data);
         // if (data.isBrewing()) {
         //
         // }
