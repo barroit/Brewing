@@ -1,11 +1,8 @@
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
-import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.utils.CommonUtils;
-import homeward.plugin.brewing.utils.GuiUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -13,7 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.Test;
 
-import java.io.Reader;
 import java.util.*;
 import java.util.List;
 

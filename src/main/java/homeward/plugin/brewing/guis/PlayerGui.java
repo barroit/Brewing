@@ -1,4 +1,4 @@
-package homeward.plugin.brewing.utils;
+package homeward.plugin.brewing.guis;
 
 import de.tr7zw.nbtapi.NBTFile;
 import de.tr7zw.nbtapi.NBTItem;
@@ -9,6 +9,7 @@ import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.enumerates.EnumBase;
 import homeward.plugin.brewing.listeners.BrewingBarrelListener;
+import homeward.plugin.brewing.utils.CommonUtils;
 import lombok.SneakyThrows;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -19,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.io.File;
@@ -30,7 +30,7 @@ import static homeward.plugin.brewing.enumerates.ComponentEnum.*;
 import static homeward.plugin.brewing.utils.InventoryUtils.*;
 import static homeward.plugin.brewing.constants.BarrelConstants.*;
 
-public class GuiUtils {
+public class PlayerGui {
     private NBTFile file;
     private Location barrelLocation;
 
@@ -73,8 +73,6 @@ public class GuiUtils {
 
         if (slotNotDefined && !cursorItemIsAir) {
             setInventoryCursorItem(gui, eventSlot, cursorItem, player);
-            ItemMeta itemMeta = new ItemStack(Material.AIR).getItemMeta();
-            // itemMeta.
         } else if (!slotNotDefined) {
             if (cursorItemIsAir) {
                 switch (eventSlot) {
@@ -222,7 +220,6 @@ public class GuiUtils {
         itemNBT.removeKey("PublicBukkitValues");
         return itemNBT.getItem();
     }
-
 
     // the player not put an item in this slot && their cursor nonnull
     private void setInventoryCursorItem(StorageGui gui, int eventSlot, ItemStack cursorItem, HumanEntity player) {

@@ -22,7 +22,7 @@ public class BarrelInventoryData implements Serializable {
     private Object outPutItems;
 
     private int expectOutPut;
-    private int actualOutPut;
+    private int actualOutPut = expectOutPut;
     private Integer storedOutPutItems;
 
     private int brewingTime;

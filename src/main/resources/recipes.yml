@@ -26,13 +26,13 @@ wine:
 spark-wine:
   substrate:
     - carrot
+  restriction: [ ]
+  yest: [ ]
   yield:
     max-yield: 10
     minimal-yield: 3
     #additional state 额外状态
     restriction-index: 0.5
     yeast-index: 0.5
-  restriction: [ ]
-  yest: [ ]
   brewing-cycle: 5
   output: sparkwine #拿装酒仪器点击后产出的物品 #itemstack

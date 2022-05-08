@@ -7,7 +7,7 @@ import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.StorageGui;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.utils.CommonUtils;
-import homeward.plugin.brewing.utils.GuiUtils;
+import homeward.plugin.brewing.guis.PlayerGui;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.kyori.adventure.text.TextComponent;
@@ -46,7 +46,7 @@ public class BrewingBarrelListener implements Listener {
             return;
         }
 
-        StorageGui storageGui = new GuiUtils().generateStorage();
+        StorageGui storageGui = new PlayerGui().generateStorage();
         initializeSlot(barrelLocation, storageGui);
 
         barrelGUIMap.put(barrelLocation, storageGui);
@@ -73,13 +73,13 @@ public class BrewingBarrelListener implements Listener {
         }
 
         if (data.isHasSubstrate()) {
-            GuiUtils.setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_SUBSTRATE);
+            PlayerGui.setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_SUBSTRATE);
         }
         if (data.isHasRestriction()) {
-            GuiUtils.setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_RESTRICTION);
+            PlayerGui.setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_RESTRICTION);
         }
         if (data.isHasYeast()) {
-            GuiUtils.setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_YEAST);
+            PlayerGui.setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_YEAST);
         }
 
         if (data.isBrewing()) {
