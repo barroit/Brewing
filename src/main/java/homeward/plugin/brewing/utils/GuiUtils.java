@@ -11,6 +11,7 @@ import homeward.plugin.brewing.enumerates.EnumBase;
 import homeward.plugin.brewing.listeners.BrewingBarrelListener;
 import lombok.SneakyThrows;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -18,11 +19,14 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.checkerframework.common.value.qual.IntRange;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Map;
 
+import static homeward.plugin.brewing.enumerates.ComponentEnum.*;
 import static homeward.plugin.brewing.utils.InventoryUtils.*;
 import static homeward.plugin.brewing.constants.BarrelConstants.*;
 
@@ -32,7 +36,8 @@ public class GuiUtils {
 
     @SneakyThrows
     public StorageGui generateStorage() {
-        StorageGui storageGui = generateStorageGui(3, ComponentEnum.BARREL_TITLE);
+        ComponentEnum[] title = {NEGATIVE_10, GUI_CONTAINER, GAP_REGULAR, GUI_BARREL};
+        StorageGui storageGui = generateStorageGui(3, NamedTextColor.WHITE, title);
 
         storageGui.setItem(SUBSTRATE_SLOT, new GuiItem(substrateSlot));
         storageGui.setItem(RESTRICTION_SLOT, new GuiItem(restrictionSlot));
@@ -42,9 +47,9 @@ public class GuiUtils {
         storageGui.setItem(24, new GuiItem(yeastSlotState));
 
         storageGui.setDefaultTopClickAction(event -> event.setCancelled(true));
-        storageGui.addSlotAction(SUBSTRATE_SLOT, this::handleSubstrateSlotClick);
-        // storageGui.addSlotAction(RESTRICTION_SLOT, this::handleClick);
-        // storageGui.addSlotAction(YEAST_SLOT, this::handleClick);
+        storageGui.addSlotAction(SUBSTRATE_SLOT, this::handleSlotClick);
+        storageGui.addSlotAction(RESTRICTION_SLOT, this::handleSlotClick);
+        storageGui.addSlotAction(YEAST_SLOT, this::handleSlotClick);
         storageGui.setCloseGuiAction(event -> {
             Map<HumanEntity, Location> barrelLocationMap = BrewingBarrelListener.getBarrelLocationMap();
             barrelLocationMap.remove(event.getPlayer());
@@ -53,7 +58,7 @@ public class GuiUtils {
         return storageGui;
     }
 
-    private void handleSubstrateSlotClick(InventoryClickEvent event) {
+    private void handleSlotClick(InventoryClickEvent event) {
         if (!(event.getClickedInventory().getHolder() instanceof StorageGui gui)) return;
 
         ItemStack cursorItem = event.getCursor();
@@ -68,9 +73,15 @@ public class GuiUtils {
 
         if (slotNotDefined && !cursorItemIsAir) {
             setInventoryCursorItem(gui, eventSlot, cursorItem, player);
+            ItemMeta itemMeta = new ItemStack(Material.AIR).getItemMeta();
+            // itemMeta.
         } else if (!slotNotDefined) {
             if (cursorItemIsAir) {
-                setInventoryCursorItem(player, gui, eventSlot);
+                switch (eventSlot) {
+                    case 2 -> setInventoryCursorItem(player, gui, eventSlot, substrateSlot);
+                    case 11 -> setInventoryCursorItem(player, gui, eventSlot, restrictionSlot);
+                    case 20 -> setInventoryCursorItem(player, gui, eventSlot, yeastSlot);
+                }
             } else if (gui.getGuiItem(eventSlot) != null && gui.getGuiItem(eventSlot).getItemStack().getItemMeta().getCustomModelData() == player.getItemOnCursor().getItemMeta().getCustomModelData()) {
                 ItemStack itemInInventory = gui.getGuiItem(eventSlot).getItemStack();
                 if (itemInInventory.getAmount() == 64) {
@@ -110,33 +121,61 @@ public class GuiUtils {
         if (rawItem == null) return;
         NBTItem nbtTags = new NBTItem(rawItem);
 
-        if (data.getSubstrate() == null && nbtTags.getString("BrewingBarrel").equalsIgnoreCase("Substrate") && !data.isHasSubstrate()) {
-            ItemStack itemInSlot = updateItem(rawItem, nbtTags);
-            if (itemInSlot == null) return;
-            data.setSubstrate(itemInSlot).setHasSubstrate(true);
-            updateItem(gui, itemInSlot, eventSlot, data);
-            setTitle(ComponentEnum.BARREL_TITLE_WITH_SUBSTRATE, gui);
-            if (gui.getInventory().getItem(eventSlot) == null) {
-                gui.updateItem(SUBSTRATE_SLOT, substrateSlot);
+        switch (eventSlot) {
+            case 2 -> setSubstrateData(data, nbtTags, rawItem, gui, eventSlot);
+            case 11 -> setRestrictionData(data, nbtTags, rawItem, gui, eventSlot);
+            case 20 -> setYeastData(data, nbtTags, rawItem, gui, eventSlot);
+        }
+
+        if (gui.getInventory().getItem(eventSlot) == null) {
+            switch (eventSlot) {
+                case 2 -> gui.updateItem(SUBSTRATE_SLOT, substrateSlot);
+                case 11 -> gui.updateItem(RESTRICTION_SLOT, restrictionSlot);
+                case 20 -> gui.updateItem(YEAST_SLOT, yeastSlot);
             }
-        } else {
-            data.setSubstrate(rawItem);
         }
 
         if (data.isHasSubstrate() && data.isHasRestriction() && data.isHasYeast()) {
             data.setBrewing(true);
         }
 
-        // if (data.getRestriction() == null && eventSlot == RESTRICTION_SLOT) {
-        //     data.setRestriction(itemInSlot).setHasRestriction(true);
-        //     updateItem(gui, itemInSlot, eventSlot, data, ComponentEnum.BARREL_TITLE_WITH_RESTRICTION);
-        //
-        // } else if (data.getYeast() == null && eventSlot == YEAST_SLOT) {
-        //     data.setYeast(itemInSlot).setHasYeast(true);
-        //     updateItem(gui, itemInSlot, eventSlot, data, ComponentEnum.BARREL_TITLE_WITH_YEAST);
-        // }
-
         saveData(data);
+    }
+
+    private void setSubstrateData(BarrelInventoryData data, NBTItem nbtTags, ItemStack rawItem, StorageGui gui, int eventSlot) {
+        if (data.getSubstrate() == null && nbtTags.getString("BrewingBarrel").equalsIgnoreCase("Substrate") && !data.isHasSubstrate()) {
+            ItemStack itemInSlot = updateItem(rawItem, nbtTags);
+            if (itemInSlot == null) return;
+            data.setSubstrate(itemInSlot).setHasSubstrate(true);
+            updateItem(gui, itemInSlot, eventSlot, data);
+            setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_SUBSTRATE);
+        } else {
+            data.setSubstrate(rawItem);
+        }
+    }
+
+    private void setRestrictionData(BarrelInventoryData data, NBTItem nbtTags, ItemStack rawItem, StorageGui gui, int eventSlot) {
+        if (data.getRestriction() == null && nbtTags.getString("BrewingBarrel").equalsIgnoreCase("Restriction") && !data.isHasRestriction()) {
+            ItemStack itemInSlot = updateItem(rawItem, nbtTags);
+            if (itemInSlot == null) return;
+            data.setRestriction(itemInSlot).setHasRestriction(true);
+            updateItem(gui, itemInSlot, eventSlot, data);
+            setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_RESTRICTION);
+        } else {
+            data.setRestriction(rawItem);
+        }
+    }
+
+    private void setYeastData(BarrelInventoryData data, NBTItem nbtTags, ItemStack rawItem, StorageGui gui, int eventSlot) {
+        if (data.getYeast() == null && nbtTags.getString("BrewingBarrel").equalsIgnoreCase("Yeast") && !data.isHasYeast()) {
+            ItemStack itemInSlot = updateItem(rawItem, nbtTags);
+            if (itemInSlot == null) return;
+            data.setYeast(itemInSlot).setHasYeast(true);
+            updateItem(gui, itemInSlot, eventSlot, data);
+            setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_YEAST);
+        } else {
+            data.setYeast(rawItem);
+        }
     }
 
     private ItemStack updateItem(ItemStack rawItem, NBTItem nbtTags) {
@@ -148,7 +187,6 @@ public class GuiUtils {
 
     private void updateItem(StorageGui gui, ItemStack itemInSlot, @IntRange(from = 0, to = 26) int eventSlot, BarrelInventoryData data) {
         gui.updateItem(eventSlot, itemInSlot);
-
         if (data.getSubstrate() != null && data.getRestriction() != null && data.getYeast() != null && !data.isBrewing()) {
             data.setBrewing(true);
         }
@@ -160,11 +198,20 @@ public class GuiUtils {
         file.save();
     }
 
-    public static void setTitle(EnumBase enumBase, StorageGui gui) {
-        TextComponent newTitle = (TextComponent) enumBase.getComponent();
+    public static void setTitle(StorageGui gui, NamedTextColor namedTextColor, EnumBase ...title) {
+        StringBuilder sb = new StringBuilder();
+        Arrays.stream(title).toList().forEach(enumBase -> sb.append(((TextComponent) enumBase.getComponent()).content()));
+
+        String finalTitle = ChatColor.valueOf(namedTextColor.toString().toUpperCase()) + ((TextComponent) gui.title()).content() + sb;
+        gui.updateTitle(finalTitle);
+    }
+
+    public static void removeTitle(EnumBase remove, EnumBase replace, StorageGui gui) {
+        String removeContent = ((TextComponent) remove.getComponent()).content();
+        String replaceContent = ((TextComponent) replace.getComponent()).content();
         TextComponent rawTitle = (TextComponent) gui.title();
         TextColor titleColor = rawTitle.style().color();
-        String title = (titleColor == null ? "" : ChatColor.valueOf(titleColor.toString().toUpperCase()) + rawTitle.content()) + newTitle.content();
+        String title = (titleColor == null ? "" : ChatColor.valueOf(titleColor.toString().toUpperCase()) + rawTitle.content().replaceAll(removeContent, "")) + replaceContent;
         gui.updateTitle(title);
     }
 
@@ -184,9 +231,9 @@ public class GuiUtils {
     }
 
     // the player has put an item in this slot && their cursor doesn't have any items
-    private void setInventoryCursorItem(HumanEntity player, StorageGui gui, int eventSlot) {
+    private void setInventoryCursorItem(HumanEntity player, StorageGui gui, int eventSlot, ItemStack descriptionItem) {
         player.setItemOnCursor(getItemInSlot(gui, eventSlot));
-        gui.updateItem(SUBSTRATE_SLOT, substrateSlot);
+        gui.updateItem(eventSlot, descriptionItem);
     }
 
     private void exchangeInventoryCursorItem(HumanEntity player, StorageGui gui, int eventSlot) {
@@ -210,44 +257,4 @@ public class GuiUtils {
         itemInInventory.setAmount(64);
         gui.updateItem(eventSlot, itemInInventory);
     }
-
-
-
-
-
-    private void handleClick(InventoryClickEvent event) {
-        if (!(event.getClickedInventory().getHolder() instanceof StorageGui gui)) return;
-
-        ItemStack cursor = event.getCursor();
-        if (cursor == null) return;
-        int eventSlot = event.getSlot();
-        if (!BaseInfo.BARREL_DESCRIPTION_MANIPULATIVE_LIST.contains(eventSlot)) return;
-
-        HumanEntity player = event.getWhoClicked();
-        ItemStack itemWithoutTag = getItemInSlot(gui, eventSlot);
-
-        boolean isDescription = BaseInfo.BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST.contains(new NBTItem(itemWithoutTag).getInteger("CustomModelData"));
-        boolean cursorIsAir = cursor.getType() == Material.AIR;
-
-        if (isDescription && !cursorIsAir) { // the player not put an item in this slot and their cursor nonnull
-            gui.updateItem(eventSlot, cursor);
-            player.setItemOnCursor(new ItemStack(Material.AIR));
-
-        } else if (!isDescription && cursorIsAir) { // the player has put an item in this slot and their cursor doesn't have an item
-            player.setItemOnCursor(itemWithoutTag);
-            switch (eventSlot) {
-                case 2 -> gui.updateItem(SUBSTRATE_SLOT, substrateSlot);
-                case 11 -> gui.updateItem(RESTRICTION_SLOT, restrictionSlot);
-                case 20 -> gui.updateItem(YEAST_SLOT, yeastSlot);
-            }
-
-        } else if (!isDescription) { // the player has put an item in this slot and their cursor nonnull
-            ItemStack itemOnCursor = player.getItemOnCursor();
-            player.setItemOnCursor(itemWithoutTag);
-            gui.updateItem(eventSlot, itemOnCursor);
-        }
-
-        persistentFileData(player, gui, eventSlot);
-    }
-
 }
