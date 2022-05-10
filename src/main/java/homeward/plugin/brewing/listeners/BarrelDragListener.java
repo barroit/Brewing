@@ -9,7 +9,7 @@ import org.bukkit.inventory.InventoryView;
 import java.util.Collections;
 import java.util.Set;
 
-public class BarrelDragEvent implements Listener {
+public class BarrelDragListener implements Listener {
     @EventHandler
     public void onPlayerDragEvent(InventoryDragEvent event) {
         if (!(event.getInventory().getHolder() instanceof BaseGui)) return;

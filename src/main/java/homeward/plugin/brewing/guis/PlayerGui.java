@@ -1,9 +1,12 @@
 package homeward.plugin.brewing.guis;
 
+import com.google.gson.Gson;
 import de.tr7zw.nbtapi.NBTFile;
 import de.tr7zw.nbtapi.NBTItem;
+import dev.lone.itemsadder.api.CustomStack;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.StorageGui;
+import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
@@ -94,6 +97,7 @@ public class PlayerGui {
             }
         } else return;
 
+
         persistentFileData(player, gui, eventSlot);
     }
 
@@ -125,6 +129,7 @@ public class PlayerGui {
             case 20 -> setYeastData(data, nbtTags, rawItem, gui, eventSlot);
         }
 
+
         if (gui.getInventory().getItem(eventSlot) == null) {
             switch (eventSlot) {
                 case 2 -> gui.updateItem(SUBSTRATE_SLOT, substrateSlot);
@@ -133,22 +138,60 @@ public class PlayerGui {
             }
         }
 
-        if (data.isHasSubstrate() && data.isHasRestriction() && data.isHasYeast()) {
-            data.setBrewing(true);
+        if (data.isHasSubstrate() && data.isHasRestriction() && data.isHasYeast() && !data.isBrewing()) {
+            startBrewing(gui, data);
         }
 
         saveData(data);
+    }
+
+    public static void startBrewing(StorageGui gui, BarrelInventoryData data) {
+        gui.setItem(4, new GuiItem(generateSlotItem(Material.PAPER, "wine", 4500)));
+        gui.setItem(22, new GuiItem(generateSlotItem(Material.PAPER, "wine", 4500)));
+        gui.setItem(13, new GuiItem(generateSlotItem(Material.PAPER, "wine", 4505)));
+        gui.updateTitle(ChatColor.WHITE + ((TextComponent) gui.title()).content().replaceAll(((TextComponent) GAP_REGULAR.getComponent()).content() + ((TextComponent) GUI_BARREL.getComponent()).content(), ""));
+
+        System.out.println(data);
+
+        boolean[] hasSet = {false};
+        if (data.isInitialize()) return;
+
+        Brewing.getConfigurationMap().forEach((k, v) -> {
+            NBTItem substrate = new NBTItem(data.getSubstrate());
+            NBTItem restriction = new NBTItem(data.getRestriction());
+            NBTItem yeast = new NBTItem(data.getYeast());
+            substrate.removeKey("PublicBukkitValues");
+            restriction.removeKey("PublicBukkitValues");
+            yeast.removeKey("PublicBukkitValues");
+
+            if (CustomStack.byItemStack(substrate.getItem()).getNamespacedID().equals(v.get("substrate").getAsString())) {
+                String[] restrictionList = new Gson().fromJson(v.get("restriction").getAsString().replaceAll("^\"\"$", ""), String[].class);
+                String[] yeastList = new Gson().fromJson(v.get("yeast").getAsString().replaceAll("^\"\"$", ""), String[].class);
+
+                boolean hasRestriction = Arrays.stream(restrictionList).toList().contains(CustomStack.byItemStack(restriction.getItem()).getNamespacedID());
+                boolean hasYeast = Arrays.stream(yeastList).toList().contains(CustomStack.byItemStack(yeast.getItem()).getNamespacedID());
+
+                if (!(hasRestriction && hasYeast)) return;
+
+                data.setBrewingType(k).setOutPutItems(v.get("output").getAsString())
+                        .setExpectOutPut(v.get("maxYield").getAsInt())
+                        .setActualOutPut(CommonUtils.getIntervalRandom(v.get("minYield").getAsInt(), v.get("maxYield").getAsInt()))
+                        .setStoredOutPutItems(0).setBrewingTime(v.get("brewingCycle").getAsInt())
+                        .setCurrentBrewingTime(0).setBrewing(true).setInitialize(true);
+                hasSet[0] = true;
+            }
+        });
     }
 
     private void setSubstrateData(BarrelInventoryData data, NBTItem nbtTags, ItemStack rawItem, StorageGui gui, int eventSlot) {
         if (data.getSubstrate() == null && nbtTags.getString("BrewingBarrel").equalsIgnoreCase("Substrate") && !data.isHasSubstrate()) {
             ItemStack itemInSlot = updateItem(rawItem, nbtTags);
             if (itemInSlot == null) return;
-            data.setSubstrate(itemInSlot).setHasSubstrate(true);
+            data.setSubstrateSlot(rawItem).setSubstrate(itemInSlot).setHasSubstrate(true);
             updateItem(gui, itemInSlot, eventSlot, data);
             setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_SUBSTRATE);
         } else {
-            data.setSubstrate(rawItem);
+            data.setSubstrateSlot(rawItem);
         }
     }
 
@@ -156,11 +199,11 @@ public class PlayerGui {
         if (data.getRestriction() == null && nbtTags.getString("BrewingBarrel").equalsIgnoreCase("Restriction") && !data.isHasRestriction()) {
             ItemStack itemInSlot = updateItem(rawItem, nbtTags);
             if (itemInSlot == null) return;
-            data.setRestriction(itemInSlot).setHasRestriction(true);
+            data.setRestrictionSlot(rawItem).setRestriction(itemInSlot).setHasRestriction(true);
             updateItem(gui, itemInSlot, eventSlot, data);
             setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_RESTRICTION);
         } else {
-            data.setRestriction(rawItem);
+            data.setRestrictionSlot(rawItem);
         }
     }
 
@@ -168,11 +211,11 @@ public class PlayerGui {
         if (data.getYeast() == null && nbtTags.getString("BrewingBarrel").equalsIgnoreCase("Yeast") && !data.isHasYeast()) {
             ItemStack itemInSlot = updateItem(rawItem, nbtTags);
             if (itemInSlot == null) return;
-            data.setYeast(itemInSlot).setHasYeast(true);
+            data.setYeastSlot(rawItem).setYeast(itemInSlot).setHasYeast(true);
             updateItem(gui, itemInSlot, eventSlot, data);
             setTitle(gui, NamedTextColor.WHITE, GAP_REGULAR, GUI_YEAST);
         } else {
-            data.setYeast(rawItem);
+            data.setYeastSlot(rawItem);
         }
     }
 
@@ -185,9 +228,6 @@ public class PlayerGui {
 
     private void updateItem(StorageGui gui, ItemStack itemInSlot, @IntRange(from = 0, to = 26) int eventSlot, BarrelInventoryData data) {
         gui.updateItem(eventSlot, itemInSlot);
-        if (data.getSubstrate() != null && data.getRestriction() != null && data.getYeast() != null && !data.isBrewing()) {
-            data.setBrewing(true);
-        }
     }
 
     @SneakyThrows

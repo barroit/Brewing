@@ -1,20 +1,20 @@
 package homeward.plugin.brewing.listeners;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import de.tr7zw.nbtapi.NBTFile;
+import dev.lone.itemsadder.api.CustomStack;
 import dev.lone.itemsadder.api.Events.CustomBlockInteractEvent;
 import dev.triumphteam.gui.guis.BaseGui;
-import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.StorageGui;
+import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.utils.CommonUtils;
 import homeward.plugin.brewing.guis.PlayerGui;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,16 +22,16 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static homeward.plugin.brewing.constants.BarrelConstants.*;
 import static homeward.plugin.brewing.enumerates.ComponentEnum.*;
-import static homeward.plugin.brewing.utils.InventoryUtils.generateSlotItem;
 
 public class BrewingBarrelListener implements Listener {
-    @Getter private static final Map<Location, BaseGui> barrelGUIMap = new HashMap<>();
-    @Getter private static final Map<HumanEntity, Location> barrelLocationMap = new HashMap<>();
+    @Getter
+    private static final Map<Location, BaseGui> barrelGUIMap = new HashMap<>();
+    @Getter
+    private static final Map<HumanEntity, Location> barrelLocationMap = new HashMap<>();
 
     @EventHandler
     public void onPlayerInteract(final CustomBlockInteractEvent event) {
@@ -62,14 +62,14 @@ public class BrewingBarrelListener implements Listener {
         BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(bytesData.length == 0 ? null : bytesData);
         if (data == null) return;
 
-        if (data.getSubstrate() != null) {
-            gui.updateItem(SUBSTRATE_SLOT, data.getSubstrate());
+        if (data.getSubstrateSlot() != null) {
+            gui.updateItem(SUBSTRATE_SLOT, data.getSubstrateSlot());
         }
-        if (data.getRestriction() != null) {
-            gui.updateItem(RESTRICTION_SLOT, data.getRestriction());
+        if (data.getRestrictionSlot() != null) {
+            gui.updateItem(RESTRICTION_SLOT, data.getRestrictionSlot());
         }
-        if (data.getYeast() != null) {
-            gui.updateItem(YEAST_SLOT, data.getYeast());
+        if (data.getYeastSlot() != null) {
+            gui.updateItem(YEAST_SLOT, data.getYeastSlot());
         }
 
         if (data.isHasSubstrate()) {
@@ -83,10 +83,7 @@ public class BrewingBarrelListener implements Listener {
         }
 
         if (data.isBrewing()) {
-            gui.setItem(4, new GuiItem(generateSlotItem(Material.PAPER, "wine", 4500)));
-            gui.setItem(22, new GuiItem(generateSlotItem(Material.PAPER, "wine", 4500)));
-            gui.setItem(13, new GuiItem(generateSlotItem(Material.PAPER, "wine", 4505)));
-            gui.updateTitle(ChatColor.WHITE + ((TextComponent) gui.title()).content().replaceAll(((TextComponent) GAP_REGULAR.getComponent()).content() + ((TextComponent) GUI_BARREL.getComponent()).content(), ""));
+            PlayerGui.startBrewing(gui, data);
         }
     }
 }
