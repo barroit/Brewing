@@ -26,12 +26,13 @@ wine:
       item:
         itemsAdder: "wine"
 
-  #抑制剂对产量影响的系数
-  restriction-index: 0.5 # TODO
-  #酵母对产量影响的系数
-  yeast-index: 0.5 # TODO
-  #产出最后结算的系数
-  yield-index: 1 # TODO
+  index:
+    #抑制剂对产量影响的系数 全局
+    restriction-index: 0.5 # TODO
+    #酵母对产量影响的系数
+    yeast-index: 0.5 # TODO
+    #产出最后结算的系数
+    yield-index: 1 # TODO
 
   #可以接受哪些抑制剂 类型 Itemstack
   restriction:
