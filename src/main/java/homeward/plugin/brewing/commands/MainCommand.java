@@ -21,29 +21,28 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Command("homewardbrewing")
 @Alias("hwb")
 public class MainCommand extends CommandBase {
+    private final Map<String, JsonElement> configurationMap = new LinkedHashMap<>();
 
     @Default
     public void defaultCommand(final CommandSender commandSender) {
-
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Homeward brewing (协调酿酒) version &61.0.2"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7基于GUI界面的多材料酿酒系统"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7输入&6/hwb help &7来获取所有指令帮助"));
-
     }
 
     @SubCommand("testLocationCast")
@@ -63,34 +62,13 @@ public class MainCommand extends CommandBase {
         });
     }
 
-    @SubCommand("testBarrelInventoryData")
-    public void testBarrelInventoryData(CommandSender sender) throws IOException {
-
-        Player player = (Player) sender;
-        Block targetBlock = player.getTargetBlock(5);
-        if (targetBlock == null) return;
-
-        BarrelInventoryData inventoryData = new BarrelInventoryData()
-                .setSubstrate(new ItemStack(Material.GREEN_WOOL))
-                .setRestriction(new ItemStack(Material.RED_WOOL))
-                .setYeast(new ItemStack(Material.PINK_WOOL))
-                .setBrewingType("dark vine")
-                .setOutPutItems("old_vines")
-                .setExpectOutPut(4)
-                .setActualOutPut(3)
-                .setBrewingTime(5);
-
-        String dataS = ItemStackUtils.encodeObject(inventoryData);
-
-
-        NBTFile file = new NBTFile(new File(player.getWorld().getName(), "brew.nbt"));
-        file.setObject(targetBlock.getLocation() + "", inventoryData);
-
-        file.save();
-        BarrelInventoryData object = file.getObject(targetBlock.getLocation() + "", BarrelInventoryData.class);
-        System.out.println(object.getSubstrate().getType());
-
+    @SubCommand("removeNBTFile")
+    @SneakyThrows
+    public void removeFile(CommandSender sender) {
+        File file = new File(((Player) sender).getWorld().getName(), "brew.nbt");
+        file.delete();
     }
+
 
     //不要删除 测试用的
     @SubCommand("storagedata")
@@ -124,6 +102,41 @@ public class MainCommand extends CommandBase {
             };
         }.start();
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7增加了 &61 &7酿造周期"));
+    }
+
+    @SubCommand("testConfiguration")
+    @SneakyThrows
+    public void testConfiguration(CommandSender commandSender) {
+        Set<String> shallowKeys = ConfigurationUtils.getKeys("recipes");
+        FileConfiguration fileConfiguration = ConfigurationUtils.get("recipes");
+        if (shallowKeys == null) return;
+
+        Gson gson = new Gson();
+
+        shallowKeys.forEach(k -> {
+            ConfigurationSection section = fileConfiguration.getConfigurationSection(k);
+            if (section == null) return;
+            ConfigurationSection yieldSection = section.getConfigurationSection("yield");
+            if (yieldSection == null) return;
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("substrate", section.getString("substrate"));
+            jsonObject.addProperty("restriction", gson.toJson(section.getStringList("restriction"), List.class));
+            jsonObject.addProperty("yeast", gson.toJson(section.getStringList("yeast"), List.class));
+            jsonObject.addProperty("maxYield", yieldSection.getInt("max-yield"));
+            jsonObject.addProperty("minYield", yieldSection.getInt("min-yield"));
+            jsonObject.addProperty("restrictionIndex", yieldSection.getDouble("restriction-index"));
+            jsonObject.addProperty("yeastIndex", yieldSection.getDouble("yeast-index"));
+            jsonObject.addProperty("brewingCycle", section.getInt("brewing-cycle"));
+            jsonObject.addProperty("output", section.getString("output"));
+
+            configurationMap.put(k, jsonObject);
+        });
+
+        shallowKeys.forEach(v -> {
+            JsonObject object = (JsonObject) configurationMap.get(v);
+            System.out.println(object.getAsJsonObject());
+        });
     }
 
     /**

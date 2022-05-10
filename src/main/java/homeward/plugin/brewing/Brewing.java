@@ -1,5 +1,8 @@
 package homeward.plugin.brewing;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
@@ -10,13 +13,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 public final class Brewing extends JavaPlugin {
@@ -24,6 +31,7 @@ public final class Brewing extends JavaPlugin {
     private final CommandSender commandSender;
     private final String packageName;
     @Getter private final static Map<String, World> worldMap = new LinkedHashMap<>();
+    @Getter private static final Map<String, JsonObject> configurationMap = new LinkedHashMap<>();
 
     /**
      * <h3>Get current plugin instance</h3>
@@ -37,6 +45,8 @@ public final class Brewing extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        initializeConfigurationData();
+
         CommandManager commandManager = new CommandManager(this);
         // register command here
         commandManager.register(new MainCommand());
@@ -142,5 +152,52 @@ public final class Brewing extends JavaPlugin {
         Bukkit.getScheduler().cancelTasks(this);
         processFerment();
         setWorldMap();
+    }
+
+    private void initializeConfigurationData() {
+        Set<String> shallowKeys = ConfigurationUtils.getKeys("recipes");
+        FileConfiguration fileConfiguration = ConfigurationUtils.get("recipes");
+        if (shallowKeys == null) return;
+
+        Gson gson = new Gson();
+
+        shallowKeys.forEach(k -> {
+            ConfigurationSection section = fileConfiguration.getConfigurationSection(k);
+            if (section == null) return;
+            ConfigurationSection yieldSection = section.getConfigurationSection("yield");
+            if (yieldSection == null) return;
+
+            String substrate = section.getString("substrate");
+            if (substrate == null) return;
+            String restriction = gson.toJson(section.getStringList("restriction"), List.class);
+            if (restriction.length() == 0) return;
+            String yeast = gson.toJson(section.getStringList("yeast"), List.class);
+            if (yeast.length() == 0) return;
+            int maxYield = yieldSection.getInt("max-yield");
+            if (maxYield == 0) return;
+            int minYield = yieldSection.getInt("min-yield");
+            if (minYield == 0) return;
+            double restrictionIndex = yieldSection.getDouble("restriction-index");
+            if (restrictionIndex == 0) return;
+            double yeastIndex = yieldSection.getDouble("yeast-index");
+            if (yeastIndex == 0) return;
+            int brewingCycle = section.getInt("brewing-cycle");
+            if (brewingCycle == 0) return;
+            String output = section.getString("output");
+            if (output == null) return;
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("substrate", substrate);
+            jsonObject.addProperty("restriction", restriction);
+            jsonObject.addProperty("yeast", yeast);
+            jsonObject.addProperty("maxYield", maxYield);
+            jsonObject.addProperty("minYield", minYield);
+            jsonObject.addProperty("restrictionIndex", restrictionIndex);
+            jsonObject.addProperty("yeastIndex", yeastIndex);
+            jsonObject.addProperty("brewingCycle", brewingCycle);
+            jsonObject.addProperty("output", output);
+
+            configurationMap.put(k, jsonObject);
+        });
     }
 }

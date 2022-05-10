@@ -17,18 +17,28 @@ public class ConfigurationUtils {
     private static Map<String, File> fileMap;
     private static Map<String, FileConfiguration> fileConfigurationMap;
 
+
     /**
+     * 获取指定文件key list
      *
-     * Initialize configuration files
-     * <h3>Must and should only be called on plugin initialing</h3>
-     *
-     * @param plugin the plugin instance
-     * @param configname your config name without extension
+     * @param fileName file name
+     * @return key set
      */
-    public ConfigurationUtils(@NotNull Brewing plugin, @NotNull String ...configname) {
-        fileMap = new HashMap<>();
-        fileConfigurationMap = new HashMap<>();
-        this.setValue(plugin, configname);
+    public static Set<String> getKeys(String fileName) {
+        fileName = generateName(fileName);
+        return fileConfigurationMap.containsKey(fileName) ? fileConfigurationMap.get(fileName).getKeys(false) : null;
+    }
+
+    /**
+     * 获取指定文件key list
+     *
+     * @param fileName file name
+     * @param deep Whether or not to get a deep list, as opposed to a shallow list
+     * @return key set
+     */
+    public static Set<String> getKeys(String fileName, boolean deep) {
+        fileName = generateName(fileName);
+        return fileConfigurationMap.containsKey(fileName) ? fileConfigurationMap.get(fileName).getKeys(deep) : null;
     }
 
     /**
@@ -102,5 +112,23 @@ public class ConfigurationUtils {
             fileConfigurationMap.put(v, configuration);
             fileMap.put(v, file);
         });
+    }
+
+    private static String generateName(String fileName) {
+        return (fileName == null || fileName.isBlank()) ? null : fileName.replaceAll("([\\w-]*)\\.yml|yaml$", "$1") + ".yml";
+    }
+
+    /**
+     *
+     * Initialize configuration files
+     * <h3>Must and should only be called on plugin initialing</h3>
+     *
+     * @param plugin the plugin instance
+     * @param configname your config name without extension
+     */
+    public ConfigurationUtils(@NotNull Brewing plugin, @NotNull String ...configname) {
+        fileMap = new HashMap<>();
+        fileConfigurationMap = new HashMap<>();
+        setValue(plugin, configname);
     }
 }

@@ -1,38 +1,38 @@
-wine:
-  #底物 哪些水果塞进去 类型 Itemstack
-  substrate:
-    - apple
-    - glow_berries
-  #产量
-  yield:
-    #最大产量
-    max-yield: 10
-    #最小产量
-    minimal-yield: 3
-    #additional state 额外状态
-    #抑制剂对产量影响的系数
-    restriction-index: 0.5
-    #酵母对产量影响的系数
-    yeast-index: 0.5
-  #可以接受哪些抑制剂 类型 Itemstack
-  restriction: [ ]
-  #可以接收哪些酵母菌 类型 Itemstack
-  yest: [ ]
-  #酿造周期 类型 Int 天数
-  brewing-cycle: 5
-  #最终输出 类型 Itemstack
-  output: wine #拿装酒仪器点击后产出的物品 #itemstack
-
 spark-wine:
-  substrate:
-    - carrot
-  restriction: [ ]
-  yest: [ ]
+  substrate: 'homeward:grape'
+  restriction:
+    - 'homeward:sulfur_dioxide'
+  yeast:
+    - 'homeward:yeast'
   yield:
     max-yield: 10
-    minimal-yield: 3
-    #additional state 额外状态
+    min-yield: 3
     restriction-index: 0.5
     yeast-index: 0.5
   brewing-cycle: 5
-  output: sparkwine #拿装酒仪器点击后产出的物品 #itemstack
+  output: 'homeward:spark-wine'
+
+#wine:
+#  #底物 哪些水果塞进去 类型 Itemstack
+#  substrate:
+#    - apple
+#    - glow_berries
+#  #产量
+#  yield:
+#    #最大产量
+#    max-yield: 10
+#    #最小产量
+#    minimal-yield: 3
+#    #additional state 额外状态
+#    #抑制剂对产量影响的系数
+#    restriction-index: 0.5
+#    #酵母对产量影响的系数
+#    yeast-index: 0.5
+#  #可以接受哪些抑制剂 类型 Itemstack
+#  restriction: [ ]
+#  #可以接收哪些酵母菌 类型 Itemstack
+#  yeast: [ ]
+#  #酿造周期 类型 Int 天数
+#  brewing-cycle: 5
+#  #最终输出 类型 Itemstack
+#  output: wine #拿装酒仪器点击后产出的物品 #itemstack

@@ -1,8 +1,11 @@
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
+import homeward.plugin.brewing.beans.SelectActionIndex;
 import homeward.plugin.brewing.utils.CommonUtils;
+import homeward.plugin.brewing.utils.ConfigurationUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class SimpleTest {
     @Test
@@ -94,7 +98,6 @@ public class SimpleTest {
                 .setRestriction(null)
                 .setYeast(null)
                 .setBrewingType("dark_vine")
-                .setOutPutItems("old_vines")
                 .setExpectOutPut(4)
                 .setActualOutPut(3)
                 .setBrewingTime(5);
@@ -113,5 +116,37 @@ public class SimpleTest {
         JsonObject asJsonObject = jsonElement.getAsJsonObject();
         JsonElement name = asJsonObject.get("name");
         System.out.println(name.getAsString());
+    }
+
+    @Test
+    void testSelectActionIndex() {
+        SelectActionIndex selectActionIndex = new SelectActionIndex("s", "r", "y");
+
+        SelectActionIndex selectActionIndex1 = new Gson().fromJson(selectActionIndex.toString(), SelectActionIndex.class);
+        System.out.println(selectActionIndex1);
+
+        JsonElement jsonElement = JsonParser.parseString(selectActionIndex.toString());
+        JsonObject asJsonObject = jsonElement.getAsJsonObject();
+        System.out.println(asJsonObject.get("substrate").getAsString());
+    }
+
+    @Test
+    void testRegex() {
+        String t = "[\"homeward:sulfur_dioxide\"]";
+        System.out.println(t.replaceAll("^\"\"$", ""));
+    }
+
+    @Test
+    void testRandom() {
+        int max = 10;
+        int min = 3;
+
+        CountDownLatch countDownLatch = new CountDownLatch(50);
+
+        while (countDownLatch.getCount() >= 0) {
+            int i = min + (int) (Math.random() * (max - min + 1));
+            System.out.println(i);
+            countDownLatch.countDown();
+        }
     }
 }

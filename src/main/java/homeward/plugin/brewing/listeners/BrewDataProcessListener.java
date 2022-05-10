@@ -102,7 +102,7 @@ public class BrewDataProcessListener implements Listener {
         data.setCurrentBrewingTime(data.getCurrentBrewingTime() + 1);
 
         if (data.getCurrentBrewingTime() == data.getBrewingTime()) {
-            data.setBrewing(false).setStoredOutPutItems(data.getActualOutPut()).setOutPutItems(new ItemStack(Material.GREEN_WOOL));
+            data.setBrewing(false).setStoredOutPutItems(data.getActualOutPut());
         }
 
         file.setObject(stringLocation, data);
