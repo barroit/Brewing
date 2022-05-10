@@ -3,14 +3,14 @@ wine:
   substrate:
     1:
       type: item
-        item:
-          material: glow_berries
-          quantity: 1
+      item:
+        material: glow_berries
+        quantity: 1
     2:
       type: item
-        item:
-          material: apple
-          quantity: 1
+      item:
+        material: apple
+        quantity: 1
   #产量
   yield:
     #最大产量
@@ -23,8 +23,8 @@ wine:
   #拿装酒仪器点击后产出的物品 #itemstack
   output:
     type: item
-      item:
-        itemsAdder: "wine"
+    item:
+      itemsAdder: "wine"
 
   index:
     #抑制剂对产量影响的系数 全局
@@ -38,30 +38,30 @@ wine:
   restriction:
     1:
       type: item
-        item:
-          itemsAdder: "restriction1"
-          quantity: 10
-          index: 100 # TODO
+      item:
+        itemsAdder: "restriction1"
+        quantity: 10
+        index: 100 # TODO
     2:
       type: item
-        item:
-          itemsAdder: "restriction2"
-          quantity: 10
-          index: 90 # TODO
+      item:
+        itemsAdder: "restriction2"
+        quantity: 10
+        index: 90 # TODO
   #可以接收哪些酵母菌 类型 Itemstack
   yest:
     1:
       type: item
-        item:
-          itemsAdder: "yeast1"
-          quantity: 10
-          index: 90 # TODO
+      item:
+        itemsAdder: "yeast1"
+        quantity: 10
+        index: 90 # TODO
     2:
       type: item
-        item:
-          itemsAdder: "yeast2"
-          quantity: 10
-          index: 500 # TODO
+      item:
+        itemsAdder: "yeast2"
+        quantity: 10
+        index: 500 # TODO
 
   #酿造周期 类型 Int 天数
   brewing-cycle: 5

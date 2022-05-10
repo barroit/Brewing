@@ -7,8 +7,9 @@ authors: [ Baioretto,Caizii,Xunzhen ]
 description: homewardjourney's brewing plugin
 website: https://fantang.cc
 
-depend:
+softdepend:
   - ItemsAdder
+  - MMOItems
 
 commands:
   homewardbrewing:

@@ -20,10 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 public final class Brewing extends JavaPlugin {
@@ -32,6 +29,7 @@ public final class Brewing extends JavaPlugin {
     private final String packageName;
     @Getter private final static Map<String, World> worldMap = new LinkedHashMap<>();
     @Getter private static final Map<String, JsonObject> configurationMap = new LinkedHashMap<>();
+    @Getter private static final Map<String, JsonObject> recipes = new LinkedHashMap<>();
 
     /**
      * <h3>Get current plugin instance</h3>
@@ -45,6 +43,8 @@ public final class Brewing extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        initializeRecipes();
+
         initializeConfigurationData();
 
         CommandManager commandManager = new CommandManager(this);
@@ -152,6 +152,12 @@ public final class Brewing extends JavaPlugin {
         Bukkit.getScheduler().cancelTasks(this);
         processFerment();
         setWorldMap();
+    }
+
+    private void initializeRecipes() {
+        FileConfiguration recipesFileConfiguration = ConfigurationUtils.get("recipes");
+        Set<String> keys = recipesFileConfiguration.getKeys(false);
+        System.out.println(keys);
     }
 
     private void initializeConfigurationData() {
