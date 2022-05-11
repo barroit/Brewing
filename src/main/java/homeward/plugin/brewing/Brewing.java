@@ -3,6 +3,7 @@ package homeward.plugin.brewing;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
@@ -43,10 +44,6 @@ public final class Brewing extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        initializeRecipes();
-
-        initializeConfigurationData();
-
         CommandManager commandManager = new CommandManager(this);
         // register command here
         commandManager.register(new MainCommand());
@@ -156,8 +153,10 @@ public final class Brewing extends JavaPlugin {
 
     private void initializeRecipes() {
         FileConfiguration recipesFileConfiguration = ConfigurationUtils.get("recipes");
-        Set<String> keys = recipesFileConfiguration.getKeys(false);
-        System.out.println(keys);
+        ConfigurationSection configurationSection = recipesFileConfiguration.getConfigurationSection("wine");
+
+        JsonElement substrate = JsonParser.parseString(configurationSection.getString("substrate").replaceAll("=", ":"));
+        substrate.getAsJsonArray().forEach(System.out::println);
     }
 
     private void initializeConfigurationData() {

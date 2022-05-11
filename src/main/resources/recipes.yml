@@ -1,82 +1,68 @@
 wine:
-  #底物 哪些水果塞进去 类型 Itemstack
-  substrate:
-    1:
-      type: item
+  substrate: # 底物 哪些水果塞进去 类型 Itemstack
+    - from: Vanilla
       item:
-        material: glow_berries
-        quantity: 1
-    2:
-      type: item
+        material: POTION
+        potion-type: SPEED
+        amount: 1
+    - from: ItemsAdder
       item:
-        material: apple
-        quantity: 1
-  #产量
-  yield:
-    #最大产量
-    max-yield: 10
-    #最小产量
-    minimal-yield: 3
-    #additional state 额外状态
-
-  #最终输出 类型 ItemsAdder
-  #拿装酒仪器点击后产出的物品 #itemstack
-  output:
-    type: item
-    item:
-      itemsAdder: "wine"
-
-  index:
-    #抑制剂对产量影响的系数 全局
-    restriction-index: 0.5 # TODO
-    #酵母对产量影响的系数
-    yeast-index: 0.5 # TODO
-    #产出最后结算的系数
-    yield-index: 1 # TODO
-
-  #可以接受哪些抑制剂 类型 Itemstack
-  restriction:
-    1:
-      type: item
+        namespace: 'homeward'
+        id: 'grape'
+        amount: 1
+    - from: MMOItems
       item:
-        itemsAdder: "restriction1"
+        type: BREWING
+        id: PEAR
+        scaled: 1
+        tier: UNCOMMON
+        amount: 1
+  restriction: # 可以接受哪些抑制剂 类型 Itemstack
+    - type: item
+      item:
+        itemsAdder: 'restriction1'
         quantity: 10
         index: 100 # TODO
-    2:
-      type: item
+    - type: item
       item:
-        itemsAdder: "restriction2"
+        itemsAdder: 'restriction2'
         quantity: 10
         index: 90 # TODO
-  #可以接收哪些酵母菌 类型 Itemstack
-  yest:
-    1:
-      type: item
+  yest: # 可以接收哪些酵母菌 类型 Itemstack
+    - type: item
       item:
         itemsAdder: "yeast1"
         quantity: 10
         index: 90 # TODO
-    2:
-      type: item
+    - type: item
       item:
         itemsAdder: "yeast2"
         quantity: 10
         index: 500 # TODO
+  output: # 拿装酒仪器点击后产出的物品/最终输出 (itemstack)
+    type: item
+    item:
+      itemsAdder: 'wine'
+  yield: # 产量
+    max-yield: 10 # 最大产量
+    minimal-yield: 3 # 最小产量
+  index:
+    restriction-index: 0.5 # 抑制剂对产量影响的系数 全局
+    yeast-index: 0.5 # 酵母对产量影响的系数
+    yield-index: 1 # 产出最后结算的系数
+  brewing-cycle: 5 # 酿造周期 类型 Int 天数
 
-  #酿造周期 类型 Int 天数
-  brewing-cycle: 5
 
-
-spark-wine:
-  substrate:
-    - carrot
-  restriction: [ ]
-  yest: [ ]
-  yield:
-    max-yield: 10
-    minimal-yield: 3
-    #additional state 额外状态
-    restriction-index: 0.5
-    yeast-index: 0.5
-  brewing-cycle: 5
-  output: sparkwine #拿装酒仪器点击后产出的物品 #itemstack
+#spark-wine:
+#  substrate:
+#    - carrot
+#  restriction: [ ]
+#  yest: [ ]
+#  yield:
+#    max-yield: 10
+#    minimal-yield: 3
+#    #additional state 额外状态
+#    restriction-index: 0.5
+#    yeast-index: 0.5
+#  brewing-cycle: 5
+#  output: sparkwine #拿装酒仪器点击后产出的物品 #itemstack

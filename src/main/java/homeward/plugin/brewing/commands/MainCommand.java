@@ -1,20 +1,24 @@
 package homeward.plugin.brewing.commands;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import de.tr7zw.nbtapi.NBTFile;
+import dev.lone.itemsadder.api.CustomStack;
 import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import homeward.plugin.brewing.utils.ItemStackUtils;
+import io.lumine.mythic.lib.api.item.NBTItem;
 import lombok.SneakyThrows;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
+import net.Indyuce.mmoitems.MMOItems;
+import net.Indyuce.mmoitems.api.ItemTier;
+import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
+import net.Indyuce.mmoitems.api.player.PlayerData;
+import net.Indyuce.mmoitems.manager.TierManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -25,13 +29,16 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MainHand;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Command("homewardbrewing")
 @Alias("hwb")
@@ -43,6 +50,40 @@ public class MainCommand extends CommandBase {
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Homeward brewing (协调酿酒) version &61.0.2"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7基于GUI界面的多材料酿酒系统"));
         commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7输入&6/hwb help &7来获取所有指令帮助"));
+    }
+
+    @SubCommand("testMMOItems")
+    public void testMMOItems(CommandSender commandSender) {
+        Player player = (Player) commandSender;
+
+        FileConfiguration recipes = ConfigurationUtils.get("recipes");
+        // [{from=Vanilla, item={material=POTION, potion-type=SPEED, amount=1}},
+        // {from=ItemsAdder, item={namespacedId=homeward:grape, amount=1}},
+        // {from=MMOItems, item={type=BREWING, id=PEAR, scaled=1, tier=UNCOMMON, amount=1}}]
+
+        JsonArray jsonElements = new Gson().fromJson(recipes.getConfigurationSection("wine").getString("substrate").replaceAll("=", ":"), JsonArray.class);
+        jsonElements.forEach(v -> {
+            JsonObject jsonObject = v.getAsJsonObject();
+            String from = jsonObject.get("from").getAsString();
+            JsonObject item = jsonObject.get("item").getAsJsonObject();
+            PlayerInventory inventory = player.getInventory();
+
+            if ("Vanilla".equalsIgnoreCase(from)) {
+                String material = item.get("material").getAsString();
+                ItemStack itemStack = new ItemStack(Material.valueOf(material));
+                if ("POTION".equalsIgnoreCase(material)) {
+                    itemStack.editMeta(PotionMeta.class, meta -> meta.setBasePotionData(new PotionData(PotionType.valueOf(item.get("potion-type").getAsString()))));
+                }
+                inventory.addItem(itemStack);
+            } else if ("ItemsAdder".equalsIgnoreCase(from)) {
+                CustomStack instance = CustomStack.getInstance(item.get("namespace").getAsString() + ":" + item.get("id").getAsString());
+                inventory.addItem(instance.getItemStack());
+            } else if ("MMOItems".equalsIgnoreCase(from)) {
+                MMOItem mmoItem = MMOItems.plugin.getMMOItem(MMOItems.plugin.getTypes().get(item.get("type").getAsString()), item.get("id").getAsString(), item.get("scaled").getAsInt(), MMOItems.plugin.getTiers().get(item.get("tier").getAsString()));
+                ItemStack build = mmoItem.newBuilder().build();
+                inventory.addItem(build);
+            }
+        });
     }
 
     @SubCommand("testLocationCast")
