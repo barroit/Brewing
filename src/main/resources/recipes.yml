@@ -1,16 +1,16 @@
 wine:
   substrate: # 底物 哪些水果塞进去 类型 Itemstack
-    - from: Vanilla
+    - provider: Vanilla
       item:
         material: POTION
         potion-type: SPEED
         amount: 1
-    - from: ItemsAdder
+    - provider: ItemsAdder
       item:
         namespace: 'homeward'
         id: 'grape'
         amount: 1
-    - from: MMOItems
+    - provider: MMOItems
       item:
         type: BREWING
         id: PEAR

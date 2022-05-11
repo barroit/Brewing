@@ -4,8 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.beans.SelectActionIndex;
-import homeward.plugin.brewing.utils.CommonUtils;
-import homeward.plugin.brewing.utils.ConfigurationUtils;
+import homeward.plugin.brewing.utils.HomewardUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -101,9 +100,9 @@ public class SimpleTest {
                 .setExpectOutPut(4)
                 .setActualOutPut(3)
                 .setBrewingTime(5);
-        byte[] encodeObject = CommonUtils.encodeBukkitObject(inventoryData);
+        byte[] encodeObject = HomewardUtils.serializeAsBytes(inventoryData);
 
-        BarrelInventoryData o = (BarrelInventoryData) CommonUtils.decodeBukkitObject(encodeObject);
+        BarrelInventoryData o = (BarrelInventoryData) HomewardUtils.deserializeBytes(encodeObject);
         if (o == null) return;
         System.out.println(o.getBrewingType());
     }

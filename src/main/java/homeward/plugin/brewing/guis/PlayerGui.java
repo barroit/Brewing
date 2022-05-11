@@ -12,7 +12,7 @@ import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.enumerates.EnumBase;
 import homeward.plugin.brewing.listeners.BrewingBarrelListener;
-import homeward.plugin.brewing.utils.CommonUtils;
+import homeward.plugin.brewing.utils.HomewardUtils;
 import lombok.SneakyThrows;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -113,7 +113,7 @@ public class PlayerGui {
         }
 
         byte[] bytesData = file.getByteArray(barrelLocation + "");
-        BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(bytesData.length == 0 ? null : bytesData);
+        BarrelInventoryData data = (BarrelInventoryData) HomewardUtils.deserializeBytes(bytesData.length == 0 ? null : bytesData);
         if (data == null) {
             data = new BarrelInventoryData();
         }
@@ -175,7 +175,7 @@ public class PlayerGui {
 
                 data.setBrewingType(k).setOutPutItems(v.get("output").getAsString())
                         .setExpectOutPut(v.get("maxYield").getAsInt())
-                        .setActualOutPut(CommonUtils.getIntervalRandom(v.get("minYield").getAsInt(), v.get("maxYield").getAsInt()))
+                        .setActualOutPut(HomewardUtils.getIntervalRandom(v.get("minYield").getAsInt(), v.get("maxYield").getAsInt()))
                         .setStoredOutPutItems(0).setBrewingTime(v.get("brewingCycle").getAsInt())
                         .setCurrentBrewingTime(0).setBrewing(true).setInitialize(true);
                 hasSet[0] = true;
@@ -232,7 +232,7 @@ public class PlayerGui {
 
     @SneakyThrows
     private void saveData(BarrelInventoryData data) {
-        file.setByteArray(barrelLocation + "", CommonUtils.encodeBukkitObject(data));
+        file.setByteArray(barrelLocation + "", HomewardUtils.serializeAsBytes(data));
         file.save();
     }
 

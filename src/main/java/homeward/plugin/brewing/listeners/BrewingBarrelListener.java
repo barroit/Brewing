@@ -1,15 +1,11 @@
 package homeward.plugin.brewing.listeners;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import de.tr7zw.nbtapi.NBTFile;
-import dev.lone.itemsadder.api.CustomStack;
 import dev.lone.itemsadder.api.Events.CustomBlockInteractEvent;
 import dev.triumphteam.gui.guis.BaseGui;
 import dev.triumphteam.gui.guis.StorageGui;
-import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
-import homeward.plugin.brewing.utils.CommonUtils;
+import homeward.plugin.brewing.utils.HomewardUtils;
 import homeward.plugin.brewing.guis.PlayerGui;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -59,7 +55,7 @@ public class BrewingBarrelListener implements Listener {
     public static void initializeSlot(@NotNull Location location, @NotNull StorageGui gui) {
         NBTFile file = new NBTFile(new File(location.getWorld().getName(), "brew.nbt"));
         byte[] bytesData = file.getByteArray(location + "");
-        BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(bytesData.length == 0 ? null : bytesData);
+        BarrelInventoryData data = (BarrelInventoryData) HomewardUtils.deserializeBytes(bytesData.length == 0 ? null : bytesData);
         if (data == null) return;
 
         if (data.getSubstrateSlot() != null) {

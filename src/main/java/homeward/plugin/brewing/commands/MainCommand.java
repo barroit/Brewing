@@ -1,24 +1,18 @@
 package homeward.plugin.brewing.commands;
 
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
 import de.tr7zw.nbtapi.NBTFile;
 import dev.lone.itemsadder.api.CustomStack;
 import homeward.plugin.brewing.Brewing;
-import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
+import homeward.plugin.brewing.utils.HomewardUtils;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
-import homeward.plugin.brewing.utils.ItemStackUtils;
-import io.lumine.mythic.lib.api.item.NBTItem;
 import lombok.SneakyThrows;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import net.Indyuce.mmoitems.MMOItems;
-import net.Indyuce.mmoitems.api.ItemTier;
 import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
-import net.Indyuce.mmoitems.api.player.PlayerData;
-import net.Indyuce.mmoitems.manager.TierManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,35 +23,84 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MainHand;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+import static homeward.plugin.brewing.utils.HomewardUtils.*;
 
 @Command("homewardbrewing")
 @Alias("hwb")
 public class MainCommand extends CommandBase {
     private final Map<String, JsonElement> configurationMap = new LinkedHashMap<>();
 
-    @Default
-    public void defaultCommand(final CommandSender commandSender) {
-        commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7Homeward brewing (协调酿酒) version &61.0.2"));
-        commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7基于GUI界面的多材料酿酒系统"));
-        commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7输入&6/hwb help &7来获取所有指令帮助"));
+    @SubCommand("testSerialize")
+    public void testSerialize(CommandSender commandSender) {
+        Player player = (Player) commandSender;
+
+        ItemStack vanilla = new ItemStack(Material.TROPICAL_FISH);
+        ItemStack grapeInHand = CustomStack.byItemStack(player.getInventory().getItemInMainHand()).getItemStack();
+        ItemStack grape = CustomStack.getInstance("homeward:grape").getItemStack();
+
+        // ItemStack itemStack = new ItemStack(grape.getType());
+        // itemStack.setItemMeta(grape.getItemMeta());
+        //
+        // HomewardUtils.deserializeBytes(HomewardUtils.serializeAsBytes(itemStack));
+
+        // System.out.println("grapeInHand: \n" + grapeInHand);
+        // System.out.println("grape: \n" + grape);
+
+        // deserializeBytes(serializeAsBytes(vanilla)); // working fine
+        // deserializeBytes(serializeAsBytes(grapeInHand)); // working fine
+        deserializeBytes(serializeAsBytes(grape)); // exception
+
+        // player.getInventory().addItem(itemStack);
+
+        // region
+        // System.out.println(grapeInHand.hashCode()); // -363005669
+        // System.out.println(grape.hashCode()); // -363005669
+        // System.out.println(grape.hashCode() == grapeInHand.hashCode()); // true
+        // System.out.println("equals: " + grapeInHand.equals(grape)); // false
+        // System.out.println("Amount: " + (grapeInHand.getAmount() == grape.getAmount())); // true
+        // System.out.println("isSimilar: " + grapeInHand.isSimilar(grape)); // false
+        // System.out.println("Type: " + (grapeInHand.getType() == grape.getType())); // true
+        // System.out.println("Durability: " + (grapeInHand.getDurability() == grape.getDurability())); // true
+        // System.out.println("hasItemMeta: " + (grapeInHand.hasItemMeta() == grape.hasItemMeta())); // true
+        // System.out.println("ItemMeta: " + Bukkit.getItemFactory().equals(grapeInHand.getItemMeta(), grapeInHand.getItemMeta())); // true
+        // endregion
+
+        // System.out.println(isSimilar(grapeInHand, grape)); // true
     }
+
+    public boolean isSimilar(ItemStack stack1, ItemStack stack2) {
+        if (stack2 == null) {
+            return false;
+        }
+        if (stack2 == stack1) {
+            return true;
+        }
+        Material comparisonType =
+                (stack1.getType().isLegacy()) ? Bukkit.getUnsafe().fromLegacy(stack1.getData(), true) : stack1.getType();
+
+        return comparisonType == stack2.getType() &&
+                stack1.getDurability() == stack2.getDurability() &&
+                stack1.hasItemMeta() == stack2.hasItemMeta() &&
+                (stack1.hasItemMeta() ? Bukkit.getItemFactory().equals(stack1.getItemMeta(), stack2.getItemMeta()) : true);
+    }
+    
 
     @SubCommand("testMMOItems")
     public void testMMOItems(CommandSender commandSender) {
         Player player = (Player) commandSender;
 
         FileConfiguration recipes = ConfigurationUtils.get("recipes");
-        // [{from=Vanilla, item={material=POTION, potion-type=SPEED, amount=1}},
+        // [{from=grapeInHand, item={material=POTION, potion-type=SPEED, amount=1}},
         // {from=ItemsAdder, item={namespacedId=homeward:grape, amount=1}},
         // {from=MMOItems, item={type=BREWING, id=PEAR, scaled=1, tier=UNCOMMON, amount=1}}]
 
@@ -68,7 +111,7 @@ public class MainCommand extends CommandBase {
             JsonObject item = jsonObject.get("item").getAsJsonObject();
             PlayerInventory inventory = player.getInventory();
 
-            if ("Vanilla".equalsIgnoreCase(from)) {
+            if ("grapeInHand".equalsIgnoreCase(from)) {
                 String material = item.get("material").getAsString();
                 ItemStack itemStack = new ItemStack(Material.valueOf(material));
                 if ("POTION".equalsIgnoreCase(material)) {

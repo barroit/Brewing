@@ -7,25 +7,17 @@ import dev.triumphteam.gui.guis.BaseGui;
 import dev.triumphteam.gui.guis.StorageGui;
 import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
-import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
-import homeward.plugin.brewing.utils.CommonUtils;
-import homeward.plugin.brewing.utils.ItemStackUtils;
+import homeward.plugin.brewing.utils.HomewardUtils;
 import lombok.SneakyThrows;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -93,7 +85,7 @@ public class BrewDataProcessListener implements Listener {
 
         byte[] bytesData = file.getByteArray(stringLocation);
 
-        BarrelInventoryData data = (BarrelInventoryData) CommonUtils.decodeBukkitObject(bytesData.length == 0 ? null : bytesData);
+        BarrelInventoryData data = (BarrelInventoryData) HomewardUtils.deserializeBytes(bytesData.length == 0 ? null : bytesData);
         if (data == null) return;
 
         if (data.getCurrentBrewingTime() >= data.getBrewingTime()) return;

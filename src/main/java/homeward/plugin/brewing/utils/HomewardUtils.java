@@ -8,12 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.util.Base64;
 
-public class CommonUtils {
+public class HomewardUtils {
     public static int getIntervalRandom(int min, int max) {
         return min + (int) (Math.random() * (max - min + 1));
     }
 
-    public static byte[] encodeBukkitObject(@NotNull Object object) {
+    public static byte[] serializeAsBytes(@NotNull Object object) {
         byte[] encodeObject = null;
 
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -26,11 +26,9 @@ public class CommonUtils {
 
             byte[] serialized = byteStream.toByteArray();
             encodeObject = Base64.getEncoder().encode(serialized);
-            // do not close stream here ×
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            // close stream here √
             if (bukkitStream != null) {
                 try {
                     bukkitStream.close();
@@ -48,10 +46,7 @@ public class CommonUtils {
         return encodeObject;
     }
 
-    /**
-     * 编译OBJ反序列化
-     */
-    public static @Nullable Object decodeBukkitObject(byte[] bytes) {
+    public static @Nullable Object deserializeBytes(byte[] bytes) {
         if (bytes == null) return null;
         Object decodedObject = null;
 

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import homeward.plugin.brewing.commands.MainCommand;
+import homeward.plugin.brewing.commands.MockFileConfigurationTest;
 import homeward.plugin.brewing.constants.BaseInfo;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
@@ -13,7 +14,6 @@ import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -26,7 +26,6 @@ import java.util.logging.Level;
 
 public final class Brewing extends JavaPlugin {
     private static Brewing plugin;
-    private final CommandSender commandSender;
     private final String packageName;
     @Getter private final static Map<String, World> worldMap = new LinkedHashMap<>();
     @Getter private static final Map<String, JsonObject> configurationMap = new LinkedHashMap<>();
@@ -47,6 +46,7 @@ public final class Brewing extends JavaPlugin {
         CommandManager commandManager = new CommandManager(this);
         // register command here
         commandManager.register(new MainCommand());
+        commandManager.register(new MockFileConfigurationTest());
 
         registerListeners();
 
@@ -60,7 +60,6 @@ public final class Brewing extends JavaPlugin {
     public Brewing() {
         this.checkDepend();
         plugin = this;
-        this.commandSender = super.getServer().getConsoleSender();
         this.packageName = getClass().getPackageName();
         this.initializeConfiguration();
     }
@@ -73,7 +72,7 @@ public final class Brewing extends JavaPlugin {
     private void onEnableMessage() {
         // change on loaded message here
         String message = String.format("&7[&a+&7] 「%s」loaded, version: &6%s", BaseInfo.PLUGIN_NAME, BaseInfo.PLUGIN_VERSION);
-        commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        getSLF4JLogger().info(ChatColor.translateAlternateColorCodes('&', message));
     }
 
     private void checkDepend() {
