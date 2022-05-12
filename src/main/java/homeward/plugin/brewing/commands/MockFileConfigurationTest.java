@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import homeward.plugin.brewing.Brewing;
+import homeward.plugin.brewing.beans.RecipesItem;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import lombok.Getter;
 import me.mattstudios.mf.annotations.Alias;
@@ -27,10 +28,12 @@ import java.util.Set;
 @Alias("m")
 public class MockFileConfigurationTest extends CommandBase {
     private final FileConfiguration recipesFileConfiguration;
+    private static final Set<RecipesItem> recipesItemSet = new LinkedHashSet<>();
     @Getter private final Set<Object> substrateSets = new LinkedHashSet<>();
 
     public MockFileConfigurationTest() {
         recipesFileConfiguration = ConfigurationUtils.get("recipes");
+
     }
 
     @SubCommand("substrate")
@@ -45,9 +48,14 @@ public class MockFileConfigurationTest extends CommandBase {
         ConfigurationSection objectSection = recipesFileConfiguration.getConfigurationSection(key);
         if (objectSection == null) return;
 
+        RecipesItem recipesItem = new RecipesItem();
+
+        // recipesItem.setSubstrate();
+        recipesItemSet.add(recipesItem);
+
+        // 为substrate赋值
         String substrateStringSection = objectSection.getString("substrate");
         if (substrateStringSection == null) return;
-
         JsonArray substratesArray = new Gson().fromJson(substrateStringSection.replaceAll("=", ":"), JsonArray.class);
         substratesArray.forEach(this::initSubstrateSection);
     }

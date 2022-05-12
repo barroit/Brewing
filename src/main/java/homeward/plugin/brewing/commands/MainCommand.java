@@ -4,9 +4,9 @@ import com.google.gson.*;
 import de.tr7zw.nbtapi.NBTFile;
 import dev.lone.itemsadder.api.CustomStack;
 import homeward.plugin.brewing.Brewing;
+import homeward.plugin.brewing.beans.RecipesItem;
 import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
-import homeward.plugin.brewing.utils.HomewardUtils;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import lombok.SneakyThrows;
 import me.mattstudios.mf.annotations.*;
@@ -27,7 +27,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,40 +41,17 @@ public class MainCommand extends CommandBase {
 
     @SubCommand("testSerialize")
     public void testSerialize(CommandSender commandSender) {
-        Player player = (Player) commandSender;
-
-        ItemStack vanilla = new ItemStack(Material.TROPICAL_FISH);
-        ItemStack grapeInHand = CustomStack.byItemStack(player.getInventory().getItemInMainHand()).getItemStack();
         ItemStack grape = CustomStack.getInstance("homeward:grape").getItemStack();
+        
+        // Serialize and deserialize using ItemStack static method before serialize and deserialize the bean class
+        ItemStack itemStack = ItemStack.deserializeBytes(grape.serializeAsBytes());
 
-        // ItemStack itemStack = new ItemStack(grape.getType());
-        // itemStack.setItemMeta(grape.getItemMeta());
-        //
-        // HomewardUtils.deserializeBytes(HomewardUtils.serializeAsBytes(itemStack));
+        RecipesItem recipesItem = new RecipesItem();
 
-        // System.out.println("grapeInHand: \n" + grapeInHand);
-        // System.out.println("grape: \n" + grape);
+        byte[] recipesItemByteArray = serializeAsBytes(recipesItem);
+        RecipesItem recipes = (RecipesItem) deserializeBytes(recipesItemByteArray); // now working fine
 
-        // deserializeBytes(serializeAsBytes(vanilla)); // working fine
-        // deserializeBytes(serializeAsBytes(grapeInHand)); // working fine
-        deserializeBytes(serializeAsBytes(grape)); // exception
-
-        // player.getInventory().addItem(itemStack);
-
-        // region
-        // System.out.println(grapeInHand.hashCode()); // -363005669
-        // System.out.println(grape.hashCode()); // -363005669
-        // System.out.println(grape.hashCode() == grapeInHand.hashCode()); // true
-        // System.out.println("equals: " + grapeInHand.equals(grape)); // false
-        // System.out.println("Amount: " + (grapeInHand.getAmount() == grape.getAmount())); // true
-        // System.out.println("isSimilar: " + grapeInHand.isSimilar(grape)); // false
-        // System.out.println("Type: " + (grapeInHand.getType() == grape.getType())); // true
-        // System.out.println("Durability: " + (grapeInHand.getDurability() == grape.getDurability())); // true
-        // System.out.println("hasItemMeta: " + (grapeInHand.hasItemMeta() == grape.hasItemMeta())); // true
-        // System.out.println("ItemMeta: " + Bukkit.getItemFactory().equals(grapeInHand.getItemMeta(), grapeInHand.getItemMeta())); // true
-        // endregion
-
-        // System.out.println(isSimilar(grapeInHand, grape)); // true
+        System.out.println(recipes.substrate());
     }
 
     public boolean isSimilar(ItemStack stack1, ItemStack stack2) {

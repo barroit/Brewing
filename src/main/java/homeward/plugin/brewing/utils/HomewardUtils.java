@@ -58,8 +58,6 @@ public class HomewardUtils {
         try {
             bukkitStream = new BukkitObjectInputStream(byteStream);
             decodedObject = bukkitStream.readObject();
-            byteStream.close();
-            bukkitStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
