@@ -6,8 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.commands.MockFileConfigurationTest;
-import homeward.plugin.brewing.commands.Temporary;
-import homeward.plugin.brewing.constants.BaseInfo;
+import homeward.plugin.brewing.constants.PluginInformation;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import lombok.Getter;
@@ -48,7 +47,6 @@ public final class Brewing extends JavaPlugin {
         // register command here
         commandManager.register(new MainCommand());
         commandManager.register(new MockFileConfigurationTest());
-        commandManager.register(new Temporary());
 
         registerListeners();
 
@@ -73,7 +71,7 @@ public final class Brewing extends JavaPlugin {
 
     private void onEnableMessage() {
         // change on loaded message here
-        String message = String.format("&7[&a+&7] 「%s」loaded, version: &6%s", BaseInfo.PLUGIN_NAME, BaseInfo.PLUGIN_VERSION);
+        String message = String.format("&7[&a+&7] 「%s」loaded, version: &6%s", PluginInformation.PLUGIN_NAME, PluginInformation.PLUGIN_VERSION);
         getSLF4JLogger().info(ChatColor.translateAlternateColorCodes('&', message));
     }
 

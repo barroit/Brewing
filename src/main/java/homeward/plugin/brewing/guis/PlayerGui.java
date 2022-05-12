@@ -8,7 +8,7 @@ import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.StorageGui;
 import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
-import homeward.plugin.brewing.constants.BaseInfo;
+import homeward.plugin.brewing.constants.PluginInformation;
 import homeward.plugin.brewing.enumerates.ComponentEnum;
 import homeward.plugin.brewing.enumerates.EnumBase;
 import homeward.plugin.brewing.listeners.BrewingBarrelListener;
@@ -72,7 +72,7 @@ public class PlayerGui {
         HumanEntity player = event.getWhoClicked();
 
         if (getItemInSlot(gui, eventSlot) == null) return;
-        boolean slotNotDefined = BaseInfo.BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST.contains(new NBTItem(getItemInSlot(gui, eventSlot)).getInteger("CustomModelData"));
+        boolean slotNotDefined = PluginInformation.BARREL_DESCRIPTION_CUSTOM_MODEL_DATA_LIST.contains(new NBTItem(getItemInSlot(gui, eventSlot)).getInteger("CustomModelData"));
 
         if (slotNotDefined && !cursorItemIsAir) {
             setInventoryCursorItem(gui, eventSlot, cursorItem, player);

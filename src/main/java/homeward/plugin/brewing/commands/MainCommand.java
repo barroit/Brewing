@@ -53,22 +53,6 @@ public class MainCommand extends CommandBase {
 
         System.out.println(recipes.substrate());
     }
-
-    public boolean isSimilar(ItemStack stack1, ItemStack stack2) {
-        if (stack2 == null) {
-            return false;
-        }
-        if (stack2 == stack1) {
-            return true;
-        }
-        Material comparisonType =
-                (stack1.getType().isLegacy()) ? Bukkit.getUnsafe().fromLegacy(stack1.getData(), true) : stack1.getType();
-
-        return comparisonType == stack2.getType() &&
-                stack1.getDurability() == stack2.getDurability() &&
-                stack1.hasItemMeta() == stack2.hasItemMeta() &&
-                (stack1.hasItemMeta() ? Bukkit.getItemFactory().equals(stack1.getItemMeta(), stack2.getItemMeta()) : true);
-    }
     
 
     @SubCommand("testMMOItems")

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BaseInfo {
+public class PluginInformation {
     public final static String PLUGIN_NAME = "Homeward Brewing";
     public final static String PLUGIN_VERSION = "1.1.0";
     public final static String PLUGIN_PATH = Brewing.getInstance().getDataFolder().toString().replaceAll("\\\\", "/") + "/";

@@ -4,7 +4,10 @@ public enum StringEnum implements EnumBase{
     GUI_GUI("gui"),
     GUI_STORAGE("storage"),
     GUI_SCROLLING("scrolling"),
-    GUI_PAGINATED("paginated");
+    GUI_PAGINATED("paginated"),
+    ITEMSADDER("ItemsAdder"),
+    VANILLA("Vanilla"),
+    MMOITEMS("MMOItems");
 
     private final String value;
     StringEnum(String value) {
