@@ -9,10 +9,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.Test;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -160,5 +161,22 @@ public class SimpleTest {
             System.out.println(i2 + "; " + i1);
             System.out.println(currentPath);
         }
+    }
+
+    @Test
+    void testDouble() {
+        String test2 = "0.5";
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+        String format = decimalFormat.format(Double.valueOf(test2));
+        System.out.println(format);
+    }
+
+    @Test
+    void testMatches() {
+        String test = "123ww";
+        System.out.println(test.matches("[^0-9]"));
+        // NumberUtils.is
+
     }
 }

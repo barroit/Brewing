@@ -47,12 +47,11 @@ public class MainCommand extends CommandBase {
         // Serialize and deserialize using ItemStack static method before serialize and deserialize the bean class
         ItemStack itemStack = ItemStack.deserializeBytes(grape.serializeAsBytes());
 
-        RecipesItem recipesItem = new RecipesItem();
+        // RecipesItem recipesItem = new RecipesItem();
+        RecipesItem recipesItem = null;
 
         byte[] recipesItemByteArray = serializeAsBytes(recipesItem);
         RecipesItem recipes = (RecipesItem) deserializeBytes(recipesItemByteArray); // now working fine
-
-        System.out.println(recipes.substrate());
     }
 
     @SubCommand("testGetForClass")

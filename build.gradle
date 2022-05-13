@@ -34,6 +34,9 @@ repositories {
 }
 
 dependencies {
+    // Common Lang
+    compileOnly 'org.apache.commons:commons-lang3:3.12.0'
+
     // NBT API
     implementation 'de.tr7zw:item-nbt-api-plugin:2.9.2'
 
@@ -53,7 +56,9 @@ dependencies {
     implementation "dev.triumphteam:triumph-gui:3.1.2"
 
     // Paper Minecraft
-    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+    compileOnly ('io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT') {
+        exclude group:"commons-lang", module:"commons-lang"
+    }
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.24'

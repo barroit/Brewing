@@ -1,9 +1,6 @@
 package homeward.plugin.brewing.beans;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.inventory.ItemStack;
@@ -15,8 +12,9 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Accessors(fluent = true)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@ToString
 public class CustomItemStack implements Serializable {
     ItemStack itemStack;
     @Builder.Default Integer quantity = 1;
-    @Builder.Default Integer index = 100;
+    @Builder.Default double index = 1.0D;
 }

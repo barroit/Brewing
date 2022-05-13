@@ -12,7 +12,10 @@ public enum StringEnum implements EnumBase{
     SUBSTRATE("substrate"),
     RESTRICTION("restriction"),
     YEAST("yeast"),
-    OUTPUT("output");
+    OUTPUT("output"),
+    YIELD("yield"),
+    INDEX("index"),
+    CYCLE("cycle");
 
     private final String value;
     StringEnum(String value) {

@@ -1,4 +1,5 @@
 wine:
+  display-name: "&awine" # 配方名称
   substrate: # 底物 哪些水果塞进去 类型 ItemStack
     - provider: "Vanilla"
       item:
@@ -58,8 +59,8 @@ wine:
       potion-type: "SPEED"
       quantity: 4
   yield: # 产量
-    max-yield: 10 # 最大产量
-    minimal-yield: 3 # 最小产量
+    max: 10 # 最大产量
+    min: 3 # 最小产量
   index:
     restriction-index: 0.5 # 抑制剂对产量影响的系数 全局
     yeast-index: 0.5 # 酵母对产量影响的系数
