@@ -1,13 +1,13 @@
 package homeward.plugin.brewing.enumerates;
 
 public enum ErrorEnum implements EnumBase{
-    VALUE_INCORRECT("VALUE INCORRECT"),
-    NAMESPACE_ID_INCORRECT("NAMESPACE ID INCORRECT, The path is virtual, Check The NAMESPACE and ID is correct"),
-    NOT_ACTUALLY_NUMERIC("VALUE IS NOT NUMERIC"),
-    STRING_IS_BLANK("STRING IS BLANK"),
-    NUMBER_TOO_LARGE("NUMBER IS TOO BIG"),
-    NUMBER_TOO_SMALL("NUMBER IS TOO SMALL"),
-    NUMBER_NOT_INTEGER("NUMBER IS NOT IN INTEGER RANGE");
+    VALUE_INCORRECT("Value Incorrect"),
+    NAMESPACE_ID_INCORRECT("NamespacedId Incorrect, The path is virtual, Check The Namespace and Id is correct"),
+    NOT_ACTUALLY_NUMERIC("Value Is Not Numeric"),
+    STRING_IS_BLANK("String Is Blank"),
+    NUMBER_TOO_LARGE("Number Is Too Big"),
+    NUMBER_TOO_SMALL("Number Is Too Small"),
+    NUMBER_NOT_INTEGER("Number Is Not In Integer Range");
 
     private final String value;
     ErrorEnum(String value) {

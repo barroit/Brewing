@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import homeward.plugin.brewing.commands.ConfigurationCommand;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.commands.MockFileConfigurationTest;
 import homeward.plugin.brewing.constants.PluginInformation;
@@ -47,6 +48,7 @@ public final class Brewing extends JavaPlugin {
         // register command here
         commandManager.register(new MainCommand());
         commandManager.register(new MockFileConfigurationTest());
+        commandManager.register(new ConfigurationCommand());
 
         registerListeners();
 

@@ -154,19 +154,13 @@ public class SimpleTest {
 
     @Test
     void testInt() {
-        String path = "wine.output";
-        String separator = ".";
-        int i1 = -1, i2;
-        while ((i1 = path.indexOf(separator, i2 = i1 + 1)) != -1) {
-            final String currentPath = path.substring(i2, i1);
-            System.out.println(i2 + "; " + i1);
-            System.out.println(currentPath);
-        }
+        String t = "-1";
+        System.out.println(Integer.parseInt(t));
     }
 
     @Test
     void testDouble() {
-        String test2 = "0.5";
+        String test2 = "-1.";
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
         String format = decimalFormat.format(Double.valueOf(test2));
@@ -175,8 +169,7 @@ public class SimpleTest {
 
     @Test
     void testMatches() {
-        System.out.println(notNumeric("1-"));
-
+        System.out.println("is number: " + !notNumeric("-1w."));
     }
 
     private boolean notNumeric(final CharSequence cs) {
@@ -184,9 +177,20 @@ public class SimpleTest {
             return true;
         }
         final int sz = cs.length();
+        boolean hasPeriod = false;
+        boolean hasDash = false;
         for (int i = 0; i < sz; i++) {
-            if (!Character.isDigit(cs.charAt(i)) && cs.charAt(i) != '.') {
-                return i != 0 || cs.charAt(i) != '-';
+            char c = cs.charAt(i);
+            if (!Character.isDigit(cs.charAt(i))) {
+                if (!hasPeriod && c == '.') {
+                    hasPeriod = true;
+                    continue;
+                } else if (!hasDash && c == '-') {
+                    hasDash = true;
+                    continue;
+                }
+
+                return true;
             }
         }
         return false;

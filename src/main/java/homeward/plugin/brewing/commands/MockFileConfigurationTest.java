@@ -43,7 +43,7 @@ public class MockFileConfigurationTest extends CommandBase {
     private final DecimalFormat decimalFormat = new DecimalFormat(roundingPattern);
 
     private final MMOItems mmoItemsPlugin = MMOItems.plugin;
-    private final FileConfiguration recipesFileConfiguration;
+    private FileConfiguration recipesFileConfiguration;
     private final Set<EnumBase> materialTypeSet;
 
     private RecipesItemBuilder recipesBuilder;
@@ -54,13 +54,13 @@ public class MockFileConfigurationTest extends CommandBase {
     private static final Map<String, RecipesItem> recipesItemSet = new LinkedHashMap<>();
 
     public MockFileConfigurationTest() {
-        this.recipesFileConfiguration = ConfigurationUtils.get("recipes");
         this.materialTypeSet = new LinkedHashSet<>(Arrays.asList(StringEnum.SUBSTRATE, StringEnum.RESTRICTION, StringEnum.YEAST));
         decimalFormat.setRoundingMode(roundingMode);
     }
 
     @Default
     public void defaultCommand(CommandSender commandSender) {
+        recipesFileConfiguration = ConfigurationUtils.get("recipes");
         Set<String> recipeKeys = recipesFileConfiguration.getKeys(false);
         recipeKeys.forEach(this::keysAction);
     }
@@ -103,8 +103,7 @@ public class MockFileConfigurationTest extends CommandBase {
         if (brewingCycle == null) {
             noKeyFoundWarning(path);
             return;
-        }
-        if (notNumeric(brewingCycle)) {
+        } else if (notNumeric(brewingCycle)) {
             valueIncorrectWarning(path, brewingCycle, ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return;
         }
@@ -135,9 +134,13 @@ public class MockFileConfigurationTest extends CommandBase {
         if (restrictionIndexString == null) {
             noKeyFoundWarning(restrictionIndexPath);
             return;
-        }
-        if (notNumeric(restrictionIndexString)) {
+        } else if (notNumeric(restrictionIndexString)) {
             valueIncorrectWarning(restrictionIndexPath, restrictionIndexString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
+            return;
+        }
+        double restrictionIndex = Double.parseDouble(decimalFormat.format(Double.valueOf(restrictionIndexString)));
+        if (restrictionIndex < 0) {
+            valueIncorrectWarning(restrictionIndexPath, restrictionIndex, ErrorEnum.NUMBER_TOO_SMALL);
             return;
         }
 
@@ -146,9 +149,13 @@ public class MockFileConfigurationTest extends CommandBase {
         if (yeastIndexString == null) {
             noKeyFoundWarning(yeastIndexPath);
             return;
-        }
-        if (notNumeric(yeastIndexString)) {
+        } else if (notNumeric(yeastIndexString)) {
             valueIncorrectWarning(yeastIndexPath, yeastIndexString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
+            return;
+        }
+        double yeastIndex = Double.parseDouble(decimalFormat.format(Double.valueOf(yeastIndexString)));
+        if (yeastIndex < 0) {
+            valueIncorrectWarning(yeastIndexPath, yeastIndex, ErrorEnum.NUMBER_TOO_SMALL);
             return;
         }
 
@@ -157,15 +164,15 @@ public class MockFileConfigurationTest extends CommandBase {
         if (yieldIndexString == null) {
             noKeyFoundWarning(yieldIndexPath);
             return;
-        }
-        if (notNumeric(yieldIndexString)) {
+        } else if (notNumeric(yieldIndexString)) {
             valueIncorrectWarning(yieldIndexPath, yieldIndexString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return;
         }
-
-        double restrictionIndex = Double.parseDouble(decimalFormat.format(Double.valueOf(restrictionIndexString)));
-        double yeastIndex = Double.parseDouble(decimalFormat.format(Double.valueOf(yeastIndexString)));
         double yieldIndex = Double.parseDouble(decimalFormat.format(Double.valueOf(yieldIndexString)));
+        if (yieldIndex < 0) {
+            valueIncorrectWarning(yieldIndexPath, yieldIndex, ErrorEnum.NUMBER_TOO_SMALL);
+            return;
+        }
 
         recipesBuilder.globalRestrictionsIndex(restrictionIndex).globalYeastsIndex(yeastIndex).globalYieldIndex(yieldIndex);
         index$set = true;
@@ -187,16 +194,13 @@ public class MockFileConfigurationTest extends CommandBase {
         if (maxString == null) {
             noKeyFoundWarning(maxPath);
             return;
-        }
-        if (notNumeric(maxString)) {
+        } else if (notNumeric(maxString)) {
             valueIncorrectWarning(maxPath, maxString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return;
-        }
-        if (notInteger(maxString)) {
+        } else if (maxString.contains(".") || notInteger(maxString)) {
             valueIncorrectWarning(maxPath, maxString, ErrorEnum.NUMBER_NOT_INTEGER);
             return;
-        }
-        if (Integer.parseInt(maxString) < 1) {
+        } else if (Integer.parseInt(maxString) < 1) {
             valueIncorrectWarning(maxPath, maxString, ErrorEnum.NUMBER_TOO_SMALL);
             return;
         }
@@ -205,19 +209,16 @@ public class MockFileConfigurationTest extends CommandBase {
         String minString = yieldSection.getString(MIN);
         String minPath = getPath(sectionPath, MIN);
         if (minString != null) {
-            if (notNumeric(maxString)) {
+            if (notNumeric(minString)) {
                 valueIncorrectWarning(minPath, minString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
                 return;
-            }
-            if (notInteger(minString)) {
+            } else if (minString.contains(".") || notInteger(minString)) {
                 valueIncorrectWarning(minPath, minString, ErrorEnum.NUMBER_NOT_INTEGER);
                 return;
-            }
-            if (Integer.parseInt(minString) < 1) {
+            } else if (Integer.parseInt(minString) < 1) {
                 valueIncorrectWarning(minPath, minString, ErrorEnum.NUMBER_TOO_SMALL);
                 return;
-            }
-            if (Integer.parseInt(minString) > max) {
+            } else if (Integer.parseInt(minString) > max) {
                 valueIncorrectWarning(minPath, minString, ErrorEnum.NUMBER_TOO_LARGE);
                 return;
             }
@@ -238,8 +239,7 @@ public class MockFileConfigurationTest extends CommandBase {
         if (displayName == null) {
             noKeyFoundWarning(sectionPath);
             return;
-        }
-        if (displayName.isBlank()) {
+        } else if (displayName.isBlank()) {
             valueIncorrectWarning(sectionPath, displayName, ErrorEnum.STRING_IS_BLANK);
             return;
         }
@@ -276,7 +276,7 @@ public class MockFileConfigurationTest extends CommandBase {
         JsonObject item = new JsonObject();
         item.addProperty(QUANTITY, itemSection.getString(QUANTITY));
 
-        CustomItemStack itemStack = null;
+        CustomItemStack itemStack;
         currentPath = itemPath;
         if (RecipesConfiguration.VANILLA.equalsIgnoreCase(provider)) {
             item.addProperty(MATERIAL, itemSection.getString(MATERIAL));
@@ -293,6 +293,9 @@ public class MockFileConfigurationTest extends CommandBase {
             item.addProperty(SCALED, itemSection.getString(SCALED));
             item.addProperty(TIER, itemSection.getString(TIER));
             itemStack = createMMOItemItemStack(item);
+        } else {
+            valueIncorrectWarning(providerPath, provider, ErrorEnum.VALUE_INCORRECT);
+            return;
         }
 
         if (itemStack == null) return;
@@ -332,7 +335,7 @@ public class MockFileConfigurationTest extends CommandBase {
             }
             JsonObject item = itemElement.getAsJsonObject();
 
-            CustomItemStack itemStack = null;
+            CustomItemStack itemStack;
             currentPath = itemPath;
             if (RecipesConfiguration.VANILLA.equalsIgnoreCase(provider)) {
                 itemStack = createVanillaItemStack(item);
@@ -340,6 +343,9 @@ public class MockFileConfigurationTest extends CommandBase {
                 itemStack = createItemsAdderItemStack(item);
             } else if (RecipesConfiguration.MMOITEMS.equalsIgnoreCase(provider)) {
                 itemStack = createMMOItemItemStack(item);
+            } else {
+                valueIncorrectWarning(providerPath, provider, ErrorEnum.VALUE_INCORRECT);
+                return;
             }
 
             if (itemStack == null) return;
@@ -614,9 +620,21 @@ public class MockFileConfigurationTest extends CommandBase {
             return true;
         }
         final int sz = cs.length();
+        boolean hasPeriod = false;
         for (int i = 0; i < sz; i++) {
-            if (!Character.isDigit(cs.charAt(i)) && cs.charAt(i) != '.') {
-                return i != 0 || cs.charAt(i) != '-';
+            char c = cs.charAt(i);
+            if (!Character.isDigit(cs.charAt(i))) {
+                if (!hasPeriod && c == '.') {
+                    hasPeriod = true;
+                    continue;
+                } else if (i == 0) {
+                    if (c == '-') {
+                        continue;
+                    } else if (c == '+') {
+                        continue;
+                    }
+                }
+                return true;
             }
         }
         return false;
