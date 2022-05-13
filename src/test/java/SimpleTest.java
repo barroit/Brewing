@@ -8,6 +8,7 @@ import homeward.plugin.brewing.utils.HomewardUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.Test;
@@ -174,9 +175,20 @@ public class SimpleTest {
 
     @Test
     void testMatches() {
-        String test = "123ww";
-        System.out.println(test.matches("[^0-9]"));
-        // NumberUtils.is
+        System.out.println(notNumeric("1-"));
 
+    }
+
+    private boolean notNumeric(final CharSequence cs) {
+        if (StringUtils.isEmpty(cs)) {
+            return true;
+        }
+        final int sz = cs.length();
+        for (int i = 0; i < sz; i++) {
+            if (!Character.isDigit(cs.charAt(i)) && cs.charAt(i) != '.') {
+                return i != 0 || cs.charAt(i) != '-';
+            }
+        }
+        return false;
     }
 }

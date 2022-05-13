@@ -8,6 +8,7 @@ import homeward.plugin.brewing.beans.RecipesItem;
 import homeward.plugin.brewing.beans.RecipesItem.RecipesItemBuilder;
 import homeward.plugin.brewing.constants.RecipesConfiguration;
 import homeward.plugin.brewing.enumerates.EnumBase;
+import homeward.plugin.brewing.enumerates.ErrorEnum;
 import homeward.plugin.brewing.enumerates.StringEnum;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.annotations.Alias;
@@ -46,7 +47,7 @@ public class MockFileConfigurationTest extends CommandBase {
     private final Set<EnumBase> materialTypeSet;
 
     private RecipesItemBuilder recipesBuilder;
-    private String sectionName, keyName;
+    private String sectionName, keyName, currentPath;
     private ConfigurationSection configurationSection;
     private boolean display$set, material$set, output$set, yield$set, index$set, cycle$set = false;
 
@@ -68,7 +69,7 @@ public class MockFileConfigurationTest extends CommandBase {
         display$set = material$set = output$set = yield$set = index$set = cycle$set = false;
         configurationSection = recipesFileConfiguration.getConfigurationSection(key);
         if (configurationSection == null) {
-            warning(sectionName, key);
+            noKeyFoundWarning(sectionName);
             return;
         }
         recipesBuilder = RecipesItem.builder();
@@ -97,16 +98,24 @@ public class MockFileConfigurationTest extends CommandBase {
     // region Set "cycle" into bean object
     private void setBrewingCycle() {
         keyName = BREWING_CYCLE;
-        String cycle = configurationSection.getString(BREWING_CYCLE);
-        if (cycle == null) {
-            warning(sectionName, BREWING_CYCLE);
+        String brewingCycle = configurationSection.getString(BREWING_CYCLE);
+        String path = getPath(configurationSection, BREWING_CYCLE);
+        if (brewingCycle == null) {
+            noKeyFoundWarning(path);
             return;
         }
-        if (!isNumeric(cycle)) {
-            warning(StringEnum.CYCLE, BREWING_CYCLE, cycle);
+        if (notNumeric(brewingCycle)) {
+            valueIncorrectWarning(path, brewingCycle, ErrorEnum.NOT_ACTUALLY_NUMERIC);
+            return;
         }
 
-        recipesBuilder.brewingCycle(Integer.parseInt(cycle));
+        int cycle = Integer.parseInt(brewingCycle);
+        if (cycle < 0) {
+            valueIncorrectWarning(path, brewingCycle, ErrorEnum.NUMBER_TOO_SMALL);
+            return;
+        }
+
+        recipesBuilder.brewingCycle(cycle);
         cycle$set = true;
     }
     // endregion
@@ -115,42 +124,45 @@ public class MockFileConfigurationTest extends CommandBase {
     private void setBrewingIndex() {
         keyName = INDEX;
         ConfigurationSection indexSection = configurationSection.getConfigurationSection(INDEX);
+        String sectionPath = getPath(configurationSection, INDEX);
         if (indexSection == null) {
-            warning(sectionName, INDEX);
+            noKeyFoundWarning(sectionPath);
             return;
         }
 
         String restrictionIndexString = indexSection.getString(RESTRICTION_INDEX);
+        String restrictionIndexPath = getPath(sectionPath, RESTRICTION_INDEX);
         if (restrictionIndexString == null) {
-            warning(INDEX, RESTRICTION_INDEX);
+            noKeyFoundWarning(restrictionIndexPath);
             return;
         }
-        if (!isNumeric(restrictionIndexString)) {
-            warning(StringEnum.RESTRICTION, RESTRICTION_INDEX, restrictionIndexString);
+        if (notNumeric(restrictionIndexString)) {
+            valueIncorrectWarning(restrictionIndexPath, restrictionIndexString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return;
         }
 
         String yeastIndexString = indexSection.getString(YEAST_INDEX);
+        String yeastIndexPath = getPath(sectionPath, YEAST_INDEX);
         if (yeastIndexString == null) {
-            warning(INDEX, YEAST_INDEX);
+            noKeyFoundWarning(yeastIndexPath);
             return;
         }
-        if (!isNumeric(yeastIndexString)) {
-            warning(StringEnum.INDEX, YEAST_INDEX, yeastIndexString);
+        if (notNumeric(yeastIndexString)) {
+            valueIncorrectWarning(yeastIndexPath, yeastIndexString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return;
         }
 
         String yieldIndexString = indexSection.getString(YIELD_INDEX);
+        String yieldIndexPath = getPath(sectionPath, YIELD_INDEX);
         if (yieldIndexString == null) {
-            warning(INDEX, YIELD_INDEX);
+            noKeyFoundWarning(yieldIndexPath);
             return;
         }
-        if (!isNumeric(yieldIndexString)) {
-            warning(StringEnum.YIELD, YIELD_INDEX, yieldIndexString);
+        if (notNumeric(yieldIndexString)) {
+            valueIncorrectWarning(yieldIndexPath, yieldIndexString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return;
         }
 
-        System.out.println(restrictionIndexString);
         double restrictionIndex = Double.parseDouble(decimalFormat.format(Double.valueOf(restrictionIndexString)));
         double yeastIndex = Double.parseDouble(decimalFormat.format(Double.valueOf(yeastIndexString)));
         double yieldIndex = Double.parseDouble(decimalFormat.format(Double.valueOf(yieldIndexString)));
@@ -164,26 +176,51 @@ public class MockFileConfigurationTest extends CommandBase {
     private void setBrewingYield() {
         keyName = YIELD;
         ConfigurationSection yieldSection = configurationSection.getConfigurationSection(YIELD);
+        String sectionPath = getPath(configurationSection, YIELD);
         if (yieldSection == null) {
-            warning(sectionName, YIELD);
+            noKeyFoundWarning(sectionPath);
             return;
         }
 
         String maxString = yieldSection.getString(MAX);
+        String maxPath = getPath(sectionPath, MAX);
         if (maxString == null) {
-            warning(YIELD, MAX);
+            noKeyFoundWarning(maxPath);
             return;
         }
-        if (!isNumeric(maxString) || notInteger(maxString) || Integer.parseInt(maxString) < 1) {
-            warning(StringEnum.YIELD, MAX, maxString);
+        if (notNumeric(maxString)) {
+            valueIncorrectWarning(maxPath, maxString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
+            return;
+        }
+        if (notInteger(maxString)) {
+            valueIncorrectWarning(maxPath, maxString, ErrorEnum.NUMBER_NOT_INTEGER);
+            return;
+        }
+        if (Integer.parseInt(maxString) < 1) {
+            valueIncorrectWarning(maxPath, maxString, ErrorEnum.NUMBER_TOO_SMALL);
             return;
         }
         int max = Integer.parseInt(maxString);
 
-        String minString = yieldSection.getString("min");
-        if (minString != null && (!isNumeric(maxString) || notInteger(minString) || Integer.parseInt(minString) < 1 || Integer.parseInt(minString) > max)) {
-            warning(StringEnum.YIELD, MIN, minString);
-            return;
+        String minString = yieldSection.getString(MIN);
+        String minPath = getPath(sectionPath, MIN);
+        if (minString != null) {
+            if (notNumeric(maxString)) {
+                valueIncorrectWarning(minPath, minString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
+                return;
+            }
+            if (notInteger(minString)) {
+                valueIncorrectWarning(minPath, minString, ErrorEnum.NUMBER_NOT_INTEGER);
+                return;
+            }
+            if (Integer.parseInt(minString) < 1) {
+                valueIncorrectWarning(minPath, minString, ErrorEnum.NUMBER_TOO_SMALL);
+                return;
+            }
+            if (Integer.parseInt(minString) > max) {
+                valueIncorrectWarning(minPath, minString, ErrorEnum.NUMBER_TOO_LARGE);
+                return;
+            }
         }
         int min = minString == null ? max : Integer.parseInt(minString);
 
@@ -197,8 +234,13 @@ public class MockFileConfigurationTest extends CommandBase {
     private void setBrewingRecipeDisplayName() {
         keyName = DISPLAY_NAME;
         String displayName = configurationSection.getString(DISPLAY_NAME);
-        if (displayName == null || displayName.isBlank()) {
-            warning(sectionName, DISPLAY_NAME);
+        String sectionPath = getPath(configurationSection, DISPLAY_NAME);
+        if (displayName == null) {
+            noKeyFoundWarning(sectionPath);
+            return;
+        }
+        if (displayName.isBlank()) {
+            valueIncorrectWarning(sectionPath, displayName, ErrorEnum.STRING_IS_BLANK);
             return;
         }
 
@@ -207,24 +249,27 @@ public class MockFileConfigurationTest extends CommandBase {
     }
     // endregion
 
-    // region Set "output" section ItemStack into bean object
+    // region Set "output" into bean object
     private void setBrewingOutputItemStack() {
         keyName = OUTPUT;
         ConfigurationSection outputSection = configurationSection.getConfigurationSection(OUTPUT);
+        String sectionPath = getPath(configurationSection, OUTPUT);
         if (outputSection == null) {
-            warning(sectionName, OUTPUT);
+            noKeyFoundWarning(sectionPath);
             return;
         }
 
         String provider = outputSection.getString(PROVIDER);
+        String providerPath = getPath(sectionPath, PROVIDER);
         if (provider == null) {
-            warning(StringEnum.OUTPUT, PROVIDER);
+            noKeyFoundWarning(providerPath);
             return;
         }
 
         ConfigurationSection itemSection = outputSection.getConfigurationSection(ITEM);
+        String itemPath = getPath(sectionPath, ITEM);
         if (itemSection == null) {
-            warning(StringEnum.OUTPUT, ITEM);
+            noKeyFoundWarning(itemPath);
             return;
         }
 
@@ -232,6 +277,7 @@ public class MockFileConfigurationTest extends CommandBase {
         item.addProperty(QUANTITY, itemSection.getString(QUANTITY));
 
         CustomItemStack itemStack = null;
+        currentPath = itemPath;
         if (RecipesConfiguration.VANILLA.equalsIgnoreCase(provider)) {
             item.addProperty(MATERIAL, itemSection.getString(MATERIAL));
             item.addProperty(POTION_TYPE, itemSection.getString(POTION_TYPE));
@@ -256,235 +302,275 @@ public class MockFileConfigurationTest extends CommandBase {
     }
     // endregion
 
-    // region Set "(substrate|restriction|yeast)" section ItemStack into bean object
+    // region Set "(substrate|restriction|yeast)" into bean object
     private void setBrewingMaterialItemStack(final EnumBase materialType) {
         keyName = materialType.getString();
         String materialStringSection = configurationSection.getString(materialType.getString()); // NPE
+        String sectionPath = getPath(configurationSection, materialType.getString());
         if (materialStringSection == null) {
-            warning(sectionName, materialType.getString());
+            noKeyFoundWarning(sectionPath);
             return;
         }
 
         JsonArray materialArray = new Gson().fromJson(materialStringSection.replaceAll("=", ":"), JsonArray.class);
-        materialArray.forEach(this::materialArrayAction);
-    }
+        materialArray.forEach(jsonElement -> {
+            JsonObject section = (JsonObject) jsonElement;
 
-    private void materialArrayAction(final JsonElement jsonElement) {
-        JsonObject section = (JsonObject) jsonElement;
-        JsonElement itemProvider = section.get(PROVIDER);
-        if (itemProvider == null || itemProvider instanceof JsonNull) {
-            warning(keyName, PROVIDER);
-            return;
-        }
-        String provider = itemProvider.getAsString();
-        JsonElement itemItem = section.get(ITEM);
-        if (itemItem == null || itemItem instanceof JsonNull) {
-            warning(keyName, ITEM);
-            return;
-        }
-        JsonObject item = itemItem.getAsJsonObject();
+            JsonElement providerElement = section.get(PROVIDER);
+            String providerPath = getPath(sectionPath, PROVIDER);
+            if (providerElement == null || providerElement instanceof JsonNull) {
+                noKeyFoundWarning(providerPath);
+                return;
+            }
+            String provider = providerElement.getAsString();
 
-        CustomItemStack itemStack = null;
-        if (RecipesConfiguration.VANILLA.equalsIgnoreCase(provider)) {
-            itemStack = createVanillaItemStack(item);
-        } else if (RecipesConfiguration.ITEMSADDER.equalsIgnoreCase(provider)) {
-            itemStack = createItemsAdderItemStack(item);
-        } else if (RecipesConfiguration.MMOITEMS.equalsIgnoreCase(provider)) {
-            itemStack = createMMOItemItemStack(item);
-        }
+            JsonElement itemElement = section.get(ITEM);
+            String itemPath = getPath(sectionPath, ITEM);
+            if (itemElement == null || itemElement instanceof JsonNull) {
+                noKeyFoundWarning(itemPath);
+                return;
+            }
+            JsonObject item = itemElement.getAsJsonObject();
 
-        if (itemStack == null) return;
+            CustomItemStack itemStack = null;
+            currentPath = itemPath;
+            if (RecipesConfiguration.VANILLA.equalsIgnoreCase(provider)) {
+                itemStack = createVanillaItemStack(item);
+            } else if (RecipesConfiguration.ITEMSADDER.equalsIgnoreCase(provider)) {
+                itemStack = createItemsAdderItemStack(item);
+            } else if (RecipesConfiguration.MMOITEMS.equalsIgnoreCase(provider)) {
+                itemStack = createMMOItemItemStack(item);
+            }
 
-        switch (keyName) {
-            case SUBSTRATE -> recipesBuilder.substrate(itemStack);
-            case RESTRICTION -> recipesBuilder.restriction(itemStack);
-            case YEAST -> recipesBuilder.yeast(itemStack);
-        }
+            if (itemStack == null) return;
 
-        material$set = true;
+            switch (keyName) {
+                case SUBSTRATE -> recipesBuilder.substrate(itemStack);
+                case RESTRICTION -> recipesBuilder.restriction(itemStack);
+                case YEAST -> recipesBuilder.yeast(itemStack);
+            }
+
+            material$set = true;
+        });
     }
     // endregion
 
     // region Create Vanilla ItemStack
     private CustomItemStack createVanillaItemStack(final JsonObject item) {
-        JsonElement itemQuantity = item.get(QUANTITY);
-        boolean hasQuantity = itemQuantity != null && !(itemQuantity instanceof JsonNull);
-        if (hasQuantity && !isNumeric(itemQuantity.getAsString())) {
-            warning(StringEnum.VANILLA, QUANTITY, itemQuantity.getAsString());
+        JsonElement quantityElement = item.get(QUANTITY);
+        boolean hasQuantity = quantityElement != null && !(quantityElement instanceof JsonNull);
+        String quantityPath = getPath(currentPath, QUANTITY);
+        if (hasQuantity && notNumeric(quantityElement.getAsString())) {
+            valueIncorrectWarning(quantityPath, quantityElement.getAsString(), ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return null;
         }
 
-        JsonElement itemIndex = item.get(INDEX);
-        boolean hasIndex = itemIndex != null && !(itemIndex instanceof JsonNull);
-        if (hasIndex && !isNumeric(itemIndex.getAsString())) {
-            warning(StringEnum.VANILLA, INDEX, itemIndex.getAsString());
+        JsonElement indexElement = item.get(INDEX);
+        boolean hasIndex = indexElement != null && !(indexElement instanceof JsonNull);
+        String indexPath = getPath(currentPath, INDEX);
+        if (hasIndex && notNumeric(indexElement.getAsString())) {
+            valueIncorrectWarning(indexPath, indexElement.getAsString(), ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return null;
         }
 
-        JsonElement itemMaterial = item.get(MATERIAL);
-        if (itemMaterial == null || itemMaterial instanceof JsonNull) { // material is null?
-            warning(VANILLA, MATERIAL);
+        JsonElement materialElement = item.get(MATERIAL);
+        String materialPath = getPath(currentPath, MATERIAL);
+        if (materialElement == null || materialElement instanceof JsonNull) {
+            noKeyFoundWarning(materialPath);
             return null;
         }
 
         Material material;
         try {
-            material = Material.valueOf(itemMaterial.getAsString());
-        } catch (IllegalArgumentException e) { // material is correct?
-            warning(StringEnum.VANILLA, MATERIAL, itemMaterial.getAsString());
+            material = Material.valueOf(materialElement.getAsString());
+        } catch (IllegalArgumentException ignore) {
+            valueIncorrectWarning(materialPath, materialElement.getAsString(), ErrorEnum.VALUE_INCORRECT);
             return null;
         }
 
         ItemStack itemStack = new ItemStack(material);
 
-        // 给予potion种类
+        // Generate Potion Type
         if (Material.POTION.equals(material)) {
-            JsonElement itemPotionType = item.get(POTION_TYPE);
-            if (itemPotionType == null || itemPotionType instanceof JsonNull) { // potion type is null?
-                warning(VANILLA, POTION_TYPE);
+            JsonElement potionTypeElement = item.get(POTION_TYPE);
+            String potionTypePath = getPath(currentPath, POTION_TYPE);
+            if (potionTypeElement == null || potionTypeElement instanceof JsonNull) {
+                noKeyFoundWarning(potionTypePath);
                 return null;
             }
 
             PotionType potionType;
             try {
-                potionType = PotionType.valueOf(itemPotionType.getAsString());
-            } catch (IllegalArgumentException e) { // potion type is correct?
-                warning(StringEnum.VANILLA, POTION_TYPE, itemPotionType.getAsString());
+                potionType = PotionType.valueOf(potionTypeElement.getAsString());
+            } catch (IllegalArgumentException ignore) {
+                valueIncorrectWarning(potionTypePath, potionTypeElement.getAsString(), ErrorEnum.VALUE_INCORRECT);
                 return null;
             }
 
             itemStack.editMeta(PotionMeta.class, meta -> meta.setBasePotionData( new PotionData(potionType)));
         }
 
-        return CustomItemStack.builder().itemStack(itemStack).quantity(hasQuantity ? itemQuantity.getAsInt() : 1).index(hasIndex ? Double.parseDouble(decimalFormat.format(itemIndex.getAsDouble())) : 1D).build();
+        return CustomItemStack.builder().itemStack(itemStack).quantity(hasQuantity ? quantityElement.getAsInt() : 1).index(hasIndex ? Double.parseDouble(decimalFormat.format(indexElement.getAsDouble())) : 1D).build();
     }
     // endregion
 
     // region Create ItemsAdder ItemStack
     private CustomItemStack createItemsAdderItemStack(final JsonObject item) {
-        JsonElement itemQuantity = item.get(QUANTITY);
-        boolean hasQuantity = itemQuantity != null && !(itemQuantity instanceof JsonNull);
-        if (hasQuantity && !isNumeric(itemQuantity.getAsString())) {
-            warning(StringEnum.ITEMSADDER, QUANTITY, itemQuantity.getAsString());
+        JsonElement quantityElement = item.get(QUANTITY);
+        boolean hasQuantity = quantityElement != null && !(quantityElement instanceof JsonNull);
+        String quantityPath = getPath(currentPath, QUANTITY);
+        if (hasQuantity && notNumeric(quantityElement.getAsString())) {
+            valueIncorrectWarning(quantityPath, quantityElement.getAsString(), ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return null;
         }
 
-        JsonElement itemIndex = item.get(INDEX);
-        boolean hasIndex = itemIndex != null && !(itemIndex instanceof JsonNull);
-        if (hasIndex && !isNumeric(itemIndex.getAsString())) {
-            warning(StringEnum.ITEMSADDER, INDEX, itemIndex.getAsString());
+        JsonElement indexElement = item.get(INDEX);
+        boolean hasIndex = indexElement != null && !(indexElement instanceof JsonNull);
+        String indexPath = getPath(currentPath, INDEX);
+        if (hasIndex && notNumeric(indexElement.getAsString())) {
+            valueIncorrectWarning(indexPath, indexElement.getAsString(), ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return null;
         }
 
-        JsonElement itemNamespace = item.get(NAMESPACE);
-        if (itemNamespace == null || itemNamespace instanceof JsonNull) { // namespace is null?
-            warning(ITEMSADDER, NAMESPACE);
+        JsonElement namespaceElement = item.get(NAMESPACE);
+        String namespacePath = getPath(currentPath, NAMESPACE);
+        if (namespaceElement == null || namespaceElement instanceof JsonNull) {
+            noKeyFoundWarning(namespacePath);
             return null;
         }
-        String namespace = item.get("namespace").getAsString();
-        if (namespace.isBlank()) { // namespace is blank?
-            warning(StringEnum.ITEMSADDER, NAMESPACE, namespace);
+        String namespace = namespaceElement.getAsString();
+        if (namespace.isBlank()) {
+            valueIncorrectWarning(namespacePath, namespace, ErrorEnum.STRING_IS_BLANK);
             return null;
         }
 
-        JsonElement itemId = item.get("id");
-        if (itemId == null || itemId instanceof JsonNull) { // id is null?
-            warning(ITEMSADDER, ID);
+        JsonElement idElement = item.get(ID);
+        String idPath = getPath(currentPath, ID);
+        if (idElement == null || idElement instanceof JsonNull) {
+            noKeyFoundWarning(idPath);
             return null;
         }
-        String id = item.get("id").getAsString();
-        if (id.isBlank()) { // id is null?
-            warning(StringEnum.ITEMSADDER, ID, id);
+        String id = idElement.getAsString();
+        if (id.isBlank()) {
+            valueIncorrectWarning(idPath, id, ErrorEnum.STRING_IS_BLANK);
             return null;
         }
 
         String namespacedId = namespace + ':' + id;
+        String namespacedIdPath = getPath(currentPath, NAMESPACED_ID);
 
         CustomStack itemInstance = CustomStack.getInstance(namespacedId); // NPE
-        if (itemInstance == null) { // namespacedId is correct?
-            warning(StringEnum.ITEMSADDER, NAMESPACED_ID, namespace + ":" + id);
+        if (itemInstance == null) {
+            valueIncorrectWarning(namespacedIdPath, namespacedId, ErrorEnum.NAMESPACE_ID_INCORRECT);
             return null;
         }
 
-        ItemStack itemStack = ItemStack.deserializeBytes(itemInstance.getItemStack().serializeAsBytes());// Prevent IA internal bug
+        ItemStack itemStack = ItemStack.deserializeBytes(itemInstance.getItemStack().serializeAsBytes()); // Prevent IA internal bug
 
-        return CustomItemStack.builder().itemStack(itemStack).quantity(hasQuantity ? itemQuantity.getAsInt() : 1).index(hasIndex ? Double.parseDouble(decimalFormat.format(itemIndex.getAsDouble())) : 1D).build();
+        return CustomItemStack.builder().itemStack(itemStack).quantity(hasQuantity ? quantityElement.getAsInt() : 1).index(hasIndex ? Double.parseDouble(decimalFormat.format(indexElement.getAsDouble())) : 1D).build();
     }
     // endregion
 
     // region Create MMOItem ItemStack
     private CustomItemStack createMMOItemItemStack(final JsonObject item) {
-        JsonElement itemQuantity = item.get(QUANTITY);
-        boolean hasQuantity = itemQuantity != null && !(itemQuantity instanceof JsonNull);
-
-        if (hasQuantity && !isNumeric(itemQuantity.getAsString())) {
-            warning(StringEnum.MMOITEMS, QUANTITY, itemQuantity.getAsString());
+        JsonElement quantityElement = item.get(QUANTITY);
+        boolean hasQuantity = quantityElement != null && !(quantityElement instanceof JsonNull);
+        String quantityPath = getPath(currentPath, QUANTITY);
+        if (hasQuantity && notNumeric(quantityElement.getAsString())) {
+            valueIncorrectWarning(quantityPath, quantityElement.getAsString(), ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return null;
         }
 
-        JsonElement itemIndex = item.get(INDEX);
-        boolean hasIndex = itemIndex != null && !(itemIndex instanceof JsonNull);
-        if (hasIndex && !isNumeric(itemIndex.getAsString())) {
-            warning(StringEnum.MMOITEMS, INDEX, itemIndex.getAsString());
+        JsonElement indexElement = item.get(INDEX);
+        boolean hasIndex = indexElement != null && !(indexElement instanceof JsonNull);
+        String indexPath = getPath(currentPath, INDEX);
+        if (hasIndex && notNumeric(indexElement.getAsString())) {
+            valueIncorrectWarning(indexPath, indexElement.getAsString(), ErrorEnum.NOT_ACTUALLY_NUMERIC);
             return null;
         }
 
-        JsonElement itemType = item.get(TYPE);
-        if (itemType == null || itemType instanceof JsonNull) { // type is null?
-            warning(MMOITEMS, TYPE);
+        JsonElement typeElement = item.get(TYPE);
+        String typePath = getPath(currentPath, TYPE);
+        if (typeElement == null || typeElement instanceof JsonNull) {
+            noKeyFoundWarning(typePath);
             return null;
         }
-        Type type = mmoItemsPlugin.getTypes().get(itemType.getAsString());
-        if (type == null) { // type is correct?
-            warning(StringEnum.MMOITEMS, TYPE, itemType.getAsString());
+        Type type = mmoItemsPlugin.getTypes().get(typeElement.getAsString());
+        if (type == null) {
+            valueIncorrectWarning(typePath, typeElement.getAsString(), ErrorEnum.VALUE_INCORRECT);
             return null;
         }
 
-        JsonElement itemId = item.get(ID);
-        if (itemId == null || itemId instanceof JsonNull){ // id is null?
-            warning(StringEnum.MMOITEMS, ID);
+        JsonElement idElement = item.get(ID);
+        String idPath = getPath(currentPath, TYPE);
+        if (idElement == null || idElement instanceof JsonNull){
+            noKeyFoundWarning(idPath);
             return null;
         }
-        String id = itemId.getAsString();
+        String id = idElement.getAsString();
 
-        if (mmoItemsPlugin.getTemplates().getTemplate(type, id) == null) { // id is correct?
-            warning(StringEnum.MMOITEMS, ID, id);
+        if (mmoItemsPlugin.getTemplates().getTemplate(type, id) == null) {
+            valueIncorrectWarning(idPath, id, ErrorEnum.VALUE_INCORRECT);
             return null;
         }
 
         MMOItem mmoItem;
+        JsonElement levelElement = item.get(SCALED);
+        String levelPath = getPath(currentPath, SCALED);
 
-        JsonElement itemLevel = item.get(SCALED);
-        JsonElement itemTier = item.get(TIER);
+        JsonElement tierElement = item.get(TIER);
+        String tierPath = getPath(currentPath, TIER);
 
-        if (!((itemLevel == null || itemLevel instanceof JsonNull) || (itemTier == null || itemTier instanceof JsonNull))) {
-            int level = itemLevel.getAsInt();
-            if (level < 1) { // level is correct?
-                warning(StringEnum.MMOITEMS, SCALED, level);
+        if (!((levelElement == null || levelElement instanceof JsonNull) || (tierElement == null || tierElement instanceof JsonNull))) {
+            String levelString = levelElement.getAsString();
+            if (notNumeric(levelString)) {
+                valueIncorrectWarning(levelPath, levelString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
+            }
+            if (notInteger(levelString)) {
+                valueIncorrectWarning(levelPath, levelString, ErrorEnum.NUMBER_NOT_INTEGER);
+            }
+            int level = levelElement.getAsInt();
+            if (level < 1) {
+                valueIncorrectWarning(levelPath, level, ErrorEnum.NUMBER_TOO_SMALL);
                 return null;
             }
 
-            ItemTier tier = mmoItemsPlugin.getTiers().get(itemTier.getAsString());
-            if (tier == null) { // tier is correct?
-                warning(StringEnum.MMOITEMS, TIER, itemTier.getAsString());
+            String tierString = tierElement.getAsString();
+            if (tierString.isBlank()) {
+                valueIncorrectWarning(tierPath, tierString, ErrorEnum.STRING_IS_BLANK);
+            }
+            ItemTier tier = mmoItemsPlugin.getTiers().get(tierString);
+            if (tier == null) {
+                valueIncorrectWarning(tierPath, tierString, ErrorEnum.VALUE_INCORRECT);
                 return null;
             }
 
             mmoItem = mmoItemsPlugin.getMMOItem(type, id, level, tier);
 
-        } else if (!(itemLevel == null || itemLevel instanceof JsonNull)) { // itemTier == null
-            int level = itemLevel.getAsInt();
-            if (level < 1) { // level is correct?
-                warning(StringEnum.MMOITEMS, SCALED, level);
+        } else if (!(levelElement == null || levelElement instanceof JsonNull)) {
+            String levelString = levelElement.getAsString();
+            if (notNumeric(levelString)) {
+                valueIncorrectWarning(levelPath, levelString, ErrorEnum.NOT_ACTUALLY_NUMERIC);
+            }
+            if (notInteger(levelString)) {
+                valueIncorrectWarning(levelPath, levelString, ErrorEnum.NUMBER_NOT_INTEGER);
+            }
+            int level = levelElement.getAsInt();
+            if (level < 1) {
+                valueIncorrectWarning(levelPath, level, ErrorEnum.NUMBER_TOO_SMALL);
                 return null;
             }
 
             mmoItem = mmoItemsPlugin.getMMOItem(type, id, level, null);
 
-        } else if (!(itemTier == null || itemTier instanceof JsonNull)) { // itemLevel == null
-            ItemTier tier = mmoItemsPlugin.getTiers().get(itemTier.getAsString());
-            if (tier == null) { // tier is correct?
-                warning(StringEnum.MMOITEMS, TIER, itemTier.getAsString());
+        } else if (!(tierElement == null || tierElement instanceof JsonNull)) {
+            String tierString = tierElement.getAsString();
+            if (tierString.isBlank()) {
+                valueIncorrectWarning(tierPath, tierString, ErrorEnum.STRING_IS_BLANK);
+            }
+            ItemTier tier = mmoItemsPlugin.getTiers().get(tierString);
+            if (tier == null) {
+                valueIncorrectWarning(tierPath, tierString, ErrorEnum.VALUE_INCORRECT);
                 return null;
             }
 
@@ -494,7 +580,7 @@ public class MockFileConfigurationTest extends CommandBase {
             mmoItem = mmoItemsPlugin.getMMOItem(type, id, 0, null);
         }
 
-        return mmoItem != null ? CustomItemStack.builder().itemStack(mmoItem.newBuilder().build()).quantity(hasQuantity ? itemQuantity.getAsInt() : 1).index(hasIndex ? Double.parseDouble(decimalFormat.format(itemIndex.getAsDouble())) : 1D).build() : null;
+        return mmoItem != null ? CustomItemStack.builder().itemStack(mmoItem.newBuilder().build()).quantity(hasQuantity ? quantityElement.getAsInt() : 1).index(hasIndex ? Double.parseDouble(decimalFormat.format(indexElement.getAsDouble())) : 1D).build() : null;
     }
     // endregion
 
@@ -505,22 +591,17 @@ public class MockFileConfigurationTest extends CommandBase {
     }
 
     private void fail(String key) {
-        String message = String.format("The \"%s\" section in %s has an error and it will not take effect", key, FILE_NAME);
+        String message = String.format("The \"%s\" section in %s has an error and this section will not take effect", key, FILE_NAME);
         Brewing.getInstance().getSLF4JLogger().error(message);
     }
 
-    private void warning(String provider, String key) {
-        String message = String.format("Cannot read property in %s. The problem arises in KEY:%s, VALUE:%s from SECTION:%s, is it empty?", FILE_NAME, provider, key, sectionName);
+    private void noKeyFoundWarning(String path) {
+        String message = String.format("cannot read %s in %s, does the key exist or the value not null?", path, FILE_NAME);
         Brewing.getInstance().getSLF4JLogger().warn(message);
     }
 
-    private void warning(EnumBase provider, String key) {
-        String message = String.format("Cannot read %s item in %s. The problem arises in KEY:%s from SECTION:%s, is it empty?", provider.getString(), FILE_NAME, key, sectionName);
-        Brewing.getInstance().getSLF4JLogger().warn(message);
-    }
-
-    private void warning(EnumBase provider, String key, Object value) {
-        String message = String.format("Cannot read %s item in %s. The problem arises in KEY:%s, VALUE:%s from SECTION:%s.", provider.getString(), FILE_NAME, key, value, sectionName);
+    private void valueIncorrectWarning(String path, Object value, EnumBase errorEnum) {
+        String message = String.format("cannot read %s:%s in %s, caused by %s", path, value, FILE_NAME, errorEnum.getString());
         Brewing.getInstance().getSLF4JLogger().warn(message);
     }
 
@@ -528,17 +609,25 @@ public class MockFileConfigurationTest extends CommandBase {
         return Double.compare(2147483648.0, Double.parseDouble(integer)) <= 0 || Double.compare(-2147483649.0, Double.parseDouble(integer)) >= 0;
     }
 
-    private boolean isNumeric(final CharSequence cs) {
+    private boolean notNumeric(final CharSequence cs) {
         if (StringUtils.isEmpty(cs)) {
-            return false;
+            return true;
         }
         final int sz = cs.length();
         for (int i = 0; i < sz; i++) {
             if (!Character.isDigit(cs.charAt(i)) && cs.charAt(i) != '.') {
-                return false;
+                return i != 0 || cs.charAt(i) != '-';
             }
         }
-        return true;
+        return false;
+    }
+
+    private String getPath(ConfigurationSection section, String current) {
+        return section.getCurrentPath() + '.' + current;
+    }
+
+    private String getPath(String path, String append) {
+        return path + '.' + append;
     }
     // endregion
 }

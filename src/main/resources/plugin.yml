@@ -2,8 +2,7 @@ name: Brewing
 version: 1.1.0
 main: homeward.plugin.brewing.Brewing
 api-version: 1.18
-prefix: hwb
-authors: [ Baioretto,Caizii,Xunzhen ]
+prefix: HomewardBrewing
 description: homewardjourney's brewing plugin
 website: https://fantang.cc
 
