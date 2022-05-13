@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.Test;
 
@@ -146,6 +147,18 @@ public class SimpleTest {
             int i = min + (int) (Math.random() * (max - min + 1));
             System.out.println(i);
             countDownLatch.countDown();
+        }
+    }
+
+    @Test
+    void testInt() {
+        String path = "wine.output";
+        String separator = ".";
+        int i1 = -1, i2;
+        while ((i1 = path.indexOf(separator, i2 = i1 + 1)) != -1) {
+            final String currentPath = path.substring(i2, i1);
+            System.out.println(i2 + "; " + i1);
+            System.out.println(currentPath);
         }
     }
 }

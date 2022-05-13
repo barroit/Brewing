@@ -4,6 +4,7 @@ import com.google.gson.*;
 import de.tr7zw.nbtapi.NBTFile;
 import dev.lone.itemsadder.api.CustomStack;
 import homeward.plugin.brewing.Brewing;
+import homeward.plugin.brewing.beans.CustomItemStack;
 import homeward.plugin.brewing.beans.RecipesItem;
 import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
@@ -53,7 +54,13 @@ public class MainCommand extends CommandBase {
 
         System.out.println(recipes.substrate());
     }
-    
+
+    @SubCommand("testGetForClass")
+    public void testGetForClass(CommandSender commandSender) {
+        ItemStack itemStack = ItemStack.deserializeBytes(CustomStack.getInstance("homeward:grape").getItemStack().serializeAsBytes());
+        CustomItemStack build = CustomItemStack.builder().itemStack(itemStack).quantity(10).build();
+        System.out.println(build.index());
+    }
 
     @SubCommand("testMMOItems")
     public void testMMOItems(CommandSender commandSender) {

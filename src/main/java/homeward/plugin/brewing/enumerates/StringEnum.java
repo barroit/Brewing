@@ -7,7 +7,12 @@ public enum StringEnum implements EnumBase{
     GUI_PAGINATED("paginated"),
     ITEMSADDER("ItemsAdder"),
     VANILLA("Vanilla"),
-    MMOITEMS("MMOItems");
+    MMOITEMS("MMOItems"),
+
+    SUBSTRATE("substrate"),
+    RESTRICTION("restriction"),
+    YEAST("yeast"),
+    OUTPUT("output");
 
     private final String value;
     StringEnum(String value) {
