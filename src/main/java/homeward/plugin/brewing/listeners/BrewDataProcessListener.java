@@ -119,8 +119,8 @@ public class BrewDataProcessListener implements Listener {
         String jsonString = stringLocation.replaceAll(".*(\\{)(.+?)},?", "$1$2,").replaceAll("=", ":");
         JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
         String worldName = jsonObject.get("name").getAsString();
-        if (!Brewing.getWorldMap().containsKey(worldName)) return null;
-        World world = Brewing.getWorldMap().get(worldName);
+        if (!Brewing.getInstance().worldMap().containsKey(worldName)) return null;
+        World world = Brewing.getInstance().worldMap().get(worldName);
         float x = jsonObject.get("x").getAsFloat();
         float y = jsonObject.get("y").getAsFloat();
         float z = jsonObject.get("z").getAsFloat();

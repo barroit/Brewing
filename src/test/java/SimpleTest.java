@@ -1,4 +1,3 @@
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -17,6 +16,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimpleTest {
     @Test
@@ -197,7 +197,12 @@ public class SimpleTest {
 
     @Test
     void testRoundingPattern() {
-        String roundingPatternString = "#.##";
-        System.out.println(roundingPatternString.matches("#\\.#{1,23}"));
+        AtomicInteger count = new AtomicInteger(1);
+        List<Integer> list = new LinkedList<>(Arrays.asList(1, 2, 3, 4, 5));
+        list.forEach(v -> {
+            int andIncrement = count.getAndIncrement();
+            if (andIncrement > 4) return;
+            System.out.println("" + andIncrement);
+        });
     }
 }

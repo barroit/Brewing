@@ -156,31 +156,31 @@ public class PlayerGui {
         boolean[] hasSet = {false};
         if (data.isInitialize()) return;
 
-        Brewing.getConfigurationMap().forEach((k, v) -> {
-            NBTItem substrate = new NBTItem(data.getSubstrate());
-            NBTItem restriction = new NBTItem(data.getRestriction());
-            NBTItem yeast = new NBTItem(data.getYeast());
-            substrate.removeKey("PublicBukkitValues");
-            restriction.removeKey("PublicBukkitValues");
-            yeast.removeKey("PublicBukkitValues");
-
-            if (CustomStack.byItemStack(substrate.getItem()).getNamespacedID().equals(v.get("substrate").getAsString())) {
-                String[] restrictionList = new Gson().fromJson(v.get("restriction").getAsString().replaceAll("^\"\"$", ""), String[].class);
-                String[] yeastList = new Gson().fromJson(v.get("yeast").getAsString().replaceAll("^\"\"$", ""), String[].class);
-
-                boolean hasRestriction = Arrays.stream(restrictionList).toList().contains(CustomStack.byItemStack(restriction.getItem()).getNamespacedID());
-                boolean hasYeast = Arrays.stream(yeastList).toList().contains(CustomStack.byItemStack(yeast.getItem()).getNamespacedID());
-
-                if (!(hasRestriction && hasYeast)) return;
-
-                data.setBrewingType(k).setOutPutItems(v.get("output").getAsString())
-                        .setExpectOutPut(v.get("maxYield").getAsInt())
-                        .setActualOutPut(HomewardUtils.getIntervalRandom(v.get("minYield").getAsInt(), v.get("maxYield").getAsInt()))
-                        .setStoredOutPutItems(0).setBrewingTime(v.get("brewingCycle").getAsInt())
-                        .setCurrentBrewingTime(0).setBrewing(true).setInitialize(true);
-                hasSet[0] = true;
-            }
-        });
+        // Brewing.getConfigurationMap().forEach((k, v) -> {
+        //     NBTItem substrate = new NBTItem(data.getSubstrate());
+        //     NBTItem restriction = new NBTItem(data.getRestriction());
+        //     NBTItem yeast = new NBTItem(data.getYeast());
+        //     substrate.removeKey("PublicBukkitValues");
+        //     restriction.removeKey("PublicBukkitValues");
+        //     yeast.removeKey("PublicBukkitValues");
+        //
+        //     if (CustomStack.byItemStack(substrate.getItem()).getNamespacedID().equals(v.get("substrate").getAsString())) {
+        //         String[] restrictionList = new Gson().fromJson(v.get("restriction").getAsString().replaceAll("^\"\"$", ""), String[].class);
+        //         String[] yeastList = new Gson().fromJson(v.get("yeast").getAsString().replaceAll("^\"\"$", ""), String[].class);
+        //
+        //         boolean hasRestriction = Arrays.stream(restrictionList).toList().contains(CustomStack.byItemStack(restriction.getItem()).getNamespacedID());
+        //         boolean hasYeast = Arrays.stream(yeastList).toList().contains(CustomStack.byItemStack(yeast.getItem()).getNamespacedID());
+        //
+        //         if (!(hasRestriction && hasYeast)) return;
+        //
+        //         data.setBrewingType(k).setOutPutItems(v.get("output").getAsString())
+        //                 .setExpectOutPut(v.get("maxYield").getAsInt())
+        //                 .setActualOutPut(HomewardUtils.getIntervalRandom(v.get("minYield").getAsInt(), v.get("maxYield").getAsInt()))
+        //                 .setStoredOutPutItems(0).setBrewingTime(v.get("brewingCycle").getAsInt())
+        //                 .setCurrentBrewingTime(0).setBrewing(true).setInitialize(true);
+        //         hasSet[0] = true;
+        //     }
+        // });
     }
 
     private void setSubstrateData(BarrelInventoryData data, NBTItem nbtTags, ItemStack rawItem, StorageGui gui, int eventSlot) {

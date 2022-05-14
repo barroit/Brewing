@@ -5,7 +5,7 @@ import de.tr7zw.nbtapi.NBTFile;
 import dev.lone.itemsadder.api.CustomStack;
 import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.CustomItemStack;
-import homeward.plugin.brewing.beans.RecipesItem;
+import homeward.plugin.brewing.beans.Recipe;
 import homeward.plugin.brewing.data.BrewingBarrelData;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
@@ -48,10 +48,10 @@ public class MainCommand extends CommandBase {
         ItemStack itemStack = ItemStack.deserializeBytes(grape.serializeAsBytes());
 
         // RecipesItem recipesItem = new RecipesItem();
-        RecipesItem recipesItem = null;
+        Recipe recipe = null;
 
-        byte[] recipesItemByteArray = serializeAsBytes(recipesItem);
-        RecipesItem recipes = (RecipesItem) deserializeBytes(recipesItemByteArray); // now working fine
+        byte[] recipesItemByteArray = serializeAsBytes(recipe);
+        Recipe recipes = (Recipe) deserializeBytes(recipesItemByteArray); // now working fine
     }
 
     @SubCommand("testGetForClass")

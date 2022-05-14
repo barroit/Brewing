@@ -37,4 +37,7 @@ public class RecipesConfiguration {
     public static final String POTION_TYPE = "potion-type";
     public static final String NAMESPACED_ID = "namespacedId";
     public static final String QUANTITY = "quantity";
+
+    public static final String RECIPE_LEVEL = "recipe-level";
+    public static final String LEVEL = "level";
 }

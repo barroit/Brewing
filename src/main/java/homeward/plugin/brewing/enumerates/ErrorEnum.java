@@ -7,7 +7,8 @@ public enum ErrorEnum implements EnumBase{
     STRING_IS_BLANK("String Is Blank"),
     NUMBER_TOO_LARGE("Number Is Too Big"),
     NUMBER_TOO_SMALL("Number Is Too Small"),
-    NUMBER_NOT_INTEGER("Number Is Not In Integer Range");
+    NUMBER_NOT_INTEGER("Number Is Not In Integer Range"),
+    RECIPE_LEVEL_NOT_MATCH("The Recipe Level Is Not Match Your provided.");
 
     private final String value;
     ErrorEnum(String value) {

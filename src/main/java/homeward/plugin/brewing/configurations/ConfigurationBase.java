@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import dev.lone.itemsadder.api.CustomStack;
 import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.CustomItemStack;
-import homeward.plugin.brewing.beans.RecipesItem;
+import homeward.plugin.brewing.beans.Recipe;
 import homeward.plugin.brewing.enumerates.EnumBase;
 import homeward.plugin.brewing.enumerates.ErrorEnum;
 import homeward.plugin.brewing.enumerates.StringEnum;
@@ -29,8 +29,7 @@ import java.util.*;
 
 import static homeward.plugin.brewing.constants.RecipesConfiguration.*;
 import static homeward.plugin.brewing.constants.RecipesConfiguration.TIER;
-import static homeward.plugin.brewing.utils.HomewardUtils.notInteger;
-import static homeward.plugin.brewing.utils.HomewardUtils.notNumeric;
+import static homeward.plugin.brewing.utils.HomewardUtils.*;
 
 public abstract class ConfigurationBase {
     final DecimalFormat decimalFormat;
@@ -39,10 +38,10 @@ public abstract class ConfigurationBase {
     FileConfiguration recipesFileConfiguration;
     final Set<EnumBase> materialTypeSet;
 
-    RecipesItem.RecipesItemBuilder recipesBuilder;
+    Recipe.RecipeBuilder recipesBuilder;
     String sectionName, keyName, currentPath;
     ConfigurationSection configurationSection;
-    boolean display$set, material$set, output$set, yield$set, index$set, cycle$set = false;
+    boolean display$set, material$set, output$set, yield$set, index$set, cycle$set, level$set = false;
 
     ConfigurationBase(String roundingPattern, RoundingMode roundingMode) {
         this.materialTypeSet = new LinkedHashSet<>(Arrays.asList(StringEnum.SUBSTRATE, StringEnum.RESTRICTION, StringEnum.YEAST));
@@ -51,34 +50,32 @@ public abstract class ConfigurationBase {
     }
 
     void load() {
+        if (Brewing.getInstance().recipesMap().size() != 0) Brewing.getInstance().recipesMap().clear();
+
         recipesFileConfiguration = ConfigurationUtils.get("recipes");
         Set<String> recipeKeys = recipesFileConfiguration.getKeys(false);
         recipeKeys.forEach(this::keyAction);
     }
 
     private void keyAction(final String key) {
-        display$set = material$set = output$set = yield$set = index$set = cycle$set = false;
+        display$set = material$set = output$set = yield$set = index$set = cycle$set = level$set = false;
         configurationSection = recipesFileConfiguration.getConfigurationSection(key);
         if (configurationSection == null) {
             noKeyFoundWarning(sectionName);
             return;
         }
-        recipesBuilder = RecipesItem.builder();
+        recipesBuilder = Recipe.builder();
         sectionName = key;
 
         setBrewingRecipeDisplayName(); // Set Display Name
-
+        setBrewingRecipeLevel(); // Set Recipe Level
         materialTypeSet.forEach(this::setBrewingMaterialItemStack); // Set (Substrate|Restriction|Yeast) Name
-
         setBrewingOutputItemStack(); // Set Output ItemStack
-
         setBrewingYield(); // Set Yield
-
         setBrewingIndex(); // Set Index
-
         setBrewingCycle(); // Set Brewing Cycle
 
-        if (display$set && material$set && output$set && yield$set && index$set && cycle$set) {
+        if (display$set && material$set && output$set && yield$set && index$set && cycle$set && level$set) {
             Brewing.getInstance().recipesMap(key, recipesBuilder.build());
             done(key);
         } else {
@@ -87,6 +84,7 @@ public abstract class ConfigurationBase {
     }
 
     abstract void setBrewingRecipeDisplayName();
+    abstract void setBrewingRecipeLevel();
     abstract void setBrewingMaterialItemStack(final EnumBase materialType);
     abstract void setBrewingOutputItemStack();
     abstract void setBrewingYield();
@@ -323,12 +321,12 @@ public abstract class ConfigurationBase {
     // endregion
 
     void done(String key) {
-        String message = String.format("The \"%s\" section in %s has been initialized", key, FILE_NAME);
+        String message = String.format("The recipe \"%s\" in %s was loaded successfully", key, FILE_NAME);
         Brewing.getInstance().getSLF4JLogger().info(message);
     }
 
     void fail(String key) {
-        String message = String.format("The \"%s\" section in %s has an error and this section will not take effect", key, FILE_NAME);
+        String message = String.format("The recipe \"%s\" in %s has an error and this recipe will not take effect", key, FILE_NAME);
         Brewing.getInstance().getSLF4JLogger().error(message);
     }
 
@@ -340,13 +338,5 @@ public abstract class ConfigurationBase {
     void valueIncorrectWarning(String path, Object value, EnumBase errorEnum) {
         String message = String.format("cannot read %s:%s in %s, caused by %s", path, value, FILE_NAME, errorEnum.getString());
         Brewing.getInstance().getSLF4JLogger().warn(message);
-    }
-
-    String getPath(ConfigurationSection section, String current) {
-        return section.getCurrentPath() + '.' + current;
-    }
-
-    String getPath(String path, String append) {
-        return path + '.' + append;
     }
 }

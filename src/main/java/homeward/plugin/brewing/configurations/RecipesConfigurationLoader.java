@@ -1,21 +1,26 @@
 package homeward.plugin.brewing.configurations;
 
 import com.google.gson.*;
+import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.beans.CustomItemStack;
 import homeward.plugin.brewing.constants.RecipesConfiguration;
 import homeward.plugin.brewing.enumerates.EnumBase;
 import homeward.plugin.brewing.enumerates.ErrorEnum;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.math.RoundingMode;
+import java.util.Map;
 
 import static homeward.plugin.brewing.constants.RecipesConfiguration.*;
-import static homeward.plugin.brewing.utils.HomewardUtils.notInteger;
-import static homeward.plugin.brewing.utils.HomewardUtils.notNumeric;
+import static homeward.plugin.brewing.utils.HomewardUtils.*;
 
 public class RecipesConfigurationLoader extends ConfigurationBase {
+    private final Map<String, String> recipesLevelMap;
+
     RecipesConfigurationLoader(String roundingPattern, RoundingMode roundingMode) {
         super(roundingPattern, roundingMode);
+        recipesLevelMap = Brewing.getInstance().recipesLevelMap();
     }
 
     @Override
@@ -23,7 +28,7 @@ public class RecipesConfigurationLoader extends ConfigurationBase {
         super.load();
     }
 
-    // region Set "display-name" into bean object
+    // region Set display-name
     @Override
     void setBrewingRecipeDisplayName() {
         keyName = DISPLAY_NAME;
@@ -42,7 +47,28 @@ public class RecipesConfigurationLoader extends ConfigurationBase {
     }
     // endregion
 
-    // region Set "(substrate|restriction|yeast)" ItemStack into bean object
+    // region Set level
+    @Override
+    void setBrewingRecipeLevel() {
+        keyName = LEVEL;
+        String level = configurationSection.getString(LEVEL);
+        String levelPath = getPath(configurationSection, LEVEL);
+        if (StringUtils.isBlank(level)) {
+            noKeyFoundWarning(levelPath);
+            return;
+        }
+
+        if (!recipesLevelMap.containsKey(level)) {
+            valueIncorrectWarning(levelPath, level, ErrorEnum.RECIPE_LEVEL_NOT_MATCH);
+            return;
+        }
+
+        recipesBuilder.level(level);
+        level$set = true;
+    }
+    // endregion
+
+    // region Set (substrate|restriction|yeast) ItemStack
     @Override
     void setBrewingMaterialItemStack(final EnumBase materialType) {
         keyName = materialType.getString();
@@ -99,7 +125,7 @@ public class RecipesConfigurationLoader extends ConfigurationBase {
     }
     // endregion
 
-    // region Set "output" ItemStack into bean object
+    // region Set output ItemStack
     @Override
     void setBrewingOutputItemStack() {
         keyName = OUTPUT;
@@ -156,7 +182,7 @@ public class RecipesConfigurationLoader extends ConfigurationBase {
     }
     // endregion
 
-    // region Set "yield" into bean object
+    // region Set yield
     @Override
     void setBrewingYield() {
         keyName = YIELD;
@@ -209,7 +235,7 @@ public class RecipesConfigurationLoader extends ConfigurationBase {
     }
     // endregion
 
-    // region Set "index" into bean object
+    // region Set index
     @Override
     void setBrewingIndex() {
         keyName = INDEX;
@@ -270,7 +296,7 @@ public class RecipesConfigurationLoader extends ConfigurationBase {
     }
     // endregion
 
-    // region Set "cycle" into bean object
+    // region Set cycle
     @Override
     void setBrewingCycle() {
         keyName = BREWING_CYCLE;

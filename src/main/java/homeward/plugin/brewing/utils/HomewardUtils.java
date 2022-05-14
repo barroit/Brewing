@@ -1,6 +1,7 @@
 package homeward.plugin.brewing.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
@@ -10,6 +11,14 @@ import java.io.*;
 import java.util.Base64;
 
 public class HomewardUtils {
+    public static String getPath(ConfigurationSection section, String current) {
+        return section.getCurrentPath() + '.' + current;
+    }
+
+    public static String getPath(String path, String append) {
+        return path + '.' + append;
+    }
+
     public static int getIntervalRandom(int min, int max) {
         return min + (int) (Math.random() * (max - min + 1));
     }

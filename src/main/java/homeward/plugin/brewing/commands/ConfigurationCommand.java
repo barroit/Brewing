@@ -1,5 +1,6 @@
 package homeward.plugin.brewing.commands;
 
+import dev.lone.itemsadder.api.Events.ItemsAdderLoadDataEvent;
 import homeward.plugin.brewing.Brewing;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
 import me.mattstudios.mf.annotations.Alias;
@@ -15,6 +16,7 @@ public class ConfigurationCommand extends CommandBase {
     @Default
     public void reload(CommandSender commandSender) {
         ConfigurationUtils.reload();
+        commandSender.getServer().getPluginManager().callEvent(new ItemsAdderLoadDataEvent(true));
         commandSender.sendMessage(ChatColor.GREEN + "homeward journey brewing plugin configurations reloaded");
         Brewing.getInstance().update();
     }
