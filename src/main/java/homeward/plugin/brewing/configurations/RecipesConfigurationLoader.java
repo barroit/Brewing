@@ -2,20 +2,18 @@ package homeward.plugin.brewing.configurations;
 
 import com.google.gson.*;
 import homeward.plugin.brewing.beans.CustomItemStack;
-import homeward.plugin.brewing.beans.RecipesItem;
 import homeward.plugin.brewing.constants.RecipesConfiguration;
 import homeward.plugin.brewing.enumerates.EnumBase;
 import homeward.plugin.brewing.enumerates.ErrorEnum;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.math.RoundingMode;
-import java.util.Map;
 
 import static homeward.plugin.brewing.constants.RecipesConfiguration.*;
 import static homeward.plugin.brewing.utils.HomewardUtils.notInteger;
 import static homeward.plugin.brewing.utils.HomewardUtils.notNumeric;
 
-public class RecipesConfigurationLoader extends ConfigurationBase{
+public class RecipesConfigurationLoader extends ConfigurationBase {
     RecipesConfigurationLoader(String roundingPattern, RoundingMode roundingMode) {
         super(roundingPattern, roundingMode);
     }

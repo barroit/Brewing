@@ -20,6 +20,6 @@ public class MockFileConfigurationTest extends CommandBase {
 
     @Default
     public void defaultCommand(CommandSender commandSender) {
-        System.out.println(Brewing.getInstance().recipesMap().keySet());
+        commandSender.sendMessage(Brewing.getInstance().recipesMap().keySet() + "");
     }
 }

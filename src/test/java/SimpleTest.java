@@ -182,4 +182,22 @@ public class SimpleTest {
         }
         return false;
     }
+
+    @Test
+    void testRoundingMode() {
+        String roundingModeString = "floor";
+        RoundingMode[] roundingMode = {RoundingMode.HALF_UP};
+        try {
+            roundingMode[0] = RoundingMode.valueOf(roundingModeString.replaceAll("[-\\x20]", "_").toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignore) {
+            System.out.println(1);
+        }
+        System.out.println(Arrays.toString(roundingMode));
+    }
+
+    @Test
+    void testRoundingPattern() {
+        String roundingPatternString = "#.##";
+        System.out.println(roundingPatternString.matches("#\\.#{1,23}"));
+    }
 }

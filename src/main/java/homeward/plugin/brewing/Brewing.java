@@ -1,9 +1,6 @@
 package homeward.plugin.brewing;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import homeward.plugin.brewing.beans.RecipesItem;
 import homeward.plugin.brewing.commands.ConfigurationCommand;
 import homeward.plugin.brewing.commands.MainCommand;
@@ -17,8 +14,6 @@ import me.mattstudios.mf.base.CommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -49,8 +44,6 @@ public final class Brewing extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        loadRecipes(); // load recipes configuration
-
         CommandManager commandManager = new CommandManager(this);
         // register command here
         commandManager.register(new MainCommand());
@@ -106,17 +99,6 @@ public final class Brewing extends JavaPlugin {
         });
     }
 
-    private void loadRecipes() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                RecipesConfigurationLoader.RecipesConfigurationLoaderBuilder configurationLoaderBuilder = RecipesConfigurationLoader.builder();
-                RecipesConfigurationLoader recipesConfigurationLoader = configurationLoaderBuilder.roundingMode(RoundingMode.HALF_UP).roundingPattern("#.##").build();
-                recipesConfigurationLoader.load();
-            }
-        }.run();
-    }
-
     private void processFerment() {
         getServer().getWorlds().forEach(world -> {
             final Boolean[] shouldUpdate = {false};
@@ -138,11 +120,6 @@ public final class Brewing extends JavaPlugin {
         });
     }
 
-    private void setWorldMap() {
-        worldMap.clear();
-        getServer().getWorlds().forEach(world -> worldMap.put(world.getName(), world));
-    }
-
     @Override
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
@@ -157,6 +134,11 @@ public final class Brewing extends JavaPlugin {
     public Brewing recipesMap(String key, RecipesItem recipesItem) {
         this.recipesMap.put(key, recipesItem);
         return this;
+    }
+
+    private void setWorldMap() {
+        worldMap.clear();
+        getServer().getWorlds().forEach(world -> worldMap.put(world.getName(), world));
     }
 
     public Map<String, RecipesItem> recipesMap() {
