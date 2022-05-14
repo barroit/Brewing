@@ -1,5 +1,6 @@
 package homeward.plugin.brewing.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
@@ -76,5 +77,34 @@ public class HomewardUtils {
         }
 
         return decodedObject;
+    }
+
+    public static boolean notInteger(String integer) {
+        return Double.compare(2147483648.0, Double.parseDouble(integer)) <= 0 || Double.compare(-2147483649.0, Double.parseDouble(integer)) >= 0;
+    }
+
+    public static boolean notNumeric(final CharSequence cs) {
+        if (StringUtils.isEmpty(cs)) {
+            return true;
+        }
+        final int sz = cs.length();
+        boolean hasPeriod = false;
+        for (int i = 0; i < sz; i++) {
+            char c = cs.charAt(i);
+            if (!Character.isDigit(cs.charAt(i))) {
+                if (!hasPeriod && c == '.') {
+                    hasPeriod = true;
+                    continue;
+                } else if (i == 0) {
+                    if (c == '-') {
+                        continue;
+                    } else if (c == '+') {
+                        continue;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -3,7 +3,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
-import homeward.plugin.brewing.beans.SelectActionIndex;
 import homeward.plugin.brewing.utils.HomewardUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -118,18 +117,6 @@ public class SimpleTest {
         JsonObject asJsonObject = jsonElement.getAsJsonObject();
         JsonElement name = asJsonObject.get("name");
         System.out.println(name.getAsString());
-    }
-
-    @Test
-    void testSelectActionIndex() {
-        SelectActionIndex selectActionIndex = new SelectActionIndex("s", "r", "y");
-
-        SelectActionIndex selectActionIndex1 = new Gson().fromJson(selectActionIndex.toString(), SelectActionIndex.class);
-        System.out.println(selectActionIndex1);
-
-        JsonElement jsonElement = JsonParser.parseString(selectActionIndex.toString());
-        JsonObject asJsonObject = jsonElement.getAsJsonObject();
-        System.out.println(asJsonObject.get("substrate").getAsString());
     }
 
     @Test

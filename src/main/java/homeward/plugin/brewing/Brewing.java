@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import homeward.plugin.brewing.beans.RecipesItem;
 import homeward.plugin.brewing.commands.ConfigurationCommand;
 import homeward.plugin.brewing.commands.MainCommand;
 import homeward.plugin.brewing.commands.MockFileConfigurationTest;
+import homeward.plugin.brewing.configurations.RecipesConfigurationLoader;
 import homeward.plugin.brewing.constants.PluginInformation;
 import homeward.plugin.brewing.events.BrewDataProcessEvent;
 import homeward.plugin.brewing.utils.ConfigurationUtils;
@@ -22,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
 
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -29,8 +32,10 @@ public final class Brewing extends JavaPlugin {
     private static Brewing plugin;
     private final String packageName;
     @Getter private final static Map<String, World> worldMap = new LinkedHashMap<>();
+    @Deprecated
     @Getter private static final Map<String, JsonObject> configurationMap = new LinkedHashMap<>();
-    @Getter private static final Map<String, JsonObject> recipes = new LinkedHashMap<>();
+
+    private final Map<String, RecipesItem> recipesMap;
 
     /**
      * <h3>Get current plugin instance</h3>
@@ -44,6 +49,8 @@ public final class Brewing extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        loadRecipes(); // load recipes configuration
+
         CommandManager commandManager = new CommandManager(this);
         // register command here
         commandManager.register(new MainCommand());
@@ -64,6 +71,7 @@ public final class Brewing extends JavaPlugin {
         plugin = this;
         this.packageName = getClass().getPackageName();
         this.initializeConfiguration();
+        this.recipesMap = new LinkedHashMap<>();
     }
 
     private void initializeConfiguration() {
@@ -98,22 +106,16 @@ public final class Brewing extends JavaPlugin {
         });
     }
 
-    // private void processFerment() {
-    //     BukkitRunnable runnable = new BukkitRunnable() {
-    //         @Override
-    //         public void run() {
-    //             List<World> worlds = Bukkit.getServer().getWorlds();
-    //             worlds.forEach(world -> {
-    //                 if (world.getTime() == 1000) {
-    //                     commandSender.sendMessage(world.getName() + "的周期+1, 当前世界时间为" + world.getTime());
-    //                     //触发事件处理事件，传入世界和世界文件夹
-    //                     Bukkit.getServer().getPluginManager().callEvent(new BrewDataProcessEvent(world, world.getWorldFolder()));
-    //                 }
-    //             });
-    //         }
-    //     };
-    //     runnable.runTaskTimerAsynchronously(this, 0, 20);
-    // }
+    private void loadRecipes() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                RecipesConfigurationLoader.RecipesConfigurationLoaderBuilder configurationLoaderBuilder = RecipesConfigurationLoader.builder();
+                RecipesConfigurationLoader recipesConfigurationLoader = configurationLoaderBuilder.roundingMode(RoundingMode.HALF_UP).roundingPattern("#.##").build();
+                recipesConfigurationLoader.load();
+            }
+        }.run();
+    }
 
     private void processFerment() {
         getServer().getWorlds().forEach(world -> {
@@ -150,5 +152,14 @@ public final class Brewing extends JavaPlugin {
         Bukkit.getScheduler().cancelTasks(this);
         processFerment();
         setWorldMap();
+    }
+
+    public Brewing recipesMap(String key, RecipesItem recipesItem) {
+        this.recipesMap.put(key, recipesItem);
+        return this;
+    }
+
+    public Map<String, RecipesItem> recipesMap() {
+        return this.recipesMap;
     }
 }
