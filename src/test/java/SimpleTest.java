@@ -3,14 +3,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import homeward.plugin.brewing.beans.BarrelInventoryData;
 import homeward.plugin.brewing.utils.HomewardUtils;
+import io.lumine.mythic.utils.storage.sql.hikari.util.FastList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.InventoryView;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -204,5 +208,46 @@ public class SimpleTest {
             if (andIncrement > 4) return;
             System.out.println("" + andIncrement);
         });
+    }
+
+    @Test
+    void testBigDecimal() {
+        // 00  01  02  03  04  05  06  07  08
+        // 09  10  11  12  13  14  15  16  17
+        // 18  19  20  21  22  23  24  25  26
+        // 27  28  29  30  31  32  33  34  35
+        // 36  37  38  39  40  41  42  43  44
+        // 45  46  47  48  49  50  51  52  53
+
+        int start = 18;
+        List<Integer> list = new ArrayList<>();
+
+        boolean var3 = false, var4 = false;
+
+        for (int var1 = start, var2 = 2; var1 <= start + 3 * 9 - 1; var1 ++) {
+            var var5 = 9 * var2;
+            var var6 = 9 * (var2 + 1) - 1;
+
+            if (var5 == var1) {
+                var3 = true;
+                if (var4) {
+                    var2 ++;
+                    var3 = var4 = false;
+                }
+                continue;
+            }
+            if (var6 == var1) {
+                var4 = true;
+                if (var3) {
+                    var2 ++;
+                    var3 = var4 = false;
+                }
+                continue;
+            }
+
+            list.add(var1);
+        }
+
+        System.out.println(list);
     }
 }

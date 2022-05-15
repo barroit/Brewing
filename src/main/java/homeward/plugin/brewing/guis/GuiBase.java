@@ -1,5 +1,7 @@
 package homeward.plugin.brewing.guis;
 
-public abstract class GuiBase {
+import dev.triumphteam.gui.guis.BaseGui;
 
+public abstract class GuiBase {
+    // public abstract BaseGui getGui();
 }

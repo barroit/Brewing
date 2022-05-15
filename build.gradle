@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
     // Common Lang
-    compileOnly 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 
     // NBT API
     implementation 'de.tr7zw:item-nbt-api-plugin:2.9.2'
