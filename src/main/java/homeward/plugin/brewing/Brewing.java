@@ -58,7 +58,7 @@ public class Brewing extends JavaPlugin {
         plugin = this;
         this.initializeConfiguration();
         this.recipesMap = new LinkedHashMap<>();
-        this.recipesLevelMap = new LinkedHashMap<>();
+        this.recipesLevelMap = new TreeMap<>();
         this.worldMap = new LinkedHashMap<>();
     }
 

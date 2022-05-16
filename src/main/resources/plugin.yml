@@ -6,9 +6,12 @@ prefix: HomewardBrewing
 description: homewardjourney's brewing plugin
 website: https://fantang.cc
 
+depend:
+  - "ProtocolLib"
+
 softdepend:
-  - ItemsAdder
-  - MMOItems
+  - "ItemsAdder"
+  - "MMOItems"
 
 commands:
   homewardbrewing:

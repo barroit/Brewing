@@ -1,22 +1,28 @@
 package homeward.plugin.brewing.guis;
 
+import dev.triumphteam.gui.builder.gui.PaginatedBuilder;
 import dev.triumphteam.gui.guis.BaseGui;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
+import homeward.plugin.brewing.Brewing;
 import lombok.SneakyThrows;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static homeward.plugin.brewing.constants.RecipesPreviewGui.*;
+import static homeward.plugin.brewing.guis.RecipesPreviewGui.constants.*;
 
 public class RecipesPreviewGui extends GuiBase {
     private static volatile RecipesPreviewGui instance;
     private final PaginatedGui paginatedGui;
+    private final Map<String, String> recipesLevelMap;
+
     private final ItemStack ITEM_STACK_AIR = new ItemStack(Material.AIR);
     private final GuiItem GUI_ITEM_AIR = new GuiItem(Material.AIR);
 
@@ -24,13 +30,11 @@ public class RecipesPreviewGui extends GuiBase {
     public BaseGui getGui() {
         paginatedGui.setDefaultTopClickAction(event -> event.setCancelled(true));
 
-        // todo level showcase
-
-        // timing!
-
         setInoperableArea(); // Set Inoperable Area
 
-        setRecipes(); // Set Recipes
+        setLevelShowcase(); // Set Level Showcase
+
+        setRecipesShowcase(); // Set Recipes Showcase
 
         setPaginateButton(); // Set Paginate Button
 
@@ -38,6 +42,40 @@ public class RecipesPreviewGui extends GuiBase {
 
         return paginatedGui;
     }
+
+    // region Set Level Showcase
+    private void setLevelShowcase() {
+        switch (recipesLevelMap.size()) {
+            case SIZE_FOUR -> {
+                //  |0 1 2 3 4 5 6 7 8|
+                //  |  ^   ^   ^   ^  |
+                paginatedGui.setItem(SIZE_FOUR$1, new GuiItem(Material.PAPER));
+                paginatedGui.setItem(SIZE_FOUR$2, new GuiItem(Material.PAPER));
+                paginatedGui.setItem(SIZE_FOUR$3, new GuiItem(Material.PAPER));
+                paginatedGui.setItem(SIZE_FOUR$4, new GuiItem(Material.PAPER));
+            }
+            case SIZE_THREE -> {
+                //  |0 1 2 3 4 5 6 7 8|
+                //  |  ^     ^     ^  |
+                paginatedGui.setItem(SIZE_THREE$1, new GuiItem(Material.PAPER));
+                paginatedGui.setItem(SIZE_THREE$2, new GuiItem(Material.PAPER));
+                paginatedGui.setItem(SIZE_THREE$3, new GuiItem(Material.PAPER));
+            }
+            case SIZE_TWO -> {
+                //  |0 1 2 3 4 5 6 7 8|
+                //  |  ^           ^  |
+                paginatedGui.setItem(SIZE_TWO$1, new GuiItem(Material.PAPER));
+                paginatedGui.setItem(SIZE_TWO$2, new GuiItem(Material.PAPER));
+            }
+            case SIZE_ONE -> {
+                //  |0 1 2 3 4 5 6 7 8|
+                //  |        ^        |
+                paginatedGui.setItem(SIZE_ONE$1, new GuiItem(Material.PAPER));
+            }
+            default -> throw new RuntimeException("The Recipes Level Map Has An Error. This is a brewing plugin internal bug!");
+        }
+    }
+    // endregion
 
     // region Set Gui Open Action
     private void setGuiOpenAction() {
@@ -91,7 +129,7 @@ public class RecipesPreviewGui extends GuiBase {
     // endregion
 
     // region Set Recipes
-    private void setRecipes() {
+    private void setRecipesShowcase() {
         for (var i = 0; i < 10; i ++) {
             paginatedGui.addItem(new GuiItem(Material.RED_WOOL));
         }
@@ -159,19 +197,54 @@ public class RecipesPreviewGui extends GuiBase {
     // endregion
 
     // region Get Class Instance
-    private RecipesPreviewGui(Component title, int rows, int pageSize) {
-        paginatedGui = Gui.paginated().title(title).rows(rows).pageSize(pageSize).create();
+    private RecipesPreviewGui(int rows, int pageSize) {
+        recipesLevelMap = Brewing.getInstance().recipesLevelMap();
+        PaginatedBuilder guiBuilder = Gui.paginated();
+        switch (recipesLevelMap.size()) {
+            case SIZE_FOUR -> guiBuilder.title(Component.text("4", NamedTextColor.WHITE));
+            case SIZE_THREE -> guiBuilder.title(Component.text("3", NamedTextColor.WHITE));
+            case SIZE_TWO -> guiBuilder.title(Component.text("2", NamedTextColor.WHITE));
+            case SIZE_ONE -> guiBuilder.title(Component.text("1", NamedTextColor.WHITE));
+            default -> throw new RuntimeException("The Recipes Level Map Has An Error. This is a brewing plugin internal bug!");
+        }
+        paginatedGui = guiBuilder.rows(rows).pageSize(pageSize).create();
     }
 
-    public static RecipesPreviewGui getInstance(Component title, int rows, int pageSize) {
+    public static RecipesPreviewGui getInstance(int rows, int pageSize) {
         if (null == instance) {
             synchronized (RecipesPreviewGui.class) {
                 if (null == instance) {
-                    instance = new RecipesPreviewGui(title, rows, pageSize);
+                    instance = new RecipesPreviewGui(rows, pageSize);
                 }
             }
         }
         return instance;
+    }
+    // endregion
+
+    // region Constants
+    static class constants {
+        static final int SLOT_NEXT = 52;
+        static final int SLOT_PREV = 46;
+
+        static final int SIZE_FOUR = 4;
+        static final int SIZE_THREE = 3;
+        static final int SIZE_TWO = 2;
+        static final int SIZE_ONE = 1;
+
+        static final int SIZE_FOUR$1 = 1;
+        static final int SIZE_FOUR$2 = 3;
+        static final int SIZE_FOUR$3 = 5;
+        static final int SIZE_FOUR$4 = 7;
+
+        static final int SIZE_THREE$1 = 1;
+        static final int SIZE_THREE$2 = 4;
+        static final int SIZE_THREE$3 = 7;
+
+        static final int SIZE_TWO$1 = 1;
+        static final int SIZE_TWO$2 = 7;
+
+        static final int SIZE_ONE$1 = 4;
     }
     // endregion
 }
