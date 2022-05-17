@@ -27,7 +27,7 @@ public class TestRecipesPreviewGui extends CommandBase {
 
     @Default
     public void defaultAction(CommandSender commandSender) {
-        Player player = (Player) commandSender;
+        // Player player = (Player) commandSender;
         //
         // ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         //
@@ -36,14 +36,14 @@ public class TestRecipesPreviewGui extends CommandBase {
         //
         // protocolManager.sendServerPacket((Player) commandSender, );
 
-        // Player player = (Player) commandSender;
-        //
-        // if (playerGuiInstanceMap.containsKey(player)) {
-        //     playerGuiInstanceMap.get(player).open(player);
-        // } else {
-        //     BaseGui gui = RecipesPreviewGui.getInstance(6, 21).getGui();
-        //     gui.open(player);
-        //     playerGuiInstanceMap.put(player, gui);
-        // }
+        Player player = (Player) commandSender;
+
+        if (playerGuiInstanceMap.containsKey(player)) {
+            playerGuiInstanceMap.get(player).open(player);
+        } else {
+            BaseGui gui = RecipesPreviewGui.getInstance(6, 21).getGui();
+            gui.open(player);
+            playerGuiInstanceMap.put(player, gui);
+        }
     }
 }
