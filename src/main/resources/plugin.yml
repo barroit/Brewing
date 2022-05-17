@@ -2,3 +2,7 @@ name: Brewing
 version: '${version}'
 main: homeward.plugin.brewing.Main
 api-version: 1.18
+prefix: HomewardBrewing
+
+depend:
+  - "ProtocolLib"

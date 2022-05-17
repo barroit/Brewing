@@ -1,23 +1,78 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
 }
 
 group = 'homeward.plugin'
 
+
 repositories {
     mavenCentral()
     maven {
-        name = 'papermc-repo'
-        url = 'https://papermc.io/repo/repository/maven-public/'
+        name 'codemc-repo'
+        url 'https://repo.codemc.org/repository/maven-public/'
     }
     maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
+        name 'jitpack-repo'
+        url 'https://jitpack.io'
+    }
+    maven {
+        name 'papermc-repo'
+        url 'https://papermc.io/repo/repository/maven-public/'
+    }
+    maven {
+        name 'sonatype'
+        url 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        name 'mattstudios'
+        url 'https://repo.mattstudios.me/artifactory/public/'
+    }
+    maven {
+        name 'lumine'
+        url 'https://mvn.lumine.io/repository/maven-public/'
+    }
+    maven {
+        name 'dmulloy2'
+        url "https://repo.dmulloy2.net/repository/public/"
     }
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT'
+    // Common Lang
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+    // NBT API
+    implementation 'de.tr7zw:item-nbt-api-plugin:2.9.2'
+
+    // Reflections
+    implementation 'org.reflections:reflections:0.10.2'
+
+    // Junit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+    // Matt Framework
+    implementation "me.mattstudios.utils:matt-framework:1.4.6"
+
+    // Triumph
+    implementation "dev.triumphteam:triumph-gui:3.1.2"
+
+    // Paper Minecraft
+    compileOnly ('io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT') {
+        exclude group:"commons-lang", module:"commons-lang"
+    }
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.9.0'
+
+    // ProtocolLib
+    compileOnly "com.comphenix.protocol:ProtocolLib:4.8.0"
 }
 
 def targetJavaVersion = 17
@@ -30,10 +85,22 @@ java {
     }
 }
 
+shadowJar {
+    minimize()
+    archiveBaseName.set('HomewardBrewing')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
+
+test {
+    useJUnitPlatform()
+}
+
 tasks.withType(JavaCompile).configureEach {
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         options.release = targetJavaVersion
     }
+    options.encoding = "UTF-8"
 }
 
 processResources {
@@ -42,5 +109,14 @@ processResources {
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
         expand props
+    }
+}
+
+tasks.withType(Jar) {
+    def serverDir = serverDirectory.toString()
+    if (!(serverDir == null || serverDir.isBlank())) {
+        destinationDirectory.set(file(serverDir))
+    } else {
+        System.err.println("you may need to set the server plugin directory in gradle.properties")
     }
 }
