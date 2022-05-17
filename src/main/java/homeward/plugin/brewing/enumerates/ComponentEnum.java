@@ -21,6 +21,11 @@ public enum ComponentEnum implements EnumBase {
     NEGATIVE_66(Component.text("\uF80B")),
     NEGATIVE_130(Component.text("\uF80C")),
 
+    GUI_RECIPES_PREVIEW_CONTAINER(Component.text("\uF114")),
+    GUI_RECIPES_PREVIEW_CONTAINER_LVL1(Component.text("\uF115")),
+    GUI_RECIPES_PREVIEW_CONTAINER_LVL3(Component.text("\uF116")),
+    GUI_RECIPES_PREVIEW_CONTAINER_LVL4(Component.text("\uF117")),
+
     GUI_CONTAINER(Component.text("\uF001")),
     GUI_BARREL(Component.text("\uF005")),
     GUI_SUBSTRATE(Component.text("\uF002")),

@@ -1,9 +1,5 @@
 package homeward.plugin.brewing.commands;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
 import dev.triumphteam.gui.guis.BaseGui;
 import homeward.plugin.brewing.guis.RecipesPreviewGui;
 import lombok.experimental.Accessors;
