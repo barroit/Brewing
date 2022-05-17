@@ -1,19 +1,4 @@
 name: Brewing
-version: 1.1.0
-main: homeward.plugin.brewing.Brewing
+version: '${version}'
+main: homeward.plugin.brewing.Main
 api-version: 1.18
-prefix: HomewardBrewing
-description: homewardjourney's brewing plugin
-website: https://fantang.cc
-
-depend:
-  - "ProtocolLib"
-
-softdepend:
-  - "ItemsAdder"
-  - "MMOItems"
-
-commands:
-  homewardbrewing:
-    description: 协调酿酒主要指令
-    usage: /<command>
