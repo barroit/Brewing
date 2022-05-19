@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Map;
@@ -20,7 +21,7 @@ import java.util.TreeMap;
 public final class Main extends JavaPlugin {
     private static Main plugin;
     @Getter(lazy = true) private final static String packageName = Main.class.getPackageName();
-    Map<String, String> recipesLevelMap;
+    Map<String, ItemStack> recipesLevelMap;
 
     @Override
     public void onEnable() {
@@ -57,8 +58,8 @@ public final class Main extends JavaPlugin {
     // endregion
 
     // region Set recipes level map
-    public void recipesLevelMap(String level, String display) {
-        this.recipesLevelMap.put(level, display);
+    public void recipesLevelMap(String level, ItemStack icon) {
+        this.recipesLevelMap.put(level, icon);
     }
     // endregion
 }

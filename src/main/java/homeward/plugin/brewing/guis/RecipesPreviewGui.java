@@ -23,7 +23,7 @@ import static homeward.plugin.brewing.utilities.GuiUtils.*;
 public class RecipesPreviewGui {
     private static volatile RecipesPreviewGui instance;
     private final PaginatedGui paginatedGui;
-    private final Map<String, String> recipesLevelMap;
+    private final Map<String, ItemStack> recipesLevelMap;
 
     private final ItemStack NEXT_BUTTON = new ItemStack(Material.PAPER);
     private final ItemStack PREV_BUTTON = new ItemStack(Material.PAPER);

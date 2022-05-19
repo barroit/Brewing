@@ -12,9 +12,25 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 
 @UtilityClass
 public class BrewingUtils {
+    public static boolean isRGBFormat(List<?> list) {
+        boolean pass = true;
+
+        for (Object var1 : list) {
+            Integer var2 = (Integer) var1;
+
+            if (var2 < 0 || var2 > 255) {
+                pass = false;
+                break;
+            }
+        }
+
+        return pass;
+    }
+
     public static String getPath(ConfigurationSection section, String current) {
         return section.getCurrentPath() + '.' + current;
     }
@@ -92,8 +108,8 @@ public class BrewingUtils {
         return decodedObject;
     }
 
-    public static boolean notInteger(String integer) {
-        return Double.compare(2147483648.0, Double.parseDouble(integer)) <= 0 || Double.compare(-2147483649.0, Double.parseDouble(integer)) >= 0;
+    public static boolean isInteger(String integer) {
+        return Double.compare(2147483648.0, Double.parseDouble(integer)) > 0 && Double.compare(-2147483649.0, Double.parseDouble(integer)) < 0;
     }
 
     public static boolean notNumeric(final CharSequence cs) {

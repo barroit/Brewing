@@ -66,3 +66,29 @@ wine:
     yeast-index: 0.5 # 酵母对产量影响的系数
     yield-index: 1 # 产出最后结算的系数
   brewing-cycle: 1 # 酿造周期 类型 Int 天数
+
+
+perry:
+  level: 1
+  display-name: "&asparkling-wine"
+  substrate: # 底物 哪些水果塞进去 类型 ItemStack
+    - provider: "Vanilla"
+      item:
+        material: "POTION"
+        custom-model-data: 114514
+        quantity: 4
+  restriction: # 可以接受哪些抑制剂 类型 ItemStack
+  yeast: # 可以接收哪些酵母菌 类型 ItemStack
+  output: # 拿装酒仪器点击后产出的物品/最终输出 (ItemStack)
+    provider: "Vanilla"
+    item:
+      material: "POTION"
+      potion-type: "SPEED"
+  yield: # 产量
+    max: 1 # 最大产量
+    min: 1 # 最小产量
+  index:
+    restriction-index: 0.5 # 抑制剂对产量影响的系数 全局
+    yeast-index: 0.5 # 酵母对产量影响的系数
+    yield-index: 1 # 产出最后结算的系数
+  brewing-cycle: 1 # 酿造周期 类型 Int 天数

@@ -1,54 +1,66 @@
 package homeward.plugin.brewing.loaders;
 
+import com.google.gson.*;
 import homeward.plugin.brewing.Main;
-import org.apache.commons.lang3.StringUtils;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 public class RecipesLevelLoader {
     private final Main plugin;
+    private final LevelDefaultLoader levelDefaultLoader;
 
     private RecipesLevelLoader() {
         plugin = Main.getInstance();
+        levelDefaultLoader = new LevelDefaultLoader();
     }
 
     public boolean load() {
         if (plugin.recipesLevelMap().size() != 0) plugin.recipesLevelMap().clear();
-        List<Map<?, ?>> recipeLevelListMap = plugin.getConfig().getMapList(RECIPE_LEVEL);
-        if (recipeLevelListMap.size() < 1) {
+        String recipeLevelString = plugin.getConfig().getString("recipe-level");
+        if (recipeLevelString == null) {
             plugin.getSLF4JLogger().error("Brewing plugin cannot working without recipe level. This plugin will be disable");
             plugin.disable();
             return false;
         }
+        JsonArray recipeLevelElements = new Gson().fromJson(recipeLevelString.replaceAll("=", ":"), JsonArray.class);
 
-        AtomicInteger count = new AtomicInteger(1);
-        recipeLevelListMap.forEach(map -> setRecipesLevelMap(map, count));
+        recipeLevelElements.forEach(jsonElement -> {
+            JsonObject recipeLevelObject = jsonElement.getAsJsonObject();
+
+            JsonElement levelElement = recipeLevelObject.get("level");
+            if (levelElement == null || levelElement instanceof JsonNull) {
+                String message = String.format("The level of the array from %s in config.yml is empty", "recipe-level");
+                plugin.getSLF4JLogger().warn(message);
+                return;
+            }
+
+            JsonElement itemElement = recipeLevelObject.get("item");
+            if (itemElement == null || itemElement instanceof JsonNull) {
+                String message = String.format("The item of the array from %s in config.yml is empty", "recipe-level");
+                plugin.getSLF4JLogger().warn(message);
+                return;
+            }
+
+            JsonObject itemObject = itemElement.getAsJsonObject();
+            JsonElement providerElement = itemObject.get("provider"); // nullable
+
+            if (providerElement == null || providerElement instanceof JsonNull || providerElement.getAsString().equals("default")) { // default
+                ItemStack levelIcon = levelDefaultLoader.load(itemObject);
+                if (levelIcon == null) return;
+                plugin.recipesLevelMap(levelElement.getAsString(), levelIcon);
+                return;
+            }
+        });
+
+        System.out.println(plugin.recipesLevelMap());
+
         if (plugin.recipesLevelMap().size() < 1) {
             plugin.getSLF4JLogger().error("Brewing plugin cannot working without recipe level. This plugin will be disable");
             plugin.disable();
             return false;
         }
         return true;
-    }
-
-    void setRecipesLevelMap(final Map<?, ?> map, AtomicInteger countdown) {
-        Object level = map.get(LEVEL);
-        int count = countdown.getAndIncrement();
-        if (level == null || StringUtils.isBlank(level.toString())) {
-            String message = String.format("The level of the array index %d from %s in config.yml is empty", count - 1, RECIPE_LEVEL);
-            plugin.getSLF4JLogger().warn(message);
-            return;
-        }
-        Object displayName = map.get(DISPLAY_NAME);
-        if (displayName == null || StringUtils.isBlank(displayName.toString())) {
-            String message = String.format("The display name of the array index %d from %s in config.yml is empty", count - 1, RECIPE_LEVEL);
-            plugin.getSLF4JLogger().warn(message);
-            return;
-        }
-        if (plugin.recipesLevelMap().size() > 3) return;
-        plugin.recipesLevelMap(level.toString(), displayName.toString());
     }
 
     private static class LoaderInstance {
@@ -59,8 +71,9 @@ public class RecipesLevelLoader {
         return LoaderInstance.instance;
     }
 
-    public static final String RECIPE_LEVEL = "recipe-level";
-    public static final String LEVEL = "level";
-    public static final String DISPLAY_NAME = "display-name";
+    public static final Map<String, Integer> levelMap = new LinkedHashMap<>();
 
+    static {
+        levelMap.put("default", 114500);
+    }
 }

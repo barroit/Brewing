@@ -1,7 +1,9 @@
 rounding-mode: "HALF_UP"
 rounding-pattern: "#.##"
 recipe-level:
-  - {level: 1, display-name: "garbage"}
-  - {level: 2, display-name: "regular"}
-  - {level: 3, display-name: "rare"}
-  - {level: 4, display-name: "mythic"}
+  - level: 1
+    item:
+      id: "default"
+      display:
+        name: "default"
+        color: [ 255, 192, 203 ]
