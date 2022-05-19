@@ -53,31 +53,33 @@ public class RecipesPreviewGui {
 
     // region Set Level Showcase
     private void setLevelShowcase() {
+        Object[] levelIconArray = recipesLevelMap.values().toArray();
         switch (recipesLevelMap.size()) {
             //  |0 1 2 3 4 5 6 7 8|
             //  |  ^   ^   ^   ^  |
             case SIZE_FOUR -> {
-                paginatedGui.setItem(SIZE_FOUR$1, new GuiItem(Material.PINK_STAINED_GLASS_PANE));
-                paginatedGui.setItem(SIZE_FOUR$2, new GuiItem(Material.MAGENTA_STAINED_GLASS_PANE));
-                paginatedGui.setItem(SIZE_FOUR$3, new GuiItem(Material.YELLOW_STAINED_GLASS_PANE));
-                paginatedGui.setItem(SIZE_FOUR$4, new GuiItem(Material.LIME_STAINED_GLASS_PANE));
+                paginatedGui.setItem(SIZE_FOUR$1, new GuiItem((ItemStack) levelIconArray[0]));
+                paginatedGui.setItem(SIZE_FOUR$2, new GuiItem((ItemStack) levelIconArray[1]));
+                paginatedGui.setItem(SIZE_FOUR$3, new GuiItem((ItemStack) levelIconArray[2]));
+                paginatedGui.setItem(SIZE_FOUR$4, new GuiItem((ItemStack) levelIconArray[3]));
             }
             //  |0 1 2 3 4 5 6 7 8|
             //  |  ^     ^     ^  |
             case SIZE_THREE -> {
-                paginatedGui.setItem(SIZE_THREE$1, new GuiItem(Material.MAGENTA_STAINED_GLASS_PANE));
-                paginatedGui.setItem(SIZE_THREE$2, new GuiItem(Material.PINK_STAINED_GLASS_PANE));
-                paginatedGui.setItem(SIZE_THREE$3, new GuiItem(Material.LIME_STAINED_GLASS_PANE));
+                paginatedGui.setItem(SIZE_THREE$1, new GuiItem((ItemStack) levelIconArray[0]));
+                paginatedGui.setItem(SIZE_THREE$2, new GuiItem((ItemStack) levelIconArray[1]));
+                paginatedGui.setItem(SIZE_THREE$3, new GuiItem((ItemStack) levelIconArray[2]));
             }
             //  |0 1 2 3 4 5 6 7 8|
             //  |  ^           ^  |
             case SIZE_TWO -> {
-                paginatedGui.setItem(SIZE_TWO$1, new GuiItem(Material.YELLOW_STAINED_GLASS_PANE));
-                paginatedGui.setItem(SIZE_TWO$2, new GuiItem(Material.PINK_STAINED_GLASS_PANE));
+                paginatedGui.setItem(SIZE_TWO$1, new GuiItem((ItemStack) levelIconArray[0]));
+                paginatedGui.setItem(SIZE_TWO$2, new GuiItem((ItemStack) levelIconArray[1]));
             }
             //  |0 1 2 3 4 5 6 7 8|
             //  |        ^        |
-            case SIZE_ONE -> paginatedGui.setItem(SIZE_ONE$1, new GuiItem(Material.PINK_STAINED_GLASS_PANE));
+            case SIZE_ONE -> paginatedGui.setItem(SIZE_ONE$1, new GuiItem((ItemStack) levelIconArray[0]));
+            // GG
             default -> throw new RuntimeException("The Recipes Level Map Has An Error. This is a brewing plugin internal bug!");
         }
     }

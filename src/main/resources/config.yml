@@ -3,7 +3,25 @@ rounding-pattern: "#.##"
 recipe-level:
   - level: 1
     item:
-      id: "default"
+      id: "first"
       display:
-        name: "default"
-        color: [ 255, 192, 203 ]
+        name: "level 1"
+        color: [255,0,255]
+  - level: 2
+    item:
+      id: "second"
+      display:
+        name: "level 2"
+        color: [148,0,211]
+  - level: 3
+    item:
+      id: "third"
+      display:
+        name: "level 3"
+        color: [0,191,255]
+  - level: 4
+    item:
+      id: "fourth"
+      display:
+        name: "level 4"
+        color: [124,252,0]

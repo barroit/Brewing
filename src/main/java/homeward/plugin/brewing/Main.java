@@ -25,7 +25,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if (!RecipesLevelLoader.getInstance().load()) {
+        if (!RecipesLevelLoader.getInstance().loadLevelList()) {
             return;
         }
 

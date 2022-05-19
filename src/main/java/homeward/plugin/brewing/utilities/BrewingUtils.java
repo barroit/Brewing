@@ -1,5 +1,7 @@
 package homeward.plugin.brewing.utilities;
 
+import homeward.plugin.brewing.Main;
+import homeward.plugin.brewing.enumerates.EnumBase;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,7 +18,17 @@ import java.util.List;
 
 @UtilityClass
 public class BrewingUtils {
-    public static boolean isRGBFormat(List<?> list) {
+    public void noKeyFoundWarning(String path, String file) {
+        String message = String.format("cannot read %s in %s, does the key exist or the value not null?", path, "config.yml");
+        Main.getInstance().getSLF4JLogger().warn(message);
+    }
+
+    public void valueIncorrectWarning(String path, Object value, String file, EnumBase errorEnum) {
+        String message = String.format("cannot read %s:%s in %s, caused by %s", path, value, file, errorEnum.getString());
+        Main.getInstance().getSLF4JLogger().warn(message);
+    }
+
+    public boolean isRGBFormat(List<?> list) {
         boolean pass = true;
 
         for (Object var1 : list) {
@@ -31,19 +43,19 @@ public class BrewingUtils {
         return pass;
     }
 
-    public static String getPath(ConfigurationSection section, String current) {
+    public String getPath(ConfigurationSection section, String current) {
         return section.getCurrentPath() + '.' + current;
     }
 
-    public static String getPath(String path, String append) {
+    public String getPath(String path, String append) {
         return path + '.' + append;
     }
 
-    public static int getIntervalRandom(int min, int max) {
+    public int getIntervalRandom(int min, int max) {
         return min + (int) (Math.random() * (max - min + 1));
     }
 
-    public static byte[] serializeAsBytes(@NotNull Object object) {
+    public byte[] serializeAsBytes(@NotNull Object object) {
         byte[] encodeObject = null;
 
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -76,7 +88,7 @@ public class BrewingUtils {
         return encodeObject;
     }
 
-    public static @Nullable Object deserializeBytes(byte[] bytes) {
+    public @Nullable Object deserializeBytes(byte[] bytes) {
         if (bytes == null) return null;
         Object decodedObject = null;
 
@@ -108,11 +120,11 @@ public class BrewingUtils {
         return decodedObject;
     }
 
-    public static boolean isInteger(String integer) {
+    public boolean isInteger(String integer) {
         return Double.compare(2147483648.0, Double.parseDouble(integer)) > 0 && Double.compare(-2147483649.0, Double.parseDouble(integer)) < 0;
     }
 
-    public static boolean notNumeric(final CharSequence cs) {
+    public boolean notNumeric(final CharSequence cs) {
         if (StringUtils.isEmpty(cs)) {
             return true;
         }

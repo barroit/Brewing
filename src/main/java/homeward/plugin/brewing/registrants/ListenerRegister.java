@@ -1,6 +1,7 @@
 package homeward.plugin.brewing.registrants;
 
 import homeward.plugin.brewing.Main;
+import homeward.plugin.brewing.utilities.BrewingUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
@@ -9,12 +10,10 @@ import org.reflections.Reflections;
 
 import java.util.Set;
 
-import static homeward.plugin.brewing.utilities.BrewingUtils.getPath;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ListenerRegister {
     public void register() {
-        String listenerPath = getPath(Main.packageName(), LISTENER_PACKAGE_NAME);
+        String listenerPath = BrewingUtils.getPath(Main.packageName(), LISTENER_PACKAGE_NAME);
         Set<Class<? extends Listener>> classes = new Reflections(listenerPath).getSubTypesOf(Listener.class);
         classes.forEach(var -> {
             try {

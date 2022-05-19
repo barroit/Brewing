@@ -1,6 +1,7 @@
 package homeward.plugin.brewing.registrants;
 
 import homeward.plugin.brewing.Main;
+import homeward.plugin.brewing.utilities.BrewingUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import me.mattstudios.mf.base.CommandBase;
@@ -10,8 +11,6 @@ import org.reflections.Reflections;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import static homeward.plugin.brewing.utilities.BrewingUtils.getPath;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommandRegister {
@@ -26,7 +25,7 @@ public class CommandRegister {
     }
 
     private void getCommandClassInstance() {
-        String commandPath = getPath(Main.packageName(), COMMAND_PACKAGE_NAME);
+        String commandPath = BrewingUtils.getPath(Main.packageName(), COMMAND_PACKAGE_NAME);
         Set<Class<? extends CommandBase>> classes = new Reflections(commandPath).getSubTypesOf(CommandBase.class);
 
         classes.forEach(var -> {

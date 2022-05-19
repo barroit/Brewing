@@ -4,12 +4,17 @@
 > some blank: \uF170 ~ \uF200
 
 ### custom model data
-> levels: 114500 ~ 114513
+> levels: paper(114500 ~ 114513)
 > 
-> gui components: 114514 ~ 114599
+> gui components: paper(114514 ~ 114599)
 > 
-> substrate: 114600 ~ 114699
+> substrate: tropical_fish(114600 ~ 114699)
 >
-> potions: 114700 ~ 114799
+> potions: potion(114700 ~ 114799)
 > 
-> yeast: 114800 ~ 114899
+> yeast: paper(114800 ~ 114899)
+
+
+# 特别鸣谢
+## 技术支持: [Caizii](https://github.com/Caishangqi)
+## 美术支持: 桶
