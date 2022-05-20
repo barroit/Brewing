@@ -2,6 +2,7 @@ package homeward.plugin.brewing.commands;
 
 import dev.triumphteam.gui.guis.BaseGui;
 import homeward.plugin.brewing.guis.RecipesPreviewGui;
+import homeward.plugin.brewing.loaders.ItemPropertiesLoader;
 import me.mattstudios.mf.annotations.Alias;
 import me.mattstudios.mf.annotations.Command;
 import me.mattstudios.mf.annotations.Default;
@@ -11,8 +12,10 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,12 +32,14 @@ public class MockRecipesPreviewTest extends CommandBase {
     public void defaultAction(CommandSender commandSender) {
         Player player = (Player) commandSender;
 
-        if (playerGuiInstanceMap.containsKey(player)) {
-            playerGuiInstanceMap.get(player).open(player);
-        } else {
-            BaseGui gui = RecipesPreviewGui.getInstance(6, 21).getGui();
-            gui.open(player);
-            playerGuiInstanceMap.put(player, gui);
-        }
+        ItemPropertiesLoader.getInstance().loadItems();
+
+        // if (playerGuiInstanceMap.containsKey(player)) {
+        //     playerGuiInstanceMap.get(player).open(player);
+        // } else {
+        //     BaseGui gui = RecipesPreviewGui.getInstance(6, 21).getGui();
+        //     gui.open(player);
+        //     playerGuiInstanceMap.put(player, gui);
+        // }
     }
 }

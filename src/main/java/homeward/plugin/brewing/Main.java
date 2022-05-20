@@ -25,17 +25,23 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if (!RecipesLevelLoader.getInstance().loadLevelList()) {
-            return;
-        }
+        // 我需要把配置文件的读取和存储写好
 
-        CommandRegister.getInstance().register();
-        ListenerRegister.getInstance().register();
+
+
+
+
+        // if (!RecipesLevelLoader.getInstance().loadLevelList()) {
+        //     return;
+        // }
+
+        // CommandRegister.getInstance().register();
+        // ListenerRegister.getInstance().register();
     }
 
     public Main() {
         plugin = this;
-        this.initializeConfiguration();
+        // this.initializeConfiguration();
         this.recipesLevelMap = new TreeMap<>();
     }
 

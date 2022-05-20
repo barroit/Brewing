@@ -2,7 +2,6 @@ package homeward.plugin.brewing.loaders;
 
 import com.google.gson.*;
 import homeward.plugin.brewing.Main;
-import homeward.plugin.brewing.enumerates.EnumBase;
 import homeward.plugin.brewing.enumerates.ErrorEnum;
 import homeward.plugin.brewing.loaders.RecipesLevelLoader.Constants.Fields;
 import homeward.plugin.brewing.utilities.BrewingUtils;
@@ -56,6 +55,7 @@ public class RecipesLevelLoader {
 
             ItemStack levelIcon;
 
+            // region Set ItemStack
             if (providerElement == null || providerElement instanceof JsonNull || providerElement.getAsString().equals(Fields.level_default)) { // default
                 JsonElement idElement = itemObject.get(Fields.id);
                 String itemIdPath = BrewingUtils.getPath(itemPath, Fields.id);
@@ -65,7 +65,7 @@ public class RecipesLevelLoader {
                 }
                 String id = idElement.getAsString();
                 if (!defaultLevelMap.containsKey(id)) {
-                    valueIncorrectWarning(itemIdPath, id, ErrorEnum.VALUE_INCORRECT);
+                    valueIncorrectWarning(itemIdPath, id);
                     return;
                 }
 
@@ -80,7 +80,7 @@ public class RecipesLevelLoader {
                 }
                 Material material = Material.getMaterial(materialElement.getAsString());
                 if (material == null) {
-                    valueIncorrectWarning(itemMaterialPath, materialElement.getAsString(), ErrorEnum.VALUE_INCORRECT);
+                    valueIncorrectWarning(itemMaterialPath, materialElement.getAsString());
                     return;
                 }
 
@@ -88,11 +88,18 @@ public class RecipesLevelLoader {
                 levelIcon = loadLevelList(itemObject, material, material.name(), customModelDataElement != null && BrewingUtils.isInteger(customModelDataElement.getAsString()) ? customModelDataElement.getAsInt() : 0);
 
             } else {
-                valueIncorrectWarning(providerPath, providerElement.getAsString(), ErrorEnum.VALUE_INCORRECT);
+                valueIncorrectWarning(providerPath, providerElement.getAsString());
                 return;
+            }
+            // endregion
+
+            JsonElement loreElement = recipeLevelObject.get(Fields.lore);
+            if (loreElement != null && !(loreElement instanceof JsonNull)) {
+                levelIcon.editMeta(ItemMeta.class, meta -> this.setLore(meta, loreElement));
             }
 
             plugin.recipesLevelMap(levelElement.getAsString(), levelIcon);
+
             atomicInteger.incrementAndGet();
         });
 
@@ -104,6 +111,33 @@ public class RecipesLevelLoader {
 
         return true;
     }
+
+    // region Set Icon Lore
+    private void setLore(final ItemMeta meta, JsonElement jsonElement) {
+        List<Component> components = new LinkedList<>();
+        JsonArray loreArray = jsonElement.getAsJsonArray();
+        if (loreArray.size() < 1) return;
+
+        loreArray.forEach(loreElement -> {
+            if (loreElement == null || loreElement instanceof JsonNull) {
+                components.add(Component.text(""));
+            } else if (loreElement.isJsonObject()) {
+                JsonObject loreObject = loreElement.getAsJsonObject();
+                JsonElement textElement = loreObject.get(Fields.text);
+                if (textElement == null || textElement instanceof JsonNull) {
+                    components.add(Component.text(""));
+                    return;
+                }
+                components.add(this.setTextComponent(ChatColor.translateAlternateColorCodes('&', loreElement.getAsString()), loreObject.get(Fields.color)));
+            } else {
+                String lore = ChatColor.translateAlternateColorCodes('&', loreElement.getAsString());
+                components.add(Component.text(lore));
+            }
+        });
+
+        meta.lore(components);
+    }
+    // endregion
 
     // region Get Item Level Showcase Icon
     private @NotNull ItemStack loadLevelList(JsonObject itemObject, Material materialType, String materialName, int customModelData) {
@@ -122,40 +156,43 @@ public class RecipesLevelLoader {
                     name = nameElement.getAsString();
                 }
 
-                name = ChatColor.translateAlternateColorCodes('&', name);
-                TextComponent text;
-
                 JsonElement colorElement = displayObjet.get("color");
-                if (colorElement != null) {
-                    Integer red = null, green = null, blue = null;
-
-                    JsonElement redElement = colorElement.getAsJsonArray().get(0);
-                    if (redElement != null && BrewingUtils.isInteger(redElement.getAsString())) {
-                        red = redElement.getAsInt();
-                    }
-                    JsonElement greenElement = colorElement.getAsJsonArray().get(1);
-                    if (greenElement != null && BrewingUtils.isInteger(greenElement.getAsString())) {
-                        green = greenElement.getAsInt();
-                    }
-                    JsonElement blueElement = colorElement.getAsJsonArray().get(2);
-                    if (blueElement != null && BrewingUtils.isInteger(blueElement.getAsString())) {
-                        blue = blueElement.getAsInt();
-                    }
-
-                    if (red != null && green != null && blue != null) {
-                        text = Component.text(name, TextColor.color(red, green, blue));
-                    } else {
-                        text = Component.text(name);
-                    }
-                } else {
-                    text = Component.text(name);
-                }
-                meta.displayName(text);
+                meta.displayName(this.setTextComponent(ChatColor.translateAlternateColorCodes('&', name), colorElement));
             }
-
             meta.setCustomModelData(customModelData);
         });
         return levelIcon;
+    }
+    // endregion
+
+    // region Set Text Component
+    private TextComponent setTextComponent(String text, JsonElement colorElement) {
+        if (colorElement != null && colorElement.getAsJsonArray().size() == 3) {
+            JsonArray colorArray = colorElement.getAsJsonArray();
+
+            Integer red = null, green = null, blue = null;
+
+            JsonElement redElement = colorArray.get(0);
+            if (redElement != null && BrewingUtils.isInteger(redElement.getAsString())) {
+                red = redElement.getAsInt();
+            }
+            JsonElement greenElement = colorArray.get(1);
+            if (greenElement != null && BrewingUtils.isInteger(greenElement.getAsString())) {
+                green = greenElement.getAsInt();
+            }
+            JsonElement blueElement = colorArray.get(2);
+            if (blueElement != null && BrewingUtils.isInteger(blueElement.getAsString())) {
+                blue = blueElement.getAsInt();
+            }
+
+            if (red != null && green != null && blue != null) {
+                return Component.text(text, TextColor.color(red, green, blue));
+            } else {
+                return Component.text(text);
+            }
+        } else {
+            return Component.text(text);
+        }
     }
     // endregion
 
@@ -164,8 +201,8 @@ public class RecipesLevelLoader {
         BrewingUtils.noKeyFoundWarning(path, Fields.config_yml);
     }
 
-    private void valueIncorrectWarning(String path, Object value, EnumBase errorEnum) {
-        BrewingUtils.valueIncorrectWarning(path, value, Fields.config_yml, errorEnum);
+    private void valueIncorrectWarning(String path, Object value) {
+        BrewingUtils.valueIncorrectWarning(path, value, Fields.config_yml, ErrorEnum.VALUE_INCORRECT);
     }
     // endregion
 
@@ -209,6 +246,9 @@ public class RecipesLevelLoader {
         String provider;
         String material;
         String id;
+        String lore;
+        String text;
+        String color;
 
         public static final class Fields {
             public static final String level_default = "default";
