@@ -25,7 +25,7 @@ public class CommandRegister {
     }
 
     private void getCommandClassInstance() {
-        String commandPath = BrewingUtils.getPath(Main.packageName(), COMMAND_PACKAGE_NAME);
+        String commandPath = BrewingUtils.getPath(Main.class.getPackageName(), COMMAND_PACKAGE_NAME);
         Set<Class<? extends CommandBase>> classes = new Reflections(commandPath).getSubTypesOf(CommandBase.class);
 
         classes.forEach(var -> {

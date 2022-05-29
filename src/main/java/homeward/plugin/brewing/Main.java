@@ -1,71 +1,72 @@
 package homeward.plugin.brewing;
 
-import homeward.plugin.brewing.loaders.RecipesLevelLoader;
+import com.google.common.collect.Maps;
+import homeward.plugin.brewing.beans.ItemProperties;
+import homeward.plugin.brewing.loaders.ConfigurationLoader;
 import homeward.plugin.brewing.registrants.CommandRegister;
-import homeward.plugin.brewing.registrants.ListenerRegister;
-import homeward.plugin.brewing.utilities.ConfigurationUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Accessors(fluent = true)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 public final class Main extends JavaPlugin {
+    private static boolean disable = false;
+    @Getter private static final Map<String, ItemProperties.Content> itemTier = Maps.newLinkedHashMap();
+    @Getter private static final Map<String, ItemProperties> tierItemPropertiesMap = Maps.newLinkedHashMap();
+    @Getter private static final Map<String, ItemProperties> substrateItemPropertiesMap = Maps.newLinkedHashMap();
+    @Getter private static final Map<String, ItemProperties> yeastItemPropertiesMap = Maps.newLinkedHashMap();
+    @Getter private static final Map<String, ItemProperties> outputItemPropertiesMap = Maps.newLinkedHashMap();
+
     private static Main plugin;
-    @Getter(lazy = true) private final static String packageName = Main.class.getPackageName();
-    Map<String, ItemStack> recipesLevelMap;
 
     @Override
     public void onEnable() {
-        // 我需要把配置文件的读取和存储写好
+        ConfigurationLoader.getInstance().reload();
 
-
-
-
-
-        // if (!RecipesLevelLoader.getInstance().loadLevelList()) {
-        //     return;
-        // }
-
-        // CommandRegister.getInstance().register();
+        CommandRegister.getInstance().register();
         // ListenerRegister.getInstance().register();
+
+        if (disable) {
+            Bukkit.getPluginManager().disablePlugin(Main.getInstance());
+        }
     }
 
     public Main() {
         plugin = this;
-        // this.initializeConfiguration();
-        this.recipesLevelMap = new TreeMap<>();
+    }
+
+    public static void tierItemPropertiesMap(String id, ItemProperties itemProperties) {
+        tierItemPropertiesMap.put(id, itemProperties);
+    }
+
+    public static void substrateItemPropertiesMap(String id, ItemProperties itemProperties) {
+        substrateItemPropertiesMap.put(id, itemProperties);
+    }
+
+    public static void yeastItemPropertiesMap(String id, ItemProperties itemProperties) {
+        yeastItemPropertiesMap.put(id, itemProperties);
+    }
+
+    public static void outputItemPropertiesMap(String id, ItemProperties itemProperties) {
+        outputItemPropertiesMap.put(id, itemProperties);
+    }
+
+    public static void itemTier(String id, ItemProperties.Content content) {
+        itemTier.put(id, content);
     }
 
     public static Main getInstance() {
         return plugin;
     }
 
-    // region Disable this plugin
-    public void disable() {
-        Bukkit.getPluginManager().disablePlugin(this);
+    public static void disable() {
+        disable = true;
     }
-    // endregion
-
-    // region Initialize Configuration
-    private void initializeConfiguration() {
-        saveDefaultConfig();
-        getConfig().options().copyDefaults();
-        new ConfigurationUtils(this, "recipes");
-    }
-    // endregion
-
-    // region Set recipes level map
-    public void recipesLevelMap(String level, ItemStack icon) {
-        this.recipesLevelMap.put(level, icon);
-    }
-    // endregion
 }

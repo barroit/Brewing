@@ -92,3 +92,60 @@ perry:
     yeast-index: 0.5 # 酵母对产量影响的系数
     yield-index: 1 # 产出最后结算的系数
   brewing-cycle: 1 # 酿造周期 类型 Int 天数
+
+
+
+
+
+
+
+
+
+#  {
+#    AttributeModifiers: [
+#      {
+#        Amount: 0.0d,
+#        AttributeName: "minecraft:generic.attack_speed",
+#        Name: "mmoitemsDecoy",
+#        Operation: 0,
+#        UUID: [
+#          I
+#            ;
+#            -2021319128,
+#          -1357757450,
+#          -1987131861,
+#          -563359508
+#        ]
+#      }
+#    ],
+#    HSTRY_ENCHANTS: '{"Stat":"ENCHANTS","OGStory":[{"MMOITEMS_ENCHANTS_ñstr":"[]"}]}',
+#    HideFlags: 2,
+#    MMOITEMS_DYNAMIC_LORE: '["&cConsumable","","&3 &7■ Repair: &f20","","&3 &7Tier: §7§lCOMMON"]',
+#    MMOITEMS_ENCHANTS: "[]",
+#    MMOITEMS_ITEM_ID: "SHARP_FLINT",
+#    MMOITEMS_ITEM_TYPE: "CONSUMABLE",
+#    MMOITEMS_NAME: "&fSharp Flint",
+#    MMOITEMS_REPAIR: 20.0d,
+#    MMOITEMS_TIER: "COMMON",
+#    display: {
+#      Lore: [
+#        '{"italic":false,"color":"red","text":"Consumable"}',
+#        '{"italic":false,"text":""}',
+#        '{"italic":false,"extra":[{"color":"dark_aqua","text":" "},{"color":"gray","text":"■ Repair: "},{"color":"white","text":"20"}],"text":""}',
+#        '{"italic":false,"text":""}',
+#        '{"italic":false,"extra":[{"color":"dark_aqua","text":" "},{"color":"gray","text":"Tier: "},{"bold":true,"color":"gray","text":"COMMON"}],"text":""}'
+#      ],
+#      Name: '{"italic":false,"color":"white","text":"Sharp Flint"}'
+#    }
+#  }
+#
+#
+#
+#  '{"italic":false,
+#  "extra":
+#    [
+#        {"color":"dark_aqua","text":" "},
+#        {"color":"gray","text":"Tier: "},
+#        {"bold":true,"color":"gray","text":"COMMON"}
+#    ],
+# "text":""}'

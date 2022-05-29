@@ -1,0 +1,81 @@
+tier:
+  # Default Tier t1~t4|default
+  DEFAULT:
+    provider: Vanilla
+    material: paper
+    custom-model-data: 114500
+    display:
+      text: "default"
+      color: [ 255,0,255 ]
+    lore:
+      - text: "this is the default tire"
+        color: [ 255,192,203 ]
+    item-tier: "COMMON"
+
+substrate:
+  custom-substrate: # id unique
+    provider: Vanilla
+    display: # display
+      text: "custom substrate" # name(allow color code)
+      color: [ 255,192,203 ] # RGB(higher than color code)
+    lore: # item lore
+      - text: "this is custom substrate"
+        color: [ 13,14,15 ]
+      - "&ad"
+      - "x"
+    material: "tropical_fish" # auto uppercase
+    custom-model-data: 114514
+    item-tier: "COMMON" # item tier
+    restore:
+      food: 10 # restore food value (int)
+    required-level: 4
+
+yeast:
+  custom-yeast:
+    provider: "Vanilla"
+    material: "paper"
+    custom-model-data: 114800
+    display:
+      text: "custom yeast"
+      color: [ 255,192,203 ]
+    lore:
+      - text: "this is custom yeast"
+        color: [ 13,14,15 ]
+      - "&ad"
+      - "x"
+    item-tier: "COMMON"
+    required-level: 4
+
+output:
+  custom-output:
+    provider: "Vanilla"
+    display:
+      text: "custom output"
+      color: [ 255,192,203 ]
+    lore:
+      - text: "&athis is custom output"
+      - "&atext line 2"
+    material: "potion"
+    custom-model-data: 114700
+    item-tier: "COMMON"
+    restore:
+      food: 10
+      health: 10 # restore health value (double)
+      saturation: 5 # restore saturation value (float)
+    effect: # potion
+      - potion-type: "speed"
+        duration: 200 # tick
+        amplifier: 0
+        ambient: false
+        show-particles: false
+        show-icon: false
+      - potion-type: "jump"
+        duration: 100
+        amplifier: 1
+        ambient: true
+        show-particles: true
+        show-icon: true
+    command:
+      - "give @e minecraft:paper"
+      - "give @e minecraft:air"
+    required-level: 4

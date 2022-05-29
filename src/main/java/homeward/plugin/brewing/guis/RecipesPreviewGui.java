@@ -230,7 +230,7 @@ public class RecipesPreviewGui {
 
     // region Instance Class
     private RecipesPreviewGui(int rows, int pageSize) {
-        this.recipesLevelMap = Main.getInstance().recipesLevelMap();
+        this.recipesLevelMap = null;
 
         this.initializeButton();
 
