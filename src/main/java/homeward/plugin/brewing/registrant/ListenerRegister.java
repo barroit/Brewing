@@ -1,7 +1,7 @@
-package homeward.plugin.brewing.registrants;
+package homeward.plugin.brewing.registrant;
 
 import homeward.plugin.brewing.Main;
-import homeward.plugin.brewing.utilities.BrewingUtils;
+import homeward.plugin.brewing.utilitie.BrewingUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
@@ -36,5 +36,5 @@ public class ListenerRegister {
         return RegisterInstance.instance;
     }
 
-    private static final String LISTENER_PACKAGE_NAME = "listeners";
+    private static final String LISTENER_PACKAGE_NAME = "listener";
 }

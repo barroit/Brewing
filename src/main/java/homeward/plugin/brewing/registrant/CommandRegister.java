@@ -1,11 +1,12 @@
-package homeward.plugin.brewing.registrants;
+package homeward.plugin.brewing.registrant;
 
 import homeward.plugin.brewing.Main;
-import homeward.plugin.brewing.utilities.BrewingUtils;
+import homeward.plugin.brewing.utilitie.BrewingUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import me.mattstudios.mf.base.CommandBase;
 import me.mattstudios.mf.base.CommandManager;
+import me.mattstudios.mf.base.MessageHandler;
 import org.bukkit.Bukkit;
 import org.reflections.Reflections;
 
@@ -48,5 +49,5 @@ public class CommandRegister {
         return RegisterInstance.instance;
     }
 
-    private static final String COMMAND_PACKAGE_NAME = "commands";
+    private static final String COMMAND_PACKAGE_NAME = "command";
 }

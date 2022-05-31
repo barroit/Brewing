@@ -1,4 +1,4 @@
-package homeward.plugin.brewing.utilities;
+package homeward.plugin.brewing.utilitie;
 
 import com.google.common.base.CaseFormat;
 import com.google.gson.Gson;
@@ -6,8 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import homeward.plugin.brewing.Main;
-import homeward.plugin.brewing.beans.ItemProperties;
-import homeward.plugin.brewing.enumerates.ProviderEnum;
+import homeward.plugin.brewing.bean.ItemProperties;
+import homeward.plugin.brewing.enumerate.ProviderEnum;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -47,8 +47,8 @@ public class ItemPropertiesUtils {
     public @Nullable ItemProperties.Content getDisplay(final File file, final ConfigurationSection section) {
         ConfigurationSection displaySection = section.getConfigurationSection("display");
         if (displaySection == null) {
-            logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(section.getCurrentPath(), "display"), file.getAbsolutePath()));
-            return null;
+            String display = section.getString("display");
+            return display != null && !display.isBlank() ? ItemProperties.getContent().text(display) : null;
         }
 
         return getContent(file, displaySection);
@@ -62,7 +62,7 @@ public class ItemPropertiesUtils {
         if (loreList == null) return null;
 
         AtomicInteger atomicInteger = new AtomicInteger(0);
-        ArrayList<ItemProperties.Content> loreL = new ArrayList<>();
+        ArrayList<ItemProperties.Content> lore = new ArrayList<>();
         loreList.forEach(object -> {
             int index = atomicInteger.getAndIncrement();
             if (object instanceof Map map) {
@@ -83,16 +83,16 @@ public class ItemPropertiesUtils {
                     content.color(new ArrayList<>(Arrays.asList(r, g, b)));
                 }
 
-                loreL.add(content);
-            } else if (object instanceof String lore) {
+                lore.add(content);
+            } else if (object instanceof String loreString) {
                 ItemProperties.Content content = ItemProperties.getContent();
-                content.text(lore);
-                loreL.add(content);
+                content.text(loreString);
+                lore.add(content);
             } else {
                 logger.warn(String.format("The value %s of key %s in %s incorrect", object, BrewingUtils.getPath(section.getCurrentPath(), "lore[" + index + "]"), file.getAbsolutePath()));
             }
         });
-        return loreL.size() == 0 ? null : loreL;
+        return lore.size() == 0 ? null : lore;
     }
     // endregion
 
@@ -126,7 +126,10 @@ public class ItemPropertiesUtils {
         if (tier == null) return null;
 
         if (!itemTier.containsKey(tier)) {
-            logger.warn(String.format("The value %s of key %s in %s not match item-tier set %s", tier, BrewingUtils.getPath(section.getCurrentPath(), "item-tier"), file.getAbsolutePath(), itemTier.keySet()));
+            if (itemTier.isEmpty()) {
+                logger.warn("The item-tier is empty. Did you configure it in config.yml?");
+            }
+            logger.warn(String.format("The value %s of key %s in %s does not match item-tier sets %s", tier, BrewingUtils.getPath(section.getCurrentPath(), "item-tier"), file.getAbsolutePath(), itemTier.keySet()));
             return null;
         }
 

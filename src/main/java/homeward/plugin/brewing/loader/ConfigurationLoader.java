@@ -1,20 +1,18 @@
-package homeward.plugin.brewing.loaders;
+package homeward.plugin.brewing.loader;
 
 
-import com.google.common.base.Charsets;
 import homeward.plugin.brewing.Main;
-import homeward.plugin.brewing.enumerates.EnumBase;
+import homeward.plugin.brewing.enumerate.EnumBase;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 
-/**
- * cannot be used when plugin main class instancing
- */
+// loading all file from plugin data folder
 public class ConfigurationLoader {
     private final File dataFolder = Main.getInstance().getDataFolder();
 
@@ -27,6 +25,23 @@ public class ConfigurationLoader {
 
     // region reload
     public void reload() {
+        long start = System.currentTimeMillis();
+        TextComponent prefix = Component.text("[Brewing] ", NamedTextColor.AQUA);
+        TextComponent startMessage = Component.text("loading plugin, please wait...", NamedTextColor.YELLOW);
+        Main.getInstance().getServer().getConsoleSender().sendMessage(Component.text().append(prefix, startMessage));
+
+        fileReload();
+
+        itemReload();
+
+        recipeReload();
+
+        long end = System.currentTimeMillis();
+        TextComponent endMessage = Component.text("Loaded all config files in ", NamedTextColor.GREEN).append(Component.text(end - start + " ms", NamedTextColor.AQUA));
+        Main.getInstance().getServer().getConsoleSender().sendMessage(Component.text().append(prefix, endMessage));
+    }
+
+    private void fileReload() {
         createDefaultConfigDirectory();
         createItemConfigDirectory();
         createRecipeConfigDirectory();
@@ -35,9 +50,17 @@ public class ConfigurationLoader {
         loadDefaultConfig();
         loadItemConfig();
         loadRecipeConfig();
+    }
 
+    private void itemReload() {
         TierLoader.getInstance().loadItemTier();
-        ItemPropertiesLoader.getInstance().loadItems();
+        ItemPropertiesLoader.getInstance().loadItemsProperties();
+        ItemStackLoader.getInstance().convertPropertiesToItemStack();
+    }
+
+    private void recipeReload() {
+        TierLoader.getInstance().loadRecipeTier();
+        RecipePropertiesLoader.getInstance().loadRecipeProperties();
     }
     // endregion
 
@@ -73,7 +96,7 @@ public class ConfigurationLoader {
     private void createRecipeConfigDirectory() {
         String[] recipeList = recipeFolder.list();
         if (!recipeFolder.exists() || recipeList == null || recipeList.length == 0) {
-            Main.getInstance().saveResource("recipes/test1.yml", false);
+            Main.getInstance().saveResource("recipes/template.yml", false);
         }
     }
     // endregion
@@ -109,6 +132,9 @@ public class ConfigurationLoader {
 
     private static volatile ConfigurationLoader instance;
 
+    /**
+     * cannot be used when plugin main class instancing
+     */
     public static ConfigurationLoader getInstance() {
         if (instance == null) {
             synchronized (ConfigurationLoader.class) {

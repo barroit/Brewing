@@ -1,4 +1,4 @@
-package homeward.plugin.brewing.enumerates;
+package homeward.plugin.brewing.enumerate;
 
 import net.kyori.adventure.text.Component;
 

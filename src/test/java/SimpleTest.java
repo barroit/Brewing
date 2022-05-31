@@ -1,4 +1,3 @@
-import homeward.plugin.brewing.beans.ItemProperties;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 

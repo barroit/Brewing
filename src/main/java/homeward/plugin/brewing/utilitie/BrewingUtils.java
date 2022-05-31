@@ -1,10 +1,9 @@
-package homeward.plugin.brewing.utilities;
+package homeward.plugin.brewing.utilitie;
 
-import homeward.plugin.brewing.Main;
-import homeward.plugin.brewing.enumerates.EnumBase;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
@@ -15,36 +14,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 
 @UtilityClass
+@SuppressWarnings("unused")
 public class BrewingUtils {
-    public void noKeyFoundWarning(String path, String file) {
-        String message = String.format("cannot read %s in %s, does the key exist or the value not null?", path, "config.yml");
-        Main.getInstance().getSLF4JLogger().warn(message);
+    public boolean isDisabled(YamlConfiguration configuration) {
+        List<String> headerList = configuration.options().getHeader();
+        return headerList.size() != 0 && headerList.get(0).equalsIgnoreCase("disable");
     }
 
-    public void valueIncorrectWarning(String path, Object value, String file, EnumBase errorEnum) {
-        String message = String.format("cannot read %s:%s in %s, caused by %s", path, value, file, errorEnum.getString());
-        Main.getInstance().getSLF4JLogger().warn(message);
-    }
-
-    public boolean isRGBFormat(List<?> list) {
-        boolean pass = true;
-
-        for (Object var1 : list) {
-            Integer var2 = (Integer) var1;
-
-            if (var2 < 0 || var2 > 255) {
-                pass = false;
-                break;
-            }
-        }
-
-        return pass;
+    public String capitalizeFirst(String str) {
+        return str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1).toLowerCase(Locale.ROOT);
     }
 
     public String getPath(ConfigurationSection section, String current) {
-        return section.getCurrentPath() + '.' + current;
+        return getPath(section.getCurrentPath(), current);
     }
 
     public String getPath(String path, String append) {

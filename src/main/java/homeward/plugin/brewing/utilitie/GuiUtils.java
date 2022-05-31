@@ -1,6 +1,6 @@
-package homeward.plugin.brewing.utilities;
+package homeward.plugin.brewing.utilitie;
 
-import homeward.plugin.brewing.enumerates.ComponentEnum;
+import homeward.plugin.brewing.enumerate.ComponentEnum;
 import lombok.experimental.UtilityClass;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;

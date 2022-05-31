@@ -1,12 +1,14 @@
-package homeward.plugin.brewing.beans;
+package homeward.plugin.brewing.bean;
 
-import homeward.plugin.brewing.enumerates.ItemTypeEnum;
-import homeward.plugin.brewing.enumerates.ProviderEnum;
+import homeward.plugin.brewing.enumerate.ItemTypeEnum;
+import homeward.plugin.brewing.enumerate.ProviderEnum;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -16,15 +18,15 @@ import java.util.ArrayList;
 @Accessors(fluent = true, chain = true)
 @EqualsAndHashCode
 public class ItemProperties {
-    String id; // required
-    ItemTypeEnum type; // required
-    ProviderEnum provider; // required
+    @NotNull String id; // required
+    @NotNull ItemTypeEnum type; // required
+    @NotNull ProviderEnum provider; // required
 
-    Content display;
-    ArrayList<Content> lore;
-    String tier;
+    @Nullable Content display;
+    @Nullable ArrayList<Content> lore;
+    @Nullable String tier;
 
-    Material material; // required
+    @NotNull Material material; // required
     int customModelData; // required
 
     int restoreFood;
@@ -41,8 +43,8 @@ public class ItemProperties {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Content {
-        String text;
-        ArrayList<Integer> color;
+        @NotNull String text;
+        @Nullable ArrayList<Integer> color;
 
         @Override
         public String toString() {
@@ -61,11 +63,11 @@ public class ItemProperties {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Effect {
         PotionEffectType potionType;
-        Integer duration;
-        Integer amplifier;
-        Boolean ambient;
-        Boolean showParticles;
-        Boolean showIcon;
+        int duration;
+        int amplifier;
+        boolean ambient;
+        boolean showParticles;
+        boolean showIcon;
 
         @Override
         public String toString() {
@@ -104,13 +106,12 @@ public class ItemProperties {
         double restoreHealth;
         float restoreSaturation;
 
-        ArrayList<Effect> effects;
+        @Nullable ArrayList<Effect> effects;
 
         ArrayList<String> command;
         int requiredLevel;
 
-        ItemPropertiesBuilder() {
-            display = new Content();
+        private ItemPropertiesBuilder() {
             lore = new ArrayList<>();
         }
 

@@ -5,7 +5,6 @@ import dev.triumphteam.gui.guis.BaseGui;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
-import homeward.plugin.brewing.Main;
 import lombok.SneakyThrows;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -16,9 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static homeward.plugin.brewing.enumerates.ComponentEnum.*;
+import static homeward.plugin.brewing.enumerate.ComponentEnum.*;
 import static homeward.plugin.brewing.guis.RecipesPreviewGui.constants.*;
-import static homeward.plugin.brewing.utilities.GuiUtils.*;
+import static homeward.plugin.brewing.utilitie.GuiUtils.*;
 
 public class RecipesPreviewGui {
     private static volatile RecipesPreviewGui instance;

@@ -1,7 +1,6 @@
-package homeward.plugin.brewing.enumerates;
+package homeward.plugin.brewing.enumerate;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 
 public enum ComponentEnum implements EnumBase {
     GAP_REGULAR(Component.text("\uF80C" + "\uF80A" + "\uF809" + "\uF801")),

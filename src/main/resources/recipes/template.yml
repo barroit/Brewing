@@ -1,0 +1,20 @@
+wine:
+  level: 1
+  display-name: "&awine" # 配方名称
+  substrate:
+    - item: "default-substrate"
+      quantity: 2
+  yeast:
+    - item: "default-yeast"
+      quantity: 2
+  output: "default-output"
+  extra:
+    -
+  yield:
+    max: 1
+    min: 1
+  index:
+    restriction-index: 0.5 # 抑制剂对产量影响的系数 全局
+    yeast-index: 0.5 # 酵母对产量影响的系数
+    yield-index: 1 # 产出最后结算的系数
+  brewing-cycle: 1 # 酿造周期 类型 Int 天数

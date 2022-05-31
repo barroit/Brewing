@@ -1,13 +1,14 @@
-package homeward.plugin.brewing.loaders;
+package homeward.plugin.brewing.loader;
 
 
 import com.google.common.collect.Sets;
 import homeward.plugin.brewing.Main;
-import homeward.plugin.brewing.beans.ItemProperties;
-import homeward.plugin.brewing.enumerates.ItemTypeEnum;
-import homeward.plugin.brewing.enumerates.ProviderEnum;
-import homeward.plugin.brewing.utilities.BrewingUtils;
+import homeward.plugin.brewing.bean.ItemProperties;
+import homeward.plugin.brewing.enumerate.ItemTypeEnum;
+import homeward.plugin.brewing.enumerate.ProviderEnum;
+import homeward.plugin.brewing.utilitie.BrewingUtils;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,34 +18,33 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.util.*;
 
-import static homeward.plugin.brewing.utilities.ItemPropertiesUtils.*;
+import static homeward.plugin.brewing.utilitie.ItemPropertiesUtils.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ItemPropertiesLoader {
+// loading item properties from items folder
+class ItemPropertiesLoader {
     private final Logger logger = Main.getInstance().getSLF4JLogger();
 
-    Map<ConfigurationLoader.ConfigEnum, LinkedHashMap<File, YamlConfiguration>> configurationList = ConfigurationLoader.getInstance().getConfigurationList();
+    private final Map<ConfigurationLoader.ConfigEnum, LinkedHashMap<File, YamlConfiguration>> configurationList = ConfigurationLoader.getInstance().getConfigurationList();
 
-    private static final Set<ItemProperties> itemPropertiesSet = Sets.newLinkedHashSet();
+    @Getter private final Set<ItemProperties> itemPropertiesSet = Sets.newLinkedHashSet();
 
-    // region load item properties
-    // region load
-    public void loadItems() {
+    // region load items properties
+    public void loadItemsProperties() {
         LinkedHashMap<File, YamlConfiguration> configurationFileList = configurationList.get(ConfigurationLoader.ConfigEnum.ITEM_CONFIG);
 
         if (configurationFileList == null || configurationFileList.isEmpty()) return;
 
-        configurationFileList.forEach(this::configurationFileAction);
+        itemPropertiesSet.clear();
 
-        sort();
+        configurationFileList.forEach(this::configurationFileAction);
     }
     // endregion
 
     // region foreach configuration file top keys
     private void configurationFileAction(final File file, final YamlConfiguration configuration) {
-        List<String> headerList = configuration.options().getHeader();
-        for (String header : headerList)
-            if (header.equalsIgnoreCase("disable")) return;
+        boolean disabled = BrewingUtils.isDisabled(configuration);
+        if (disabled) return;
         Set<String> configurationKeySet = configuration.getKeys(false);
         configurationKeySet.forEach(key -> this.topKeyAction(file, configuration, key));
     }
@@ -77,11 +77,18 @@ public class ItemPropertiesLoader {
 
     // region build item basic information and add ItemProperties to itemPropertiesSet
     // itemSection: topKey.xxx
-    @SuppressWarnings("DuplicateBranchesInSwitch")
     private ItemProperties buildItem(final File file, final ConfigurationSection topSection, final String itemKey, final ItemTypeEnum type) {
         ConfigurationSection itemSection = topSection.getConfigurationSection(itemKey);
         if (itemSection == null) {
             logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(topSection.getCurrentPath(), itemKey), file.getAbsolutePath()));
+            return null;
+        }
+
+        // required
+        Material material = getMaterial(file, itemSection);
+        if (material == null) return null;
+        if (ItemTypeEnum.OUTPUT.equals(type) && !Material.POTION.equals(material)) {
+            logger.warn(String.format("The material %s of key %s in %s is not a potion", material, BrewingUtils.getPath(topSection.getCurrentPath(), itemKey), file.getAbsolutePath()));
             return null;
         }
 
@@ -95,10 +102,6 @@ public class ItemPropertiesLoader {
         // default: null
         ArrayList<ItemProperties.Content> lore = getLore(file, itemSection);
 
-        // required
-        Material material = getMaterial(file, itemSection);
-        if (material == null) return null;
-
         // default: 0
         int customModuleData = getCustomModuleData(itemSection);
 
@@ -108,11 +111,9 @@ public class ItemPropertiesLoader {
         ItemProperties.ItemPropertiesBuilder builder = ItemProperties.builder();
 
         switch (type) {
-            case TIER -> {
-            }
-            case SUBSTRATE -> builder = buildSubstrate(file, itemSection, builder);
+            case TIER -> {}
+            case SUBSTRATE, OUTPUT -> builder = buildSubstrate(file, itemSection, builder);
             case YEAST -> builder = buildYeast(itemSection, builder);
-            case OUTPUT -> builder = buildSubstrate(file, itemSection, builder);
         }
         if (builder == null) return null;
 
@@ -153,22 +154,6 @@ public class ItemPropertiesLoader {
     // region build yeast
     private ItemProperties.ItemPropertiesBuilder buildYeast(final ConfigurationSection itemSection, final ItemProperties.ItemPropertiesBuilder builder) {
         return builder.requiredLevel(getRequiredLevel(itemSection));
-    }
-    // endregion
-
-    // endregion
-
-    // region sort item
-    private void sort() {
-        itemPropertiesSet.forEach(itemProperties -> {
-            ItemTypeEnum type = itemProperties.type();
-            switch (type) {
-                case TIER -> Main.tierItemPropertiesMap(itemProperties.id(), itemProperties);
-                case SUBSTRATE -> Main.substrateItemPropertiesMap(itemProperties.id(), itemProperties);
-                case YEAST -> Main.yeastItemPropertiesMap(itemProperties.id(), itemProperties);
-                case OUTPUT -> Main.outputItemPropertiesMap(itemProperties.id(), itemProperties);
-            }
-        });
     }
     // endregion
 

@@ -2,13 +2,7 @@ rounding-mode: "HALF_UP"
 rounding-pattern: "#.##"
 recipe-tier:
   - level: 1
-    item: "ONE"
-  - level: 2
-    item: "TWO"
-  - level: 3
-    item: "THREE"
-  - level: 4
-    item: "FOUR"
+    item: "default"
 item-tier:
   COMMON:
     text: "common"

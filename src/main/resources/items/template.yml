@@ -1,68 +1,75 @@
 tier:
-  # Default Tier t1~t4|default
-  DEFAULT:
-    provider: Vanilla
-    material: paper
+  default:
+    provider: "Vanilla"
+    material: "paper"
     custom-model-data: 114500
     display:
       text: "default"
       color: [ 255,0,255 ]
     lore:
-      - text: "this is the default tire"
-        color: [ 255,192,203 ]
+      - "&dthis section is the default tier"
     item-tier: "COMMON"
 
 substrate:
-  custom-substrate: # id unique
-    provider: Vanilla
-    display: # display
-      text: "custom substrate" # name(allow color code)
-      color: [ 255,192,203 ] # RGB(higher than color code)
-    lore: # item lore
-      - text: "this is custom substrate"
-        color: [ 13,14,15 ]
-      - "&ad"
-      - "x"
-    material: "tropical_fish" # auto uppercase
-    custom-model-data: 114514
-    item-tier: "COMMON" # item tier
+  grape:
+    provider: "Vanilla"
+    display: "grape"
+    lore:
+      - text: "&1this section is the default substrate"
+    material: "tropical_fish"
+    custom-model-data: 114600
+    item-tier: "COMMON"
     restore:
-      food: 10 # restore food value (int)
+      food: 3
+    required-level: 4
+  default-substrate:
+    provider: "Vanilla"
+    display:
+      text: "default substrate"
+      color: [ 255,192,203 ]
+    lore:
+      - text: "&1this section is the default substrate"
+    material: "tropical_fish"
+    custom-model-data: 114515
+    item-tier: "COMMON"
+    restore:
+      food: 5
     required-level: 4
 
+
 yeast:
-  custom-yeast:
+  default-yeast:
     provider: "Vanilla"
     material: "paper"
     custom-model-data: 114800
     display:
       text: "custom yeast"
-      color: [ 255,192,203 ]
+      color: [ 255,165,0 ]
     lore:
-      - text: "this is custom yeast"
-        color: [ 13,14,15 ]
-      - "&ad"
-      - "x"
+      - text: "this section is the default yeast"
+        color: [ 0,255,0 ]
     item-tier: "COMMON"
     required-level: 4
 
 output:
-  custom-output:
+  default-output:
     provider: "Vanilla"
     display:
-      text: "custom output"
-      color: [ 255,192,203 ]
+      text: "default output"
+      color: [ 123,104,238 ]
     lore:
-      - text: "&athis is custom output"
-      - "&atext line 2"
+      - text: "&athis section is the default output"
+      - "&asecond line"
+      - text: "&4color codes have higher priority than RGB"
+        color: [ 0,0,255 ]
     material: "potion"
     custom-model-data: 114700
     item-tier: "COMMON"
     restore:
-      food: 10
-      health: 10 # restore health value (double)
-      saturation: 5 # restore saturation value (float)
-    effect: # potion
+      food: 10 # int
+      health: 10 # double
+      saturation: 5 # float
+    effect:
       - potion-type: "speed"
         duration: 200 # tick
         amplifier: 0
