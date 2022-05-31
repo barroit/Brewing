@@ -28,6 +28,7 @@ public final class Main extends JavaPlugin {
     @Getter private static final Map<String, ItemStack> substrateItemStackMap = Maps.newLinkedHashMap();
     @Getter private static final Map<String, ItemStack> yeastItemStackMap = Maps.newLinkedHashMap();
     @Getter private static final Map<String, ItemStack> outputItemStackMap = Maps.newLinkedHashMap();
+    @Getter private static final Map<String, ItemStack> containerItemStackMap = Maps.newLinkedHashMap();
 
     private static Main plugin;
 
@@ -57,6 +58,10 @@ public final class Main extends JavaPlugin {
 
     public static void outputItemStackMap(String id, ItemStack itemStack) {
         outputItemStackMap.put(id, itemStack);
+    }
+
+    public static void containerItemStackMap(String id, ItemStack itemStack) {
+        containerItemStackMap.put(id, itemStack);
     }
 
     public static void itemTier(String id, ItemProperties.Content content) {
@@ -92,6 +97,7 @@ public final class Main extends JavaPlugin {
         substrateItemStackMap.clear();
         yeastItemStackMap.clear();
         outputItemStackMap.clear();
+        containerItemStackMap.clear();
     }
 
     public static Main getInstance() {

@@ -22,7 +22,7 @@ public class RecipeProperties implements Serializable {
     @NotNull String id, level;
     @NotNull ItemProperties.Content display;
     @Nullable ArrayList<ItemProperties.Content> lore;
-    @NotNull LinkedHashSet<ItemStack> substrates;
+    @NotNull LinkedHashSet<ItemStack> substrates, containers;
     @Nullable LinkedHashSet<CustomItem> yeasts, extras;
     @NotNull ItemStack output;
     int minYield, maxYield, cycle;
@@ -57,14 +57,14 @@ public class RecipeProperties implements Serializable {
         String id, level;
         ItemProperties.Content display;
         ArrayList<ItemProperties.Content> lore;
-        LinkedHashSet<ItemStack> substrates;
+        LinkedHashSet<ItemStack> substrates, containers;
         LinkedHashSet<CustomItem> yeasts, extras;
         ItemStack output;
         int minYield, maxYield, cycle;
 
         private RecipePropertiesBuilder() {
             lore = new ArrayList<>();
-            substrates = new LinkedHashSet<>();
+            substrates = containers = new LinkedHashSet<>();
             yeasts = extras = new LinkedHashSet<>();
         }
 
@@ -75,15 +75,12 @@ public class RecipeProperties implements Serializable {
         }
 
         public RecipeProperties build() {
-            return new RecipeProperties(this.id, this.level, this.display, this.lore, this.substrates, this.yeasts, this.extras, this.output, this.minYield, this.maxYield, this.cycle);
+            return new RecipeProperties(this.id, this.level, this.display, this.lore, this.substrates, this.containers, this.yeasts, this.extras, this.output, this.minYield, this.maxYield, this.cycle);
         }
     }
 
     @Override
     public String toString() {
-        StringBuilder substrateList = new StringBuilder();
-        substrates.forEach(s -> substrateList.append("\"").append(s).append("\","));
-        substrateList.insert(0, "[").deleteCharAt(substrateList.length() - 1).insert(substrateList.length(), "]");
-        return String.format("{id:%s,level:%s,display:%s,lore:%s,substrates:%s,yeasts:%s,extras:%s,output:%s,minYield:%d,maxYield:%d,cycle:%d}", this.id, this.level, this.display, this.lore, substrateList, this.yeasts, this.extras, this.output, this.minYield, this.maxYield, this.cycle);
+        return String.format("{id:%s,level:%s,display:%s,lore:%s,substrates:%s,yeasts:%s,extras:%s,containers:%s,output:%s,minYield:%d,maxYield:%d,cycle:%d}", this.id, this.level, this.display, this.lore, this.substrates, this.yeasts, this.extras, this.containers, this.output, this.minYield, this.maxYield, this.cycle);
     }
 }

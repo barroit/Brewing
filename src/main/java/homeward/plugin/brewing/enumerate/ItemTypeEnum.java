@@ -9,7 +9,8 @@ public enum ItemTypeEnum implements EnumBase {
     TIER("tier"),
     SUBSTRATE("substrate"),
     YEAST("yeast"),
-    OUTPUT("output");
+    OUTPUT("output"),
+    CONTAINER("container");
 
     private final String type;
 

@@ -60,6 +60,7 @@ class ItemStackLoader {
             case SUBSTRATE -> Main.substrateItemStackMap(id, addNbtTag(ItemTypeEnum.SUBSTRATE, itemStack));
             case YEAST -> Main.yeastItemStackMap(id, addNbtTag(ItemTypeEnum.YEAST, itemStack));
             case OUTPUT -> Main.outputItemStackMap(id, addNbtTag(ItemTypeEnum.OUTPUT, itemStack));
+            case CONTAINER -> Main.containerItemStackMap(id, addNbtTag(ItemTypeEnum.OUTPUT, itemStack));
         }
     }
     // endregion
@@ -147,7 +148,7 @@ class ItemStackLoader {
             int requiredLevel = itemProperties.requiredLevel();
             if (requiredLevel != 0) {
                 switch (itemProperties.type()) {
-                    case SUBSTRATE, OUTPUT, YEAST -> setRequiredLevel(requiredLevel, itemMeta);
+                    case SUBSTRATE, OUTPUT, YEAST, CONTAINER -> setRequiredLevel(requiredLevel, itemMeta);
                 }
             }
         });

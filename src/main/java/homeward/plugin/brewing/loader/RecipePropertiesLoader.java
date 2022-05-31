@@ -37,8 +37,7 @@ class RecipePropertiesLoader {
             Set<String> topKeySet = configuration.getKeys(false);
             topKeySet.forEach(topKey -> {
                 ConfigurationSection topSection = configuration.getConfigurationSection(topKey);
-
-                assert topSection != null;
+                if (topSection == null) return;
 
                 String level = getLevel(file, topSection);
                 if (level == null) return;
@@ -57,6 +56,9 @@ class RecipePropertiesLoader {
 
                 LinkedHashSet<RecipeProperties.CustomItem> extras = getCustomItem(file, topSection, "extra", true);
                 if (extras == null) return;
+
+                LinkedHashSet<ItemStack> containers = getContainers(file, topSection);
+                if (containers == null) return;
 
                 ItemStack output = getOutput(file, topSection);
                 if (output == null) return;
@@ -78,8 +80,9 @@ class RecipePropertiesLoader {
                         .display(display)
                         .lore(lore)
                         .substrates(substrates)
-                        .yeasts(yeasts)
-                        .extras(extras)
+                        .yeasts(yeasts.size() == 0 ? null : yeasts)
+                        .extras(extras.size() == 0 ? null : extras)
+                        .containers(containers)
                         .output(output)
                         .minYield(minYield)
                         .maxYield(maxYield)
@@ -89,6 +92,7 @@ class RecipePropertiesLoader {
                 Main.recipes(topKey, recipeProperties);
             });
         });
+        System.out.println(Main.recipes());
     }
     // endregion
 
@@ -209,6 +213,34 @@ class RecipePropertiesLoader {
         });
 
         return customItemList.size() == customItem.size() ? customItem : null;
+    }
+    // endregion
+
+    // region get substrate
+    private LinkedHashSet<ItemStack> getContainers(final File file, final ConfigurationSection section) {
+        List<?> containerList = section.getList("container");
+        if (containerList == null || containerList.size() == 0) {
+            logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(section, "container"), file.getAbsolutePath()));
+            return null;
+        }
+
+        LinkedHashSet<ItemStack> containers = new LinkedHashSet<>();
+        AtomicInteger atomicInteger = new AtomicInteger();
+        containerList.forEach(s -> {
+            int index = atomicInteger.getAndIncrement();
+            if (s instanceof String itemString) {
+                if (!Main.containerItemStackMap().containsKey(itemString)) {
+                    logger.warn(String.format("The value %s of key %s in %s incorrect", itemString, BrewingUtils.getPath(section, "container[" + index + "]"), file.getAbsolutePath()));
+                    return;
+                }
+
+                containers.add(Main.containerItemStackMap().get(itemString));
+            } else {
+                logger.warn(String.format("The object %s of key %s in %s is not a string", s, BrewingUtils.getPath(section, "container[" + index + "]"), file.getAbsolutePath()));
+            }
+        });
+
+        return containerList.size() == containers.size() ? containers : null;
     }
     // endregion
 
