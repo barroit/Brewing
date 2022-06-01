@@ -1,7 +1,7 @@
 package homeward.plugin.brewing.bean;
 
-import homeward.plugin.brewing.enumerate.ItemTypeEnum;
-import homeward.plugin.brewing.enumerate.ProviderEnum;
+import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Provider;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
@@ -19,8 +19,8 @@ import java.util.ArrayList;
 @EqualsAndHashCode
 public class ItemProperties {
     @NotNull String id; // required
-    @NotNull ItemTypeEnum type; // required
-    @NotNull ProviderEnum provider; // required
+    @NotNull ItemType type; // required
+    @NotNull Provider provider; // required
 
     @Nullable Content display;
     @Nullable ArrayList<Content> lore;
@@ -92,8 +92,8 @@ public class ItemProperties {
     @Accessors(fluent = true, chain = true)
     public static class ItemPropertiesBuilder {
         String id;
-        ItemTypeEnum type;
-        ProviderEnum provider;
+        ItemType type;
+        Provider provider;
 
         Content display;
         ArrayList<Content> lore;

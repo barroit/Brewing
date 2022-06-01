@@ -1,9 +1,9 @@
 package homeward.plugin.brewing.loader;
 
 
+import com.google.common.collect.Maps;
 import homeward.plugin.brewing.Main;
 import homeward.plugin.brewing.enumerate.EnumBase;
-import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,7 +21,7 @@ public class ConfigurationLoader {
     private final File itemFolder = new File(dataFolder, "items");
     private final File recipeFolder = new File(dataFolder, "recipes");
 
-    @Getter private final Map<ConfigEnum, LinkedHashMap<File, YamlConfiguration>> configurationList = new LinkedHashMap<>();
+    public static final Map<ConfigEnum, LinkedHashMap<File, YamlConfiguration>> CONFIGURATION_LIST = Maps.newHashMap();
 
     // region reload
     public void reload() {
@@ -46,14 +46,15 @@ public class ConfigurationLoader {
         createItemConfigDirectory();
         createRecipeConfigDirectory();
 
-        configurationList.clear();
+        CONFIGURATION_LIST.clear();
+
         loadDefaultConfig();
         loadItemConfig();
         loadRecipeConfig();
     }
 
     private void itemReload() {
-        TierLoader.getInstance().loadItemTier();
+        TierLoader.getInstance().loadItemTierContents();
         ItemPropertiesLoader.getInstance().loadItemsProperties();
         ItemStackLoader.getInstance().convertPropertiesToItemStack();
     }
@@ -61,6 +62,7 @@ public class ConfigurationLoader {
     private void recipeReload() {
         TierLoader.getInstance().loadRecipeTier();
         RecipePropertiesLoader.getInstance().loadRecipeProperties();
+        ItemStackLoader.getInstance().convertRecipeToItemStack();
     }
     // endregion
 
@@ -116,14 +118,14 @@ public class ConfigurationLoader {
 
     // region update configuration list
     private void updateConfigurationList(ConfigEnum type, File file, YamlConfiguration configuration) {
-        LinkedHashMap<File, YamlConfiguration> configMap = configurationList.get(type);
+        LinkedHashMap<File, YamlConfiguration> configMap = CONFIGURATION_LIST.get(type);
 
         if (configMap == null) {
             configMap = new LinkedHashMap<>();
         }
 
         configMap.put(file, configuration);
-        configurationList.put(type, configMap);
+        CONFIGURATION_LIST.put(type, configMap);
     }
     // endregion
 

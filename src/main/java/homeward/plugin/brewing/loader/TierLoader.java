@@ -3,10 +3,12 @@ package homeward.plugin.brewing.loader;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import homeward.plugin.brewing.Container;
 import homeward.plugin.brewing.Main;
 import homeward.plugin.brewing.bean.ItemProperties;
+import homeward.plugin.brewing.enumerate.ItemType;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
-import homeward.plugin.brewing.utilitie.ItemPropertiesUtils;
+import homeward.plugin.brewing.utilitie.ConfigurationUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,7 +19,6 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,15 +27,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 class TierLoader {
     private final Logger logger = Main.getInstance().getSLF4JLogger();
 
-    Map<ConfigurationLoader.ConfigEnum, LinkedHashMap<File, YamlConfiguration>> configurationList = ConfigurationLoader.getInstance().getConfigurationList();
-
     // region load item tier
-    public void loadItemTier() {
-        LinkedHashMap<File, YamlConfiguration> configurationFileList = configurationList.get(ConfigurationLoader.ConfigEnum.DEFAULT_CONFIG);
+    public void loadItemTierContents() {
+        LinkedHashMap<File, YamlConfiguration> configurationFileList = ConfigurationLoader.CONFIGURATION_LIST.get(ConfigurationLoader.ConfigEnum.DEFAULT_CONFIG);
 
         if (configurationFileList == null || configurationFileList.isEmpty()) return;
 
-        Main.clearItemTier();
+        Container.ITEM_TIER.clear();
 
         configurationFileList.forEach((file, configuration) -> {
             ConfigurationSection itemTierSection = configuration.getConfigurationSection("item-tier");
@@ -51,13 +50,13 @@ class TierLoader {
                         logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(itemTierSection.getCurrentPath(), tierKey), file.getAbsolutePath()));
                         return;
                     }
-                    Main.itemTier(tierKey, ItemProperties.getContent().text(keyString));
+                    Container.ITEM_TIER.put(tierKey, ItemProperties.getContent().text(keyString));
                     return;
                 }
 
-                ItemProperties.Content tier = ItemPropertiesUtils.getContent(file, keySection);
+                ItemProperties.Content tier = ConfigurationUtils.getContent(file, keySection);
                 if (tier == null) return;
-                Main.itemTier(tierKey, tier);
+                Container.ITEM_TIER.put(tierKey, tier);
             });
         });
     }
@@ -65,11 +64,11 @@ class TierLoader {
 
     // region load recipe tier
     public void loadRecipeTier() {
-        LinkedHashMap<File, YamlConfiguration> configurationFileList = configurationList.get(ConfigurationLoader.ConfigEnum.DEFAULT_CONFIG);
+        LinkedHashMap<File, YamlConfiguration> configurationFileList = ConfigurationLoader.CONFIGURATION_LIST.get(ConfigurationLoader.ConfigEnum.DEFAULT_CONFIG);
 
         if (configurationFileList == null || configurationFileList.isEmpty()) return;
 
-        Main.clearRecipeTier();
+        Container.RECIPE_TIER.clear();
 
         configurationFileList.forEach((file, configuration) -> {
             List<?> recipeTierList = configuration.getList("recipe-tier");
@@ -96,13 +95,13 @@ class TierLoader {
                 }
                 String itemString = itemElement.getAsString();
 
-                ItemStack item = Main.tierItemStackMap().getOrDefault(itemString, null);
+                ItemStack item = Container.ITEM_STACK_MAP.get(ItemType.TIER).getOrDefault(itemString, null);
                 if (item == null) {
                     logger.warn(String.format("The value %s of key %s in %s does not exist or incorrect", itemString, BrewingUtils.getPath("recipe-tier[" + index + "]", "item"), file.getAbsolutePath()));
                     return;
                 }
 
-                Main.recipeTier(level, item);
+                Container.RECIPE_TIER.put(level, item);
             });
         });
     }

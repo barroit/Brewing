@@ -3,12 +3,13 @@ package homeward.plugin.brewing.loader;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import homeward.plugin.brewing.Container;
 import homeward.plugin.brewing.Main;
 import homeward.plugin.brewing.bean.ItemProperties;
 import homeward.plugin.brewing.bean.RecipeProperties;
-import homeward.plugin.brewing.enumerate.ItemTypeEnum;
+import homeward.plugin.brewing.enumerate.ItemType;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
-import homeward.plugin.brewing.utilitie.ItemPropertiesUtils;
+import homeward.plugin.brewing.utilitie.ConfigurationUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -18,17 +19,16 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+// loading recipe properties from items folder
 class RecipePropertiesLoader {
     private final Logger logger = Main.getInstance().getSLF4JLogger();
 
-    private final Map<ConfigurationLoader.ConfigEnum, LinkedHashMap<File, YamlConfiguration>> configurationList = ConfigurationLoader.getInstance().getConfigurationList();
-
     // region load recipe properties
     public void loadRecipeProperties() {
-        LinkedHashMap<File, YamlConfiguration> configurationFileList = configurationList.get(ConfigurationLoader.ConfigEnum.RECIPE_CONFIG);
+        LinkedHashMap<File, YamlConfiguration> configurationFileList = ConfigurationLoader.CONFIGURATION_LIST.get(ConfigurationLoader.ConfigEnum.RECIPE_CONFIG);
         if (configurationFileList == null || configurationFileList.isEmpty()) return;
 
-        Main.clearRecipes();
+        Container.RECIPE_PROPERTIES.clear();
 
         configurationFileList.forEach((file, configuration) -> {
             boolean disabled = BrewingUtils.isDisabled(configuration);
@@ -42,7 +42,7 @@ class RecipePropertiesLoader {
                 String level = getLevel(file, topSection);
                 if (level == null) return;
 
-                ItemProperties.Content display = ItemPropertiesUtils.getDisplay(file, topSection);
+                ItemProperties.Content display = ConfigurationUtils.getDisplay(file, topSection);
                 if (display == null) {
                     logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(topSection, "display"), file.getAbsolutePath()));
                     return;
@@ -72,7 +72,7 @@ class RecipePropertiesLoader {
                 int cycle = getCycle(file, topSection);
                 if (cycle == -1) return;
 
-                ArrayList<ItemProperties.Content> lore = ItemPropertiesUtils.getLore(file, topSection);
+                ArrayList<ItemProperties.Content> lore = ConfigurationUtils.getLore(file, topSection);
 
                 RecipeProperties recipeProperties = RecipeProperties.builder()
                         .id(topKey)
@@ -89,10 +89,9 @@ class RecipePropertiesLoader {
                         .cycle(cycle)
                         .build();
 
-                Main.recipes(topKey, recipeProperties);
+                Container.RECIPE_PROPERTIES.put(topKey, recipeProperties);
             });
         });
-        System.out.println(Main.recipes());
     }
     // endregion
 
@@ -119,12 +118,13 @@ class RecipePropertiesLoader {
         substrateList.forEach(s -> {
             int index = atomicInteger.getAndIncrement();
             if (s instanceof String itemString) {
-                if (!Main.substrateItemStackMap().containsKey(itemString)) {
+                Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(ItemType.SUBSTRATE);
+                if (!map.containsKey(itemString)) {
                     logger.warn(String.format("The value %s of key %s in %s incorrect", itemString, BrewingUtils.getPath(section, "substrate[" + index + "]"), file.getAbsolutePath()));
                     return;
                 }
 
-                substrates.add(Main.substrateItemStackMap().get(itemString));
+                substrates.add(map.get(itemString));
             } else {
                 logger.warn(String.format("The object %s of key %s in %s is not a string", s, BrewingUtils.getPath(section, "substrate[" + index + "]"), file.getAbsolutePath()));
             }
@@ -157,47 +157,44 @@ class RecipePropertiesLoader {
             String itemString = itemElement.getAsString();
 
             JsonElement typeElement = customItemObject.get("type");
-            ItemTypeEnum type = null;
+            ItemType type = null;
             ItemStack itemStack;
             if (typeElement == null && hasType) {
                 logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(section, sectionName + "[" + index + "]" + ".type"), file.getAbsolutePath()));
                 return;
             } else if (typeElement != null && hasType) {
                 String typeString = typeElement.getAsString();
-                type = ItemTypeEnum.getItemType(typeString.toUpperCase(Locale.ROOT));
+                type = ItemType.getItemType(typeString.toUpperCase(Locale.ROOT));
                 if (type == null) {
                     logger.warn(String.format("The value %s of key %s in %s incorrect", typeString, BrewingUtils.getPath(section, sectionName + "[" + index + "]" + ".type"), file.getAbsolutePath()));
                     return;
                 }
 
                 boolean contains;
+                Map<String, ItemStack> map;
                 switch (type) {
-                    case SUBSTRATE -> {
-                        contains = Main.substrateItemStackMap().containsKey(itemString);
-                        itemStack = Main.substrateItemStackMap().get(itemString);
-                    }
-                    case YEAST -> {
-                        contains = Main.yeastItemStackMap().containsKey(itemString);
-                        itemStack = Main.yeastItemStackMap().get(itemString);
-                    }
-                    case OUTPUT -> {
-                        contains = Main.outputItemStackMap().containsKey(itemString);
-                        itemStack = Main.outputItemStackMap().get(itemString);
-                    }
+                    case SUBSTRATE -> map = Container.ITEM_STACK_MAP.get(ItemType.SUBSTRATE);
+                    case YEAST -> map = Container.ITEM_STACK_MAP.get(ItemType.YEAST);
+                    case OUTPUT -> map = Container.ITEM_STACK_MAP.get(ItemType.OUTPUT);
                     default -> {
                         return;
                     }
                 }
+
+                contains = map.containsKey(itemString);
+                itemStack = map.get(itemString);
+
                 if (!contains) {
                     logger.warn(String.format("The item %s of type %s of key %s in %s not exist", itemString, type, BrewingUtils.getPath(section, sectionName + "[" + index + "]"), file.getAbsolutePath()));
                     return;
                 }
             } else {
-                if (!Main.yeastItemStackMap().containsKey(itemString)) {
+                Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(ItemType.YEAST);
+                if (!map.containsKey(itemString)) {
                     logger.warn(String.format("The value %s of key %s in %s incorrect", itemString, BrewingUtils.getPath(section, sectionName + "[" + index + "]" + ".item"), file.getAbsolutePath()));
                     return;
                 }
-                itemStack = Main.yeastItemStackMap().get(itemString);
+                itemStack = map.get(itemString);
             }
 
             JsonElement amplifyElement = customItemObject.get("amplify");
@@ -229,12 +226,13 @@ class RecipePropertiesLoader {
         containerList.forEach(s -> {
             int index = atomicInteger.getAndIncrement();
             if (s instanceof String itemString) {
-                if (!Main.containerItemStackMap().containsKey(itemString)) {
+                Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(ItemType.CONTAINER);
+                if (!map.containsKey(itemString)) {
                     logger.warn(String.format("The value %s of key %s in %s incorrect", itemString, BrewingUtils.getPath(section, "container[" + index + "]"), file.getAbsolutePath()));
                     return;
                 }
 
-                containers.add(Main.containerItemStackMap().get(itemString));
+                containers.add(map.get(itemString));
             } else {
                 logger.warn(String.format("The object %s of key %s in %s is not a string", s, BrewingUtils.getPath(section, "container[" + index + "]"), file.getAbsolutePath()));
             }
@@ -252,12 +250,13 @@ class RecipePropertiesLoader {
             return null;
         }
 
-        if (!Main.outputItemStackMap().containsKey(outputString)) {
+        Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(ItemType.OUTPUT);
+        if (!map.containsKey(outputString)) {
             logger.warn(String.format("The value %s of key %s in %s incorrect", outputString, BrewingUtils.getPath(section, "output"), file.getAbsolutePath()));
             return null;
         }
 
-        return Main.outputItemStackMap().get(outputString);
+        return map.get(outputString);
     }
     // endregion
 

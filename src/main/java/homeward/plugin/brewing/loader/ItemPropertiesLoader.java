@@ -4,8 +4,8 @@ package homeward.plugin.brewing.loader;
 import com.google.common.collect.Sets;
 import homeward.plugin.brewing.Main;
 import homeward.plugin.brewing.bean.ItemProperties;
-import homeward.plugin.brewing.enumerate.ItemTypeEnum;
-import homeward.plugin.brewing.enumerate.ProviderEnum;
+import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Provider;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,20 +18,18 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.util.*;
 
-import static homeward.plugin.brewing.utilitie.ItemPropertiesUtils.*;
+import static homeward.plugin.brewing.utilitie.ConfigurationUtils.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 // loading item properties from items folder
 class ItemPropertiesLoader {
     private final Logger logger = Main.getInstance().getSLF4JLogger();
 
-    private final Map<ConfigurationLoader.ConfigEnum, LinkedHashMap<File, YamlConfiguration>> configurationList = ConfigurationLoader.getInstance().getConfigurationList();
-
     @Getter private final Set<ItemProperties> itemPropertiesSet = Sets.newLinkedHashSet();
 
     // region load items properties
     public void loadItemsProperties() {
-        LinkedHashMap<File, YamlConfiguration> configurationFileList = configurationList.get(ConfigurationLoader.ConfigEnum.ITEM_CONFIG);
+        LinkedHashMap<File, YamlConfiguration> configurationFileList = ConfigurationLoader.CONFIGURATION_LIST.get(ConfigurationLoader.ConfigEnum.ITEM_CONFIG);
 
         if (configurationFileList == null || configurationFileList.isEmpty()) return;
 
@@ -61,7 +59,7 @@ class ItemPropertiesLoader {
 
         Set<String> itemKeySet = topSection.getKeys(false);
         itemKeySet.forEach(itemKey -> {
-            ItemTypeEnum itemType = ItemTypeEnum.getItemType(topKey.toUpperCase(Locale.ROOT));
+            ItemType itemType = ItemType.getItemType(topKey.toUpperCase(Locale.ROOT));
             if (itemType == null) {
                 logger.warn(String.format("illegal key %s in %s", topKey, file.getAbsolutePath()));
                 return;
@@ -77,7 +75,7 @@ class ItemPropertiesLoader {
 
     // region build item basic information and add ItemProperties to itemPropertiesSet
     // itemSection: topKey.xxx
-    private ItemProperties buildItem(final File file, final ConfigurationSection topSection, final String itemKey, final ItemTypeEnum type) {
+    private ItemProperties buildItem(final File file, final ConfigurationSection topSection, final String itemKey, final ItemType type) {
         ConfigurationSection itemSection = topSection.getConfigurationSection(itemKey);
         if (itemSection == null) {
             logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(topSection.getCurrentPath(), itemKey), file.getAbsolutePath()));
@@ -87,13 +85,13 @@ class ItemPropertiesLoader {
         // required
         Material material = getMaterial(file, itemSection);
         if (material == null) return null;
-        if (ItemTypeEnum.OUTPUT.equals(type) && !Material.POTION.equals(material)) {
+        if (ItemType.OUTPUT.equals(type) && !Material.POTION.equals(material)) {
             logger.warn(String.format("The material %s of key %s in %s is not a potion", material, BrewingUtils.getPath(topSection.getCurrentPath(), itemKey), file.getAbsolutePath()));
             return null;
         }
 
         // required
-        ProviderEnum provider = getProvider(file, itemSection);
+        Provider provider = getProvider(file, itemSection);
         if (provider == null) return null;
 
         // default: null
@@ -113,7 +111,7 @@ class ItemPropertiesLoader {
         switch (type) {
             case TIER -> {}
             case SUBSTRATE, OUTPUT -> builder = buildSubstrate(file, itemSection, builder);
-            case YEAST -> builder = buildYeast(itemSection, builder);
+            case YEAST, CONTAINER -> builder = buildYeast(itemSection, builder);
         }
         if (builder == null) return null;
 

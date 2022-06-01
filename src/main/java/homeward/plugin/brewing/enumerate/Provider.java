@@ -4,23 +4,23 @@ import com.google.common.collect.Maps;
 
 import java.util.Map;
 
-public enum ProviderEnum implements EnumBase {
+public enum Provider implements EnumBase {
     VANILLA("vanilla");
 
     private final String name;
 
-    private static final Map<String, ProviderEnum> BY_NAME = Maps.newHashMap();
+    private static final Map<String, Provider> BY_NAME = Maps.newHashMap();
     static {
-        for (ProviderEnum provider : values()) {
+        for (Provider provider : values()) {
             BY_NAME.put(provider.name(), provider);
         }
     }
 
-    ProviderEnum(String type) {
+    Provider(String type) {
         this.name = type;
     }
 
-    public static ProviderEnum getProvider(String name) {
+    public static Provider getProvider(String name) {
         return BY_NAME.getOrDefault(name, null);
     }
 

@@ -2,7 +2,7 @@ package homeward.plugin.brewing.enumerate;
 
 import net.kyori.adventure.text.Component;
 
-public enum ComponentEnum implements EnumBase {
+public enum Components implements EnumBase {
     GAP_REGULAR(Component.text("\uF80C" + "\uF80A" + "\uF809" + "\uF801")),
 
     POSITIVE_4(Component.text("\uF825")),
@@ -27,7 +27,7 @@ public enum ComponentEnum implements EnumBase {
 
     private final Component component;
 
-    ComponentEnum(Component component) {
+    Components(Component component) {
         this.component = component;
     }
 

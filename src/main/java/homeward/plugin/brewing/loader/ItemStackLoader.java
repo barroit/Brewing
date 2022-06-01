@@ -1,15 +1,16 @@
 package homeward.plugin.brewing.loader;
 
+import com.google.common.collect.Maps;
 import de.tr7zw.nbtapi.NBTItem;
-import homeward.plugin.brewing.Main;
+import homeward.plugin.brewing.Container;
 import homeward.plugin.brewing.bean.ItemProperties;
-import homeward.plugin.brewing.enumerate.ItemTypeEnum;
-import homeward.plugin.brewing.enumerate.ProviderEnum;
+import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Provider;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
+import homeward.plugin.brewing.utilitie.ConfigurationUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,11 +23,34 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 // loading all item stack from item properties
 class ItemStackLoader {
     private final Set<ItemProperties> itemPropertiesSet = ItemPropertiesLoader.getInstance().getItemPropertiesSet();
+
+    // region convert recipe to item stack
+    public void convertRecipeToItemStack() {
+        if (Container.RECIPE_PROPERTIES.size() == 0) return;
+        Container.RECIPE_PROPERTIES.forEach((id, recipeProperties) -> {
+            ItemProperties.Content display = recipeProperties.display();
+
+            ArrayList<ItemProperties.Content> lore = recipeProperties.lore(); // nullable
+
+            ItemStack output = recipeProperties.output();
+            Material material = output.getType();
+            int customModelData = output.getItemMeta().getCustomModelData();
+
+            ItemStack itemStack = new ItemStack(material);
+            itemStack.editMeta(itemMeta -> {
+                itemMeta.displayName(ConfigurationUtils.getDisplayComponent(display));
+                itemMeta.setCustomModelData(customModelData);
+                if (lore != null) itemMeta.lore(ConfigurationUtils.getLoreComponent(lore, itemMeta));
+            });
+        });
+    }
+    // endregion
 
     // region convert properties to item stack
     public void convertPropertiesToItemStack() {
@@ -34,16 +58,15 @@ class ItemStackLoader {
             return;
         }
 
-        Main.clearItemStackMap();
+        Container.ITEM_STACK_MAP.clear();
 
         itemPropertiesSet.forEach(this::categorizeItem);
     }
-    // endregion
 
     // region categorize item
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private void categorizeItem(final ItemProperties itemProperties) {
-        ProviderEnum provider = itemProperties.provider();
+        Provider provider = itemProperties.provider();
         String id = itemProperties.id();
 
         ItemStack itemStack;
@@ -56,17 +79,26 @@ class ItemStackLoader {
 
         // add to map
         switch (itemProperties.type()) {
-            case TIER -> Main.tierItemStackMap(id, addNbtTag(ItemTypeEnum.TIER, itemStack));
-            case SUBSTRATE -> Main.substrateItemStackMap(id, addNbtTag(ItemTypeEnum.SUBSTRATE, itemStack));
-            case YEAST -> Main.yeastItemStackMap(id, addNbtTag(ItemTypeEnum.YEAST, itemStack));
-            case OUTPUT -> Main.outputItemStackMap(id, addNbtTag(ItemTypeEnum.OUTPUT, itemStack));
-            case CONTAINER -> Main.containerItemStackMap(id, addNbtTag(ItemTypeEnum.OUTPUT, itemStack));
+            case TIER -> push(ItemType.TIER, id, itemStack);
+            case SUBSTRATE -> push(ItemType.SUBSTRATE, id, itemStack);
+            case YEAST -> push(ItemType.YEAST, id, itemStack);
+            case OUTPUT -> push(ItemType.OUTPUT, id, itemStack);
+            case CONTAINER -> push(ItemType.CONTAINER, id, itemStack);
         }
     }
     // endregion
 
+    // region push to map
+    private void push(ItemType type, String id, ItemStack itemStack) {
+        Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(type);
+        if (map == null) map = Maps.newHashMap();
+        map.put(id, getItemStackWithNbtTag(type, getItemStackWithNbtTag(type, itemStack)));
+        Container.ITEM_STACK_MAP.put(type, map);
+    }
+    // endregion
+
     // region add nbt tag
-    private ItemStack addNbtTag(ItemTypeEnum type, ItemStack itemStack) {
+    private ItemStack getItemStackWithNbtTag(ItemType type, ItemStack itemStack) {
         NBTItem nbtItem = new NBTItem(itemStack);
         nbtItem.setObject("BrewingItemType", type);
         return nbtItem.getItem();
@@ -90,7 +122,7 @@ class ItemStackLoader {
             // display
             ItemProperties.Content display = itemProperties.display();
             if (display != null) {
-                itemMeta.displayName(displayComponent(display));
+                itemMeta.displayName(ConfigurationUtils.getDisplayComponent(display));
             }
 
             // restore food/health/saturation
@@ -101,7 +133,7 @@ class ItemStackLoader {
                     float saturation = itemProperties.restoreSaturation();
 
                     if (food != 0 || health != 0 || saturation != 0) {
-                        List<Component> loreList = loreList(itemMeta);
+                        List<Component> loreList = ConfigurationUtils.getLoreList(itemMeta);
                         if (food != 0) loreList.add(generateRestoreLore(food, "Food"));
                         if (health != 0) loreList.add(generateRestoreLore(health, "Health"));
                         if (health != 0) loreList.add(generateRestoreLore(saturation, "Saturation"));
@@ -113,15 +145,14 @@ class ItemStackLoader {
             // lore
             ArrayList<ItemProperties.Content> lore = itemProperties.lore();
             if (lore != null) {
-                List<Component> loreList = loreList(itemMeta);
-                lore.forEach(content -> loreList.add(loreComponent(content)));
-                itemMeta.lore(loreList);
+                List<Component> loreComponents = ConfigurationUtils.getLoreComponent(lore, itemMeta);
+                itemMeta.lore(loreComponents);
             }
 
             // effect
             ArrayList<ItemProperties.Effect> effects = itemProperties.effects();
             if (effects != null) {
-                List<Component> loreList = loreList(itemMeta);
+                List<Component> loreList = ConfigurationUtils.getLoreList(itemMeta);
                 effects.forEach(effect -> {
                     TextComponent name = Component.text(ChatColor.translateAlternateColorCodes('&', "&a>&8| &7" + BrewingUtils.capitalizeFirst(effect.potionType().getName())));
 
@@ -139,8 +170,8 @@ class ItemStackLoader {
             // tier
             String tier = itemProperties.tier();
             if (tier != null) {
-                List<Component> loreList = loreList(itemMeta);
-                loreList.add(tierComponent(Main.itemTier(tier)));
+                List<Component> loreList = ConfigurationUtils.getLoreList(itemMeta);
+                loreList.add(ConfigurationUtils.getTierComponent(Container.ITEM_TIER.get(tier)));
                 itemMeta.lore(loreList);
             }
 
@@ -148,7 +179,7 @@ class ItemStackLoader {
             int requiredLevel = itemProperties.requiredLevel();
             if (requiredLevel != 0) {
                 switch (itemProperties.type()) {
-                    case SUBSTRATE, OUTPUT, YEAST, CONTAINER -> setRequiredLevel(requiredLevel, itemMeta);
+                    case SUBSTRATE, OUTPUT, YEAST -> setRequiredLevel(requiredLevel, itemMeta);
                 }
             }
         });
@@ -157,18 +188,9 @@ class ItemStackLoader {
     }
     // endregion
 
-    // region get lore list
-    private List<Component> loreList(ItemMeta itemMeta) {
-        List<Component> loreList = itemMeta.lore();
-        if (loreList == null) loreList = new ArrayList<>();
-        loreList.add(Component.text().build());
-        return loreList;
-    }
-    // endregion
-
     // region set required level lore
     private void setRequiredLevel(final int requiredLevel, final ItemMeta itemMeta) {
-        List<Component> loreList = loreList(itemMeta);
+        List<Component> loreList = ConfigurationUtils.getLoreList(itemMeta);
         loreList.add(Component.text("Requires Level " + requiredLevel, NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
         itemMeta.lore(loreList);
     }
@@ -183,38 +205,6 @@ class ItemStackLoader {
         return Component.text().append(blank, restorePrefix, restoreValue, restoreSuffix).decoration(TextDecoration.ITALIC, false).build();
     }
     // endregion
-
-    // region get text component
-    private Component text(ItemProperties.Content content) {
-        String ccText = ChatColor.translateAlternateColorCodes('&', content.text());
-        TextComponent text = Component.text(ccText);
-        ArrayList<Integer> color = content.color();
-        if (color != null) {
-            text = text.color(TextColor.color(color.get(0), color.get(1), color.get(2)));
-        }
-        return text;
-    }
-    // endregion
-
-    // region get display component
-    private Component displayComponent(ItemProperties.Content content) {
-        return text(content).decoration(TextDecoration.ITALIC, false);
-    }
-    // endregion
-
-    // region get lore component
-    private Component loreComponent(ItemProperties.Content content) {
-        return text(content).decoration(TextDecoration.ITALIC, false);
-    }
-    // endregion
-
-    // region get tier component
-    private Component tierComponent(ItemProperties.Content content) {
-        TextComponent prefix = Component.text(" ", NamedTextColor.DARK_AQUA);
-        TextComponent tierString = Component.text("Tier: ", NamedTextColor.GRAY);
-        Component tier = text(content).decorate(TextDecoration.BOLD);
-        return prefix.append(tierString).append(tier).decoration(TextDecoration.ITALIC, false);
-    }
     // endregion
 
     // region get instance

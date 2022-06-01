@@ -5,13 +5,22 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import homeward.plugin.brewing.Container;
 import homeward.plugin.brewing.Main;
 import homeward.plugin.brewing.bean.ItemProperties;
-import homeward.plugin.brewing.enumerate.ProviderEnum;
+import homeward.plugin.brewing.enumerate.Provider;
 import lombok.experimental.UtilityClass;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -20,19 +29,18 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @UtilityClass
-public class ItemPropertiesUtils {
+public class ConfigurationUtils {
     private final Logger logger = Main.getInstance().getSLF4JLogger();
-    private final Map<String, ItemProperties.Content> itemTier = Main.itemTier();
 
     // region get provider
-    public @Nullable ProviderEnum getProvider(final File file, final ConfigurationSection section) {
+    public @Nullable Provider getProvider(final File file, final ConfigurationSection section) {
         String providerString = section.getString("provider");
         if (providerString == null) {
             logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(section.getCurrentPath(), "provider"), file.getAbsolutePath()));
             return null;
         }
 
-        ProviderEnum provider = ProviderEnum.getProvider(providerString.toUpperCase(Locale.ROOT));
+        Provider provider = Provider.getProvider(providerString.toUpperCase(Locale.ROOT));
 
         if (provider == null) {
             logger.warn(String.format("The value %s of key %s in %s is incorrect", providerString, BrewingUtils.getPath(section.getCurrentPath(), "provider"), file.getAbsolutePath()));
@@ -125,11 +133,11 @@ public class ItemPropertiesUtils {
         String tier = section.getString("item-tier", null);
         if (tier == null) return null;
 
-        if (!itemTier.containsKey(tier)) {
-            if (itemTier.isEmpty()) {
+        if (!Container.ITEM_TIER.containsKey(tier)) {
+            if (Container.ITEM_TIER.isEmpty()) {
                 logger.warn("The item-tier is empty. Did you configure it in config.yml?");
             }
-            logger.warn(String.format("The value %s of key %s in %s does not match item-tier sets %s", tier, BrewingUtils.getPath(section.getCurrentPath(), "item-tier"), file.getAbsolutePath(), itemTier.keySet()));
+            logger.warn(String.format("The value %s of key %s in %s does not match item-tier sets %s", tier, BrewingUtils.getPath(section.getCurrentPath(), "item-tier"), file.getAbsolutePath(), Container.ITEM_TIER.keySet()));
             return null;
         }
 
@@ -251,6 +259,59 @@ public class ItemPropertiesUtils {
         }
 
         return content.text(text);
+    }
+    // endregion
+
+    // region get display component
+    public Component getDisplayComponent(ItemProperties.Content content) {
+        return getComponent(content).decoration(TextDecoration.ITALIC, false);
+    }
+    // endregion
+
+    // region get lore component
+    @SuppressWarnings("unused")
+    public List<Component> getLoreComponent(@NotNull List<ItemProperties.Content> contents) {
+        List<Component> loreList = new ArrayList<>();
+        contents.forEach(content -> loreList.add(getDisplayComponent(content)));
+        return loreList;
+    }
+    // endregion
+
+    // region get lore component
+    public List<Component> getLoreComponent(@NotNull List<ItemProperties.Content> contents, ItemMeta itemMeta) {
+        List<Component> loreList = getLoreList(itemMeta);
+        contents.forEach(content -> loreList.add(getDisplayComponent(content)));
+        return loreList;
+    }
+    // endregion
+
+    // region get tier component
+    public Component getTierComponent(ItemProperties.Content content) {
+        TextComponent prefix = Component.text(" ", NamedTextColor.DARK_AQUA);
+        TextComponent tierString = Component.text("Tier: ", NamedTextColor.GRAY);
+        Component tier = getComponent(content).decorate(TextDecoration.BOLD);
+        return prefix.append(tierString).append(tier).decoration(TextDecoration.ITALIC, false);
+    }
+    // endregion
+
+    // region get lore list
+    public List<Component> getLoreList(@NotNull ItemMeta itemMeta) {
+        List<Component> loreList = itemMeta.lore();
+        if (loreList == null) loreList = new ArrayList<>();
+        loreList.add(Component.text().build());
+        return loreList;
+    }
+    // endregion
+
+    // region get text component
+    private Component getComponent(ItemProperties.Content content) {
+        String ccText = ChatColor.translateAlternateColorCodes('&', content.text());
+        TextComponent text = Component.text(ccText);
+        ArrayList<Integer> color = content.color();
+        if (color != null) {
+            text = text.color(TextColor.color(color.get(0), color.get(1), color.get(2)));
+        }
+        return text;
     }
     // endregion
 }

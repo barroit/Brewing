@@ -1,33 +1,44 @@
 package homeward.plugin.brewing.registrant;
 
 import homeward.plugin.brewing.Main;
+import homeward.plugin.brewing.enumerate.ItemType;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.mattstudios.mf.base.CommandBase;
-import me.mattstudios.mf.base.CommandManager;
-import me.mattstudios.mf.base.MessageHandler;
+import me.mattstudios.mf.base.*;
+import me.mattstudios.mf.base.components.TypeResult;
 import org.bukkit.Bukkit;
 import org.reflections.Reflections;
 
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommandRegister {
-    private final Set<CommandBase> commands = new LinkedHashSet<>();
 
     public void register() {
         CommandManager commandManager = new CommandManager(Main.getInstance());
 
-        getCommandClassInstance();
+        registerParameter(commandManager.getParameterHandler());
 
-        commandManager.register(commands.toArray(new CommandBase[0]));
+        CommandBase[] commandInstance = getCommandInstance();
+        commandManager.register(commandInstance);
     }
 
-    private void getCommandClassInstance() {
+    private void registerParameter(ParameterHandler handler) {
+        handler.register(ItemType.class, argument -> {
+            ItemType itemType = ItemType.getItemType(argument.toString().toUpperCase(Locale.ROOT));
+            if (itemType == null) return new TypeResult(argument);
+            return new TypeResult(itemType, argument);
+        });
+    }
+
+    private CommandBase[] getCommandInstance() {
         String commandPath = BrewingUtils.getPath(Main.class.getPackageName(), COMMAND_PACKAGE_NAME);
         Set<Class<? extends CommandBase>> classes = new Reflections(commandPath).getSubTypesOf(CommandBase.class);
+
+        Set<CommandBase> commands = new LinkedHashSet<>();
 
         classes.forEach(var -> {
             try {
@@ -39,6 +50,8 @@ public class CommandRegister {
                 Bukkit.getPluginManager().disablePlugin(Main.getInstance());
             }
         });
+
+        return commands.toArray(new CommandBase[]{});
     }
 
     private static class RegisterInstance {

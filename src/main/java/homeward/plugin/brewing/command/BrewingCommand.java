@@ -16,7 +16,7 @@ public class BrewingCommand extends CommandBase {
     public void defaultCommand(final CommandSender commandSender) {
         List<String> usageList = new ArrayList<>();
         usageList.add(translateAlternateColorCode("&d/brewing reload"));
-        usageList.add(translateAlternateColorCode("&d/brewing t"));
+        usageList.add(translateAlternateColorCode("&d/brewing get <item-type> <id> <amount>"));
         commandSender.sendMessage(usageList.toArray(new String[]{}));
     }
 

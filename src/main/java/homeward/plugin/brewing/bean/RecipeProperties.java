@@ -1,7 +1,7 @@
 package homeward.plugin.brewing.bean;
 
 
-import homeward.plugin.brewing.enumerate.ItemTypeEnum;
+import homeward.plugin.brewing.enumerate.ItemType;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
@@ -32,7 +32,7 @@ public class RecipeProperties implements Serializable {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @EqualsAndHashCode
     public static class CustomItem {
-        @NotNull ItemTypeEnum type;
+        @NotNull ItemType type;
         @NotNull ItemStack item;
         double amplify;
 

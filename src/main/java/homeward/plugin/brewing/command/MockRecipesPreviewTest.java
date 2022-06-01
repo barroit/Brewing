@@ -34,18 +34,4 @@ public class MockRecipesPreviewTest extends CommandBase {
         //     playerGuiInstanceMap.put(player, gui);
         // }
     }
-
-    @SubCommand("nbt")
-    public void testNBT(CommandSender commandSender) {
-        Player player = (Player) commandSender;
-        // Main.tierItemStackMap().forEach((k, v) -> {
-        //     player.getInventory().addItem(v);
-        // });
-        // Main.outputItemStackMap().forEach((k, v) -> {
-        //     player.getInventory().addItem(v);
-        // });
-        Main.substrateItemStackMap().forEach((k, v) -> {
-            player.getInventory().addItem(v);
-        });
-    }
 }

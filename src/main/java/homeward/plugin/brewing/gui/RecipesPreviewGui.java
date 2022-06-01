@@ -1,4 +1,4 @@
-package homeward.plugin.brewing.guis;
+package homeward.plugin.brewing.gui;
 
 import dev.triumphteam.gui.builder.gui.PaginatedBuilder;
 import dev.triumphteam.gui.guis.BaseGui;
@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static homeward.plugin.brewing.enumerate.ComponentEnum.*;
-import static homeward.plugin.brewing.guis.RecipesPreviewGui.constants.*;
+import static homeward.plugin.brewing.enumerate.Components.*;
+import static homeward.plugin.brewing.gui.RecipesPreviewGui.constants.*;
 import static homeward.plugin.brewing.utilitie.GuiUtils.*;
 
 public class RecipesPreviewGui {
