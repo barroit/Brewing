@@ -4,12 +4,14 @@ import com.google.common.collect.Maps;
 
 import java.util.Map;
 
+@SuppressWarnings({"SameParameterValue", "unused"})
 public enum Provider implements EnumBase {
     VANILLA("vanilla");
 
     private final String name;
 
     private static final Map<String, Provider> BY_NAME = Maps.newHashMap();
+
     static {
         for (Provider provider : values()) {
             BY_NAME.put(provider.name(), provider);

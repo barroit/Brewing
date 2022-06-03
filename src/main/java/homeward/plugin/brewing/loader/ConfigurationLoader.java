@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.*;
 
 // loading all file from plugin data folder
+@SuppressWarnings("unused")
 public class ConfigurationLoader {
     private final File dataFolder = Main.getInstance().getDataFolder();
 

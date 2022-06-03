@@ -1,6 +1,5 @@
 package homeward.plugin.brewing.command;
 
-import homeward.plugin.brewing.gui.LegacyRecipesPreviewGui;
 import homeward.plugin.brewing.gui.RecipesPreviewGui;
 import me.mattstudios.mf.annotations.Alias;
 import me.mattstudios.mf.annotations.Command;

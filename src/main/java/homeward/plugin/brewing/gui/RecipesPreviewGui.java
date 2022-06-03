@@ -6,7 +6,6 @@ import dev.triumphteam.gui.guis.PaginatedGui;
 import homeward.plugin.brewing.Container;
 import homeward.plugin.brewing.enumerate.Item;
 import homeward.plugin.brewing.enumerate.Type;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;

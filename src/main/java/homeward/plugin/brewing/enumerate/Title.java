@@ -4,6 +4,7 @@ import homeward.plugin.brewing.utilitie.GuiUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
+@SuppressWarnings("unused")
 public enum Title implements EnumBase {
     GAP_REGULAR(Component.text("\uF80C" + "\uF80A" + "\uF809" + "\uF801")),
 

@@ -213,7 +213,7 @@ class ItemStackLoader {
 
     // region get instance
     private static class LoaderInstance {
-        static ItemStackLoader instance = new ItemStackLoader();
+        static final ItemStackLoader instance = new ItemStackLoader();
     }
 
     public static ItemStackLoader getInstance() {

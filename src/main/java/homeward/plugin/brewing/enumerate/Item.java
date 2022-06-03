@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public enum Item implements EnumBase {
     NEXT_BUTTON(ItemBuilder.from(Material.PAPER).model(114514).asGuiItem()),
     NEXT_BUTTON_DIM(ItemBuilder.from(Material.PAPER).model(114515).asGuiItem()),

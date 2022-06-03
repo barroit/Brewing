@@ -3,13 +3,11 @@ package homeward.plugin.brewing.gui;
 import dev.triumphteam.gui.guis.BaseGui;
 
 import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import homeward.plugin.brewing.enumerate.Item;
 import homeward.plugin.brewing.enumerate.Title;
 import homeward.plugin.brewing.enumerate.Type;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -21,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-@SuppressWarnings("JavadocDeclaration")
+@SuppressWarnings({"JavadocDeclaration", "SameParameterValue"})
 public abstract class GuiBase<C extends BaseGui> {
     protected final Map<String, ItemStack> recipeTier;
     protected final int recipeTierSize;

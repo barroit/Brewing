@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 
+@SuppressWarnings({"unused", "SameReturnValue"})
 public interface EnumBase {
     default Component getComponent() {
         return null;

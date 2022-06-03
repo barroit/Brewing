@@ -6,7 +6,6 @@ import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import homeward.plugin.brewing.Container;
-import lombok.SneakyThrows;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -20,6 +19,7 @@ import static homeward.plugin.brewing.enumerate.Title.*;
 import static homeward.plugin.brewing.gui.LegacyRecipesPreviewGui.constants.*;
 import static homeward.plugin.brewing.utilitie.GuiUtils.*;
 
+@SuppressWarnings("unused")
 public class LegacyRecipesPreviewGui {
     private static volatile LegacyRecipesPreviewGui instance;
     private final PaginatedGui paginatedGui;
@@ -33,7 +33,6 @@ public class LegacyRecipesPreviewGui {
     private GuiItem next_button_gui_item;
     private GuiItem prev_button_gui_item;
 
-    @SneakyThrows
     public BaseGui getGui() {
         paginatedGui.setDefaultTopClickAction(event -> event.setCancelled(true));
 
