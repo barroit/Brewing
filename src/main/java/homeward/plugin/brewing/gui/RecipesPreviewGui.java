@@ -6,10 +6,12 @@ import dev.triumphteam.gui.guis.PaginatedGui;
 import homeward.plugin.brewing.Container;
 import homeward.plugin.brewing.enumerate.Item;
 import homeward.plugin.brewing.enumerate.Type;
+import homeward.plugin.brewing.exception.BrewingInternalException;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -76,11 +78,25 @@ public class RecipesPreviewGui extends GuiBase<PaginatedGui> {
         }
         Map<String, ItemStack> map = Container.RECIPE_DISPLAY_ITEMS.get(entry.getKey());
         gui.clearPageItems(map == null);
-        if (map == null) return;
+
+        try {
+            Field pageNum = PaginatedGui.class.getDeclaredField("pageNum");
+            pageNum.setAccessible(true);
+            pageNum.set(gui, 1);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new BrewingInternalException(e);
+        }
+
+        if (map == null) {
+            this.updateButtonState(gui);
+            return;
+        }
+
         map.forEach((key, itemStack) -> {
             GuiItem item = new GuiItem(itemStack);
             gui.addItem(item);
         });
+
         gui.update();
         this.updateButtonState(gui);
     }
