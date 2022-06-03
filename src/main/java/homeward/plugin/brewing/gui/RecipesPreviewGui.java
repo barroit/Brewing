@@ -1,286 +1,207 @@
 package homeward.plugin.brewing.gui;
 
-import dev.triumphteam.gui.builder.gui.PaginatedBuilder;
-import dev.triumphteam.gui.guis.BaseGui;
-import dev.triumphteam.gui.guis.Gui;
+import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
-import lombok.SneakyThrows;
-import net.kyori.adventure.text.format.NamedTextColor;
+import homeward.plugin.brewing.Container;
+import homeward.plugin.brewing.enumerate.Item;
+import homeward.plugin.brewing.enumerate.Type;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
-import static homeward.plugin.brewing.enumerate.Components.*;
-import static homeward.plugin.brewing.gui.RecipesPreviewGui.constants.*;
-import static homeward.plugin.brewing.utilitie.GuiUtils.*;
+public class RecipesPreviewGui extends GuiBase<PaginatedGui> {
+    private int currentTier = 1;
+    private final List<Map.Entry<String, ItemStack>> recipeEntryList;
 
-public class RecipesPreviewGui {
-    private static volatile RecipesPreviewGui instance;
-    private final PaginatedGui paginatedGui;
-    private final Map<String, ItemStack> recipesLevelMap;
-
-    private final ItemStack NEXT_BUTTON = new ItemStack(Material.PAPER);
-    private final ItemStack PREV_BUTTON = new ItemStack(Material.PAPER);
-    private final ItemStack NEXT_BUTTON_DIM = new ItemStack(Material.PAPER);
-    private final ItemStack PREV_BUTTON_DIM = new ItemStack(Material.PAPER);
-
-    private GuiItem next_button_gui_item;
-    private GuiItem prev_button_gui_item;
-
-    @SneakyThrows
-    public BaseGui getGui() {
-        paginatedGui.setDefaultTopClickAction(event -> event.setCancelled(true));
-
-        setInoperableArea(); // Set Inoperable Area
-
-        setLevelShowcase(); // Set Level Showcase
-
-        setRecipesShowcase(); // Set Recipes Showcase
-
-        paginatedGui.setItem(SLOT_NEXT, next_button_gui_item); // Set The Next Button
-        paginatedGui.setItem(SLOT_PREV, prev_button_gui_item); // Set The Previous Button
-
-        setGuiOpenAction(); // Set Gui Open Action
-
-        return paginatedGui;
+    private RecipesPreviewGui() {
+        super(Container.RECIPE_TIER, 27, 6, Type.RECIPES_PREVIEW_GUI);
+        recipeEntryList = super.recipeTier.entrySet().stream().toList();
     }
 
-    // region Set Level Showcase
-    private void setLevelShowcase() {
-        Object[] levelIconArray = recipesLevelMap.values().toArray();
-        switch (recipesLevelMap.size()) {
-            //  |0 1 2 3 4 5 6 7 8|
-            //  |  ^   ^   ^   ^  |
-            case SIZE_FOUR -> {
-                paginatedGui.setItem(SIZE_FOUR$1, new GuiItem((ItemStack) levelIconArray[0]));
-                paginatedGui.setItem(SIZE_FOUR$2, new GuiItem((ItemStack) levelIconArray[1]));
-                paginatedGui.setItem(SIZE_FOUR$3, new GuiItem((ItemStack) levelIconArray[2]));
-                paginatedGui.setItem(SIZE_FOUR$4, new GuiItem((ItemStack) levelIconArray[3]));
-            }
-            //  |0 1 2 3 4 5 6 7 8|
-            //  |  ^     ^     ^  |
-            case SIZE_THREE -> {
-                paginatedGui.setItem(SIZE_THREE$1, new GuiItem((ItemStack) levelIconArray[0]));
-                paginatedGui.setItem(SIZE_THREE$2, new GuiItem((ItemStack) levelIconArray[1]));
-                paginatedGui.setItem(SIZE_THREE$3, new GuiItem((ItemStack) levelIconArray[2]));
-            }
-            //  |0 1 2 3 4 5 6 7 8|
-            //  |  ^           ^  |
-            case SIZE_TWO -> {
-                paginatedGui.setItem(SIZE_TWO$1, new GuiItem((ItemStack) levelIconArray[0]));
-                paginatedGui.setItem(SIZE_TWO$2, new GuiItem((ItemStack) levelIconArray[1]));
-            }
-            //  |0 1 2 3 4 5 6 7 8|
-            //  |        ^        |
-            case SIZE_ONE -> paginatedGui.setItem(SIZE_ONE$1, new GuiItem((ItemStack) levelIconArray[0]));
-            // GG
-            default -> throw new RuntimeException("The Recipes Level Map Has An Error. This is a brewing plugin internal bug!");
-        }
+    public static PaginatedGui getGui() {
+        return new RecipesPreviewGui().getPaginatedGui();
     }
-    // endregion
 
-    // region Set Gui Open Action
-    private void setGuiOpenAction() {
-        paginatedGui.setOpenGuiAction(event -> {
-            paginatedGui.updateItem(SLOT_PREV, PREV_BUTTON_DIM);
-            if (paginatedGui.getCurrentPageNum() == paginatedGui.getPagesNum()) {
-                paginatedGui.updateItem(SLOT_NEXT, NEXT_BUTTON_DIM);
-            } else {
-                paginatedGui.updateItem(SLOT_NEXT, NEXT_BUTTON);
-            }
-        });
-    }
-    // endregion
-
-    // region Initialize Next Button Action
-    private void initializeNextButtonAction() {
-        next_button_gui_item.setAction(event -> {
-            if (paginatedGui.getNextPageNum() == paginatedGui.getPagesNum()) {
-                paginatedGui.updateItem(SLOT_NEXT, NEXT_BUTTON_DIM);
-            }
-            ItemStack previousButton = paginatedGui.getInventory().getItem(SLOT_PREV);
-            if (paginatedGui.getNextPageNum() != 1 && previousButton != null && previousButton.getItemMeta().getCustomModelData() == PREV_BUTTON_DIM_CUSTOM_MODEL_DATA) {
-                paginatedGui.updateItem(SLOT_PREV, PREV_BUTTON);
-            }
-            paginatedGui.next();
-        });
-    }
-    // endregion
-
-    // region Initialize Previous Button Action
-    private void initializePreviousButtonAction() {
-        prev_button_gui_item.setAction(event -> {
-            if (paginatedGui.getPrevPageNum() == 1) {
-                paginatedGui.updateItem(SLOT_PREV, PREV_BUTTON_DIM);
-            }
-            ItemStack nextButton = paginatedGui.getInventory().getItem(SLOT_NEXT);
-            if (paginatedGui.getPagesNum() > paginatedGui.getPrevPageNum() && nextButton != null && nextButton.getItemMeta().getCustomModelData() == NEXT_BUTTON_DIM_CUSTOM_MODEL_DATA) {
-                paginatedGui.updateItem(SLOT_NEXT, NEXT_BUTTON);
-            }
-            paginatedGui.previous();
-        });
-    }
-    // endregion
-
-    // region Set Recipes
-    private void setRecipesShowcase() {
-        for (var i = 0; i < 10; i ++) {
-            paginatedGui.addItem(new GuiItem(Material.RED_WOOL));
-        }
-        for (var i = 0; i < 10; i ++) {
-            paginatedGui.addItem(new GuiItem(Material.GREEN_WOOL));
-        }
-        for (var i = 0; i < 10; i ++) {
-            paginatedGui.addItem(new GuiItem(Material.PINK_WOOL));
-        }
-        for (var i = 0; i < 10; i ++) {
-            paginatedGui.addItem(new GuiItem(Material.GREEN_WOOL));
-        }
-        for (var i = 0; i < 10; i ++) {
-            paginatedGui.addItem(new GuiItem(Material.PINK_WOOL));
-        }
-    }
-    // endregion
-
-    // region Set Inoperable Area
-    public void setInoperableArea() {
-        List<Integer> paginationArea = getPaginationArea();
-        for (var var1 = 0; var1 <= 53; var1 ++) {
-            if (paginationArea.contains(var1)) continue;
-            paginatedGui.setItem(var1, new GuiItem(Material.AIR));
-        }
-    }
-    // endregion
-
-    // region Get Pagination Area
-    private List<Integer> getPaginationArea() {
+    @Override
+    protected @Nullable Set<Integer> untouchableZone() {
         int start = 18;
-        List<Integer> var0 = new ArrayList<>();
-
+        Set<Integer> zone = new LinkedHashSet<>();
         boolean var3 = false, var4 = false;
+        for (int index = start, line = 2; index < start + super.pageSize; index++) {
+            var left = 9 * line;
+            var right = 9 * (line + 1) - 1;
 
-        for (int var1 = start, var2 = 2; var1 <= start + 3 * 9 - 1; var1 ++) {
-            var var5 = 9 * var2;
-            var var6 = 9 * (var2 + 1) - 1;
-
-            if (var5 == var1) {
+            if (left == index) {
                 var3 = true;
                 if (var4) {
-                    var2 ++;
+                    line++;
                     var3 = var4 = false;
                 }
                 continue;
             }
-            if (var6 == var1) {
+            if (right == index) {
                 var4 = true;
                 if (var3) {
-                    var2 ++;
+                    line++;
                     var3 = var4 = false;
                 }
                 continue;
             }
-
-            var0.add(var1);
+            zone.add(index);
         }
-
-        return var0;
+        return zone;
     }
-    // endregion
 
-    // region Initialize Button When Gui Class Be instanced
-    private void initializeButton() {
-        ItemMeta nextButtonMeta = NEXT_BUTTON.getItemMeta();
-        ItemMeta nextButtonDimMeta = NEXT_BUTTON_DIM.getItemMeta();
-        ItemMeta prevButtonMeta = PREV_BUTTON.getItemMeta();
-        ItemMeta prevButtonDimMeta = PREV_BUTTON_DIM.getItemMeta();
-
-        nextButtonMeta.setCustomModelData(NEXT_BUTTON_CUSTOM_MODEL_DATA);
-        nextButtonDimMeta.setCustomModelData(NEXT_BUTTON_DIM_CUSTOM_MODEL_DATA);
-        prevButtonMeta.setCustomModelData(PREV_BUTTON_CUSTOM_MODEL_DATA);
-        prevButtonDimMeta.setCustomModelData(PREV_BUTTON_DIM_CUSTOM_MODEL_DATA);
-
-        NEXT_BUTTON.setItemMeta(nextButtonMeta);
-        NEXT_BUTTON_DIM.setItemMeta(nextButtonDimMeta);
-        PREV_BUTTON.setItemMeta(prevButtonMeta);
-        PREV_BUTTON_DIM.setItemMeta(prevButtonDimMeta);
-
-        next_button_gui_item = new GuiItem(NEXT_BUTTON);
-        prev_button_gui_item = new GuiItem(PREV_BUTTON);
+    @Override
+    protected List<Consumer<PaginatedGui>> consumer() {
+        return Arrays.asList(recipeTierDisplayConsumer(), guiButtonConsumer(), guiOpenActionConsumer(), recipeShowcaseConsumer());
     }
-    // endregion
 
-    // region Initialize Title When Gui Class Be instanced
-    private PaginatedBuilder initializeGuiTitle(PaginatedBuilder guiBuilder) {
-        switch (recipesLevelMap.size()) {
-            case SIZE_FOUR -> guiBuilder.title(getTitle(NamedTextColor.WHITE, NEGATIVE_10, GUI_RECIPES_PREVIEW_CONTAINER, GAP_REGULAR, GUI_RECIPES_PREVIEW_CONTAINER_LVL4));
-            case SIZE_THREE -> guiBuilder.title(getTitle(NamedTextColor.WHITE, NEGATIVE_10, GUI_RECIPES_PREVIEW_CONTAINER, GAP_REGULAR, GUI_RECIPES_PREVIEW_CONTAINER_LVL3));
-            case SIZE_TWO -> guiBuilder.title(getTitle(NamedTextColor.WHITE, NEGATIVE_10, GUI_RECIPES_PREVIEW_CONTAINER, GAP_REGULAR, GUI_RECIPES_PREVIEW_CONTAINER_LVL3, GAP_REGULAR, GUI_RECIPES_PREVIEW_CONTAINER_LVL4));
-            case SIZE_ONE -> guiBuilder.title(getTitle(NamedTextColor.WHITE, NEGATIVE_10, GUI_RECIPES_PREVIEW_CONTAINER, GAP_REGULAR, GUI_RECIPES_PREVIEW_CONTAINER_LVL3, GAP_REGULAR, GUI_RECIPES_PREVIEW_CONTAINER_LVL1));
-            default -> throw new RuntimeException("The Recipes Level Map Has An Error. This is a brewing plugin internal bug!");
+    private Consumer<PaginatedGui> recipeShowcaseConsumer() {
+        return this::updateRecipeShowcase;
+    }
+
+    private void updateRecipeShowcase(PaginatedGui gui) {
+        Map.Entry<String, ItemStack> entry;
+        switch (currentTier) {
+            case 1 -> entry = recipeEntryList.get(0);
+            case 2 -> entry = recipeEntryList.get(1);
+            case 3 -> entry = recipeEntryList.get(2);
+            case 4 -> entry = recipeEntryList.get(3);
+            default -> throw new IllegalStateException();
         }
-        return guiBuilder;
-    }
-    // endregion
-
-    // region Instance Class
-    private RecipesPreviewGui(int rows, int pageSize) {
-        this.recipesLevelMap = null;
-
-        this.initializeButton();
-
-        PaginatedBuilder guiBuilder = this.initializeGuiTitle(Gui.paginated());
-
-        this.paginatedGui = guiBuilder.rows(rows).pageSize(pageSize).create();
-
-        initializeNextButtonAction();
-        initializePreviousButtonAction();
+        Map<String, ItemStack> map = Container.RECIPE_DISPLAY_ITEMS.get(entry.getKey());
+        gui.clearPageItems(map == null);
+        if (map == null) return;
+        map.forEach((key, itemStack) -> {
+            GuiItem item = new GuiItem(itemStack);
+            gui.addItem(item);
+        });
+        gui.update();
+        this.updateButtonState(gui);
     }
 
-    public static RecipesPreviewGui getInstance(int rows, int pageSize) {
-        if (null == instance) {
-            synchronized (RecipesPreviewGui.class) {
-                if (null == instance) {
-                    instance = new RecipesPreviewGui(rows, pageSize);
+    private Consumer<PaginatedGui> recipeTierDisplayConsumer() {
+        return gui -> {
+            ItemStack t1I = recipeEntryList.get(0).getValue();
+            GuiItem t1G = ItemBuilder.from(t1I).asGuiItem();
+
+            t1G.setAction(event -> {
+                if (currentTier != 1) {
+                    currentTier = 1;
+                    this.updateRecipeShowcase(gui);
+                }
+            });
+
+            int tierSize = super.recipeTierSize;
+            if (tierSize == 1) {
+                gui.setItem(4, t1G);
+            } else {
+                ItemStack t2I = recipeEntryList.get(1).getValue();
+                GuiItem t2G = ItemBuilder.from(t2I).asGuiItem();
+                gui.setItem(1, t1G);
+
+                t2G.setAction(event -> {
+                    if (currentTier != 2) {
+                        currentTier = 2;
+                        this.updateRecipeShowcase(gui);
+                    }
+                });
+
+                if (tierSize == 2) {
+                    gui.setItem(7, t2G);
+                } else {
+                    ItemStack t3I = recipeEntryList.get(2).getValue();
+                    GuiItem t3G = ItemBuilder.from(t3I).asGuiItem();
+
+                    t3G.setAction(event -> {
+                        if (currentTier != 3) {
+                            currentTier = 3;
+                            this.updateRecipeShowcase(gui);
+                        }
+                    });
+
+                    if (tierSize == 3) {
+                        gui.setItem(4, t2G);
+                        gui.setItem(7, t3G);
+                    } else {
+                        ItemStack t4I = recipeEntryList.get(3).getValue();
+                        GuiItem t4G = ItemBuilder.from(t4I).asGuiItem();
+
+                        t4G.setAction(event -> {
+                            if (currentTier != 4) {
+                                currentTier = 4;
+                                this.updateRecipeShowcase(gui);
+                            }
+                        });
+
+                        gui.setItem(3, t2G);
+                        gui.setItem(5, t3G);
+                        gui.setItem(7, t4G);
+                    }
                 }
             }
+        };
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Consumer<PaginatedGui> guiButtonConsumer() {
+        return gui -> {
+            nextButtonGuiItem.setAction(event -> {
+                if (event.getAction().equals(InventoryAction.NOTHING)) {
+                    return; // prevent skip
+                }
+                if (gui.getNextPageNum() >= gui.getPagesNum()) {
+                    gui.updateItem(52, nextButtonDim);
+                }
+                if (gui.getNextPageNum() > 1 && gui.getGuiItem(46).getItemStack().equals(prevButtonDim)) {
+                    gui.updateItem(46, prevButton);
+                }
+                gui.next();
+            });
+            prevButtonGuiItem.setAction(event -> {
+                if (event.getAction().equals(InventoryAction.NOTHING)) {
+                    return;
+                }
+                if (gui.getPrevPageNum() - 1 == 0) {
+                    gui.updateItem(46, prevButtonDim);
+                }
+                if (gui.getNextPageNum() > 1 && gui.getGuiItem(52).getItemStack().equals(nextButtonDim)) {
+                    gui.updateItem(52, nextButton);
+                }
+                gui.previous();
+            });
+
+            gui.setItem(52, nextButtonGuiItem);
+            gui.setItem(46, prevButtonGuiItem);
+        };
+    }
+
+    private Consumer<PaginatedGui> guiOpenActionConsumer() {
+        return gui -> gui.setOpenGuiAction(event -> this.updateButtonState(gui));
+    }
+
+    private void updateButtonState(final PaginatedGui gui) {
+        gui.updateItem(46, prevButtonDim);
+        if (gui.getCurrentPageNum() >= gui.getPagesNum()) {
+            gui.updateItem(52, nextButtonDim);
+        } else {
+            gui.updateItem(52, nextButton);
         }
-        return instance;
     }
-    // endregion
 
-    // region Constants
-    static class constants {
-        static final int SLOT_NEXT = 52;
-        static final int SLOT_PREV = 46;
+    private final ItemStack
+            nextButton = Item.NEXT_BUTTON.getItemStack(),
+            prevButton = Item.PREV_BUTTON.getItemStack(),
+            nextButtonDim = Item.NEXT_BUTTON_DIM.getItemStack(),
+            prevButtonDim = Item.PREV_BUTTON_DIM.getItemStack();
 
-        static final int SIZE_FOUR = 4;
-        static final int SIZE_THREE = 3;
-        static final int SIZE_TWO = 2;
-        static final int SIZE_ONE = 1;
-
-        static final int SIZE_FOUR$1 = 1;
-        static final int SIZE_FOUR$2 = 3;
-        static final int SIZE_FOUR$3 = 5;
-        static final int SIZE_FOUR$4 = 7;
-
-        static final int SIZE_THREE$1 = 1;
-        static final int SIZE_THREE$2 = 4;
-        static final int SIZE_THREE$3 = 7;
-
-        static final int SIZE_TWO$1 = 1;
-        static final int SIZE_TWO$2 = 7;
-
-        static final int SIZE_ONE$1 = 4;
-
-        static final int NEXT_BUTTON_CUSTOM_MODEL_DATA = 114514;
-        static final int NEXT_BUTTON_DIM_CUSTOM_MODEL_DATA = 114515;
-        static final int PREV_BUTTON_CUSTOM_MODEL_DATA = 114516;
-        static final int PREV_BUTTON_DIM_CUSTOM_MODEL_DATA = 114517;
-    }
-    // endregion
+    private final GuiItem
+            nextButtonGuiItem = new GuiItem(nextButton),
+            prevButtonGuiItem = new GuiItem(prevButton);
 }
