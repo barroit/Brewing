@@ -1,7 +1,7 @@
 package homeward.plugin.brewing.registrant;
 
 import homeward.plugin.brewing.Main;
-import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Type;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,10 +27,10 @@ public class CommandRegister {
     }
 
     private void registerParameter(ParameterHandler handler) {
-        handler.register(ItemType.class, argument -> {
-            ItemType itemType = ItemType.getItemType(argument.toString().toUpperCase(Locale.ROOT));
-            if (itemType == null) return new TypeResult(argument);
-            return new TypeResult(itemType, argument);
+        handler.register(Type.class, argument -> {
+            Type type = Type.getType(argument.toString().toUpperCase(Locale.ROOT));
+            if (type == null) return new TypeResult(argument);
+            return new TypeResult(type, argument);
         });
     }
 

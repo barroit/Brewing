@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import homeward.plugin.brewing.Container;
 import homeward.plugin.brewing.Main;
 import homeward.plugin.brewing.bean.ItemProperties;
-import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Type;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
 import homeward.plugin.brewing.utilitie.ConfigurationUtils;
 import lombok.AccessLevel;
@@ -74,12 +74,18 @@ class TierLoader {
             List<?> recipeTierList = configuration.getList("recipe-tier");
 
             if (recipeTierList == null) {
+                logger.warn("The recipe-tier in config.yml is empty. The plugin will disable brewing gui");
                 return;
             }
 
             AtomicInteger atomicInteger = new AtomicInteger();
             recipeTierList.forEach(recipeTier -> {
                 int index = atomicInteger.getAndIncrement();
+                if (index > 3) {
+                    logger.warn("The recipe-tier in config.yml can only have up to four levels. The plugin will not record the excess part");
+                    return;
+                }
+
                 JsonObject object = JsonParser.parseString(recipeTier.toString()).getAsJsonObject();
                 JsonElement levelElement = object.get("level");
                 if (levelElement == null) {
@@ -95,7 +101,7 @@ class TierLoader {
                 }
                 String itemString = itemElement.getAsString();
 
-                ItemStack item = Container.ITEM_STACK_MAP.get(ItemType.TIER).getOrDefault(itemString, null);
+                ItemStack item = Container.ITEM_STACK_MAP.get(Type.TIER).getOrDefault(itemString, null);
                 if (item == null) {
                     logger.warn(String.format("The value %s of key %s in %s does not exist or incorrect", itemString, BrewingUtils.getPath("recipe-tier[" + index + "]", "item"), file.getAbsolutePath()));
                     return;

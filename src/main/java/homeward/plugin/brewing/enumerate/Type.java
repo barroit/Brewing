@@ -5,27 +5,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public enum ItemType implements EnumBase {
+public enum Type implements EnumBase {
+    // item type
     TIER("tier"),
     SUBSTRATE("substrate"),
     YEAST("yeast"),
     OUTPUT("output"),
-    CONTAINER("container");
+    CONTAINER("container"),
+
+    // gui type
+    RECIPES_PREVIEW_GUI("recipes preview gui");
 
     private final String type;
 
-    private static final Map<String, ItemType> BY_NAME = Maps.newHashMap();
+    private static final Map<String, Type> BY_NAME = Maps.newHashMap();
     static {
-        for (ItemType item : values()) {
+        for (Type item : values()) {
             BY_NAME.put(item.name(), item);
         }
     }
 
-    ItemType(String type) {
+    Type(String type) {
         this.type = type;
     }
 
-    public static @Nullable ItemType getItemType(String name) {
+    public static @Nullable Type getType(String name) {
         return BY_NAME.getOrDefault(name, null);
     }
 

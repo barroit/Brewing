@@ -4,7 +4,7 @@ package homeward.plugin.brewing.loader;
 import com.google.common.collect.Sets;
 import homeward.plugin.brewing.Main;
 import homeward.plugin.brewing.bean.ItemProperties;
-import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Type;
 import homeward.plugin.brewing.enumerate.Provider;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
 import lombok.AccessLevel;
@@ -59,13 +59,13 @@ class ItemPropertiesLoader {
 
         Set<String> itemKeySet = topSection.getKeys(false);
         itemKeySet.forEach(itemKey -> {
-            ItemType itemType = ItemType.getItemType(topKey.toUpperCase(Locale.ROOT));
-            if (itemType == null) {
+            Type type = Type.getType(topKey.toUpperCase(Locale.ROOT));
+            if (type == null) {
                 logger.warn(String.format("illegal key %s in %s", topKey, file.getAbsolutePath()));
                 return;
             }
 
-            ItemProperties itemProperties = buildItem(file, topSection, itemKey, itemType);
+            ItemProperties itemProperties = buildItem(file, topSection, itemKey, type);
             if (itemProperties == null) return;
 
             itemPropertiesSet.add(itemProperties);
@@ -75,7 +75,7 @@ class ItemPropertiesLoader {
 
     // region build item basic information and add ItemProperties to itemPropertiesSet
     // itemSection: topKey.xxx
-    private ItemProperties buildItem(final File file, final ConfigurationSection topSection, final String itemKey, final ItemType type) {
+    private ItemProperties buildItem(final File file, final ConfigurationSection topSection, final String itemKey, final Type type) {
         ConfigurationSection itemSection = topSection.getConfigurationSection(itemKey);
         if (itemSection == null) {
             logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(topSection.getCurrentPath(), itemKey), file.getAbsolutePath()));
@@ -85,7 +85,7 @@ class ItemPropertiesLoader {
         // required
         Material material = getMaterial(file, itemSection);
         if (material == null) return null;
-        if (ItemType.OUTPUT.equals(type) && !Material.POTION.equals(material)) {
+        if (Type.OUTPUT.equals(type) && !Material.POTION.equals(material)) {
             logger.warn(String.format("The material %s of key %s in %s is not a potion", material, BrewingUtils.getPath(topSection.getCurrentPath(), itemKey), file.getAbsolutePath()));
             return null;
         }

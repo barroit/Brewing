@@ -1,8 +1,10 @@
+import dev.triumphteam.gui.guis.Gui;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 class clazz {
     void info() {
@@ -32,5 +34,11 @@ public class SimpleTest {
     @SneakyThrows
     void testCast() {
         System.out.println(Integer.parseInt("www"));
+    }
+
+    @Test
+    void testFunctionalInterface() {
+        Consumer<Integer> square = x -> System.out.println(x * x);
+        square.accept(2);
     }
 }

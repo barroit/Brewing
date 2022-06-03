@@ -7,7 +7,7 @@ import homeward.plugin.brewing.Container;
 import homeward.plugin.brewing.Main;
 import homeward.plugin.brewing.bean.ItemProperties;
 import homeward.plugin.brewing.bean.RecipeProperties;
-import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Type;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
 import homeward.plugin.brewing.utilitie.ConfigurationUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -118,7 +118,7 @@ class RecipePropertiesLoader {
         substrateList.forEach(s -> {
             int index = atomicInteger.getAndIncrement();
             if (s instanceof String itemString) {
-                Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(ItemType.SUBSTRATE);
+                Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(Type.SUBSTRATE);
                 if (!map.containsKey(itemString)) {
                     logger.warn(String.format("The value %s of key %s in %s incorrect", itemString, BrewingUtils.getPath(section, "substrate[" + index + "]"), file.getAbsolutePath()));
                     return;
@@ -157,14 +157,14 @@ class RecipePropertiesLoader {
             String itemString = itemElement.getAsString();
 
             JsonElement typeElement = customItemObject.get("type");
-            ItemType type = null;
+            Type type = null;
             ItemStack itemStack;
             if (typeElement == null && hasType) {
                 logger.warn(String.format("The key %s in %s does not exist or incorrect", BrewingUtils.getPath(section, sectionName + "[" + index + "]" + ".type"), file.getAbsolutePath()));
                 return;
             } else if (typeElement != null && hasType) {
                 String typeString = typeElement.getAsString();
-                type = ItemType.getItemType(typeString.toUpperCase(Locale.ROOT));
+                type = Type.getType(typeString.toUpperCase(Locale.ROOT));
                 if (type == null) {
                     logger.warn(String.format("The value %s of key %s in %s incorrect", typeString, BrewingUtils.getPath(section, sectionName + "[" + index + "]" + ".type"), file.getAbsolutePath()));
                     return;
@@ -173,9 +173,9 @@ class RecipePropertiesLoader {
                 boolean contains;
                 Map<String, ItemStack> map;
                 switch (type) {
-                    case SUBSTRATE -> map = Container.ITEM_STACK_MAP.get(ItemType.SUBSTRATE);
-                    case YEAST -> map = Container.ITEM_STACK_MAP.get(ItemType.YEAST);
-                    case OUTPUT -> map = Container.ITEM_STACK_MAP.get(ItemType.OUTPUT);
+                    case SUBSTRATE -> map = Container.ITEM_STACK_MAP.get(Type.SUBSTRATE);
+                    case YEAST -> map = Container.ITEM_STACK_MAP.get(Type.YEAST);
+                    case OUTPUT -> map = Container.ITEM_STACK_MAP.get(Type.OUTPUT);
                     default -> {
                         return;
                     }
@@ -189,7 +189,7 @@ class RecipePropertiesLoader {
                     return;
                 }
             } else {
-                Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(ItemType.YEAST);
+                Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(Type.YEAST);
                 if (!map.containsKey(itemString)) {
                     logger.warn(String.format("The value %s of key %s in %s incorrect", itemString, BrewingUtils.getPath(section, sectionName + "[" + index + "]" + ".item"), file.getAbsolutePath()));
                     return;
@@ -226,7 +226,7 @@ class RecipePropertiesLoader {
         containerList.forEach(s -> {
             int index = atomicInteger.getAndIncrement();
             if (s instanceof String itemString) {
-                Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(ItemType.CONTAINER);
+                Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(Type.CONTAINER);
                 if (!map.containsKey(itemString)) {
                     logger.warn(String.format("The value %s of key %s in %s incorrect", itemString, BrewingUtils.getPath(section, "container[" + index + "]"), file.getAbsolutePath()));
                     return;
@@ -250,7 +250,7 @@ class RecipePropertiesLoader {
             return null;
         }
 
-        Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(ItemType.OUTPUT);
+        Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(Type.OUTPUT);
         if (!map.containsKey(outputString)) {
             logger.warn(String.format("The value %s of key %s in %s incorrect", outputString, BrewingUtils.getPath(section, "output"), file.getAbsolutePath()));
             return null;

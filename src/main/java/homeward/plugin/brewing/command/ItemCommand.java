@@ -1,7 +1,7 @@
 package homeward.plugin.brewing.command;
 
 import homeward.plugin.brewing.Container;
-import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Type;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.annotations.Optional;
 import me.mattstudios.mf.base.CommandBase;
@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 @SuppressWarnings("unused")
 public class ItemCommand extends CommandBase {
     @SubCommand("get")
-    public void getItem(CommandSender commandSender, ItemType type, String id, @Optional Integer amount) {
+    public void getItem(CommandSender commandSender, Type type, String id, @Optional Integer amount) {
         if (!(commandSender instanceof HumanEntity player)) return;
 
         ItemStack itemStack = Container.ITEM_STACK_MAP.get(type).get(id);
@@ -35,10 +35,10 @@ public class ItemCommand extends CommandBase {
         List<String> completionList = new LinkedList<>();
 
         if (arguments.size() == 1) {
-            return Arrays.stream(ItemType.values()).map(ItemType::getString).filter(s -> s.contains(arguments.get(0))).toList();
+            return Arrays.stream(Type.values()).map(Type::getString).filter(s -> s.contains(arguments.get(0))).toList();
         }
 
-        ItemType type = ItemType.getItemType(arguments.get(0).toUpperCase(Locale.ROOT));
+        Type type = Type.getType(arguments.get(0).toUpperCase(Locale.ROOT));
         if (type == null) return null;
         Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(type);
         if (map == null) return null;

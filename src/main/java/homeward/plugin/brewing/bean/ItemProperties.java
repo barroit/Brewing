@@ -1,6 +1,6 @@
 package homeward.plugin.brewing.bean;
 
-import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Type;
 import homeward.plugin.brewing.enumerate.Provider;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 @EqualsAndHashCode
 public class ItemProperties {
     @NotNull String id; // required
-    @NotNull ItemType type; // required
+    @NotNull Type type; // required
     @NotNull Provider provider; // required
 
     @Nullable Content display;
@@ -92,7 +92,7 @@ public class ItemProperties {
     @Accessors(fluent = true, chain = true)
     public static class ItemPropertiesBuilder {
         String id;
-        ItemType type;
+        Type type;
         Provider provider;
 
         Content display;

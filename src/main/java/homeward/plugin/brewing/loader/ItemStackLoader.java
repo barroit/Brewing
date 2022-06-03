@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import de.tr7zw.nbtapi.NBTItem;
 import homeward.plugin.brewing.Container;
 import homeward.plugin.brewing.bean.ItemProperties;
-import homeward.plugin.brewing.enumerate.ItemType;
+import homeward.plugin.brewing.enumerate.Type;
 import homeward.plugin.brewing.enumerate.Provider;
 import homeward.plugin.brewing.utilitie.BrewingUtils;
 import homeward.plugin.brewing.utilitie.ConfigurationUtils;
@@ -21,10 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 // loading all item stack from item properties
 class ItemStackLoader {
@@ -46,8 +43,15 @@ class ItemStackLoader {
             itemStack.editMeta(itemMeta -> {
                 itemMeta.displayName(ConfigurationUtils.getDisplayComponent(display));
                 itemMeta.setCustomModelData(customModelData);
+                itemMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
                 if (lore != null) itemMeta.lore(ConfigurationUtils.getLoreComponent(lore, itemMeta));
             });
+
+            String level = recipeProperties.level();
+            Map<String, ItemStack> recipeMap = Container.RECIPE_DISPLAY_ITEMS.get(level);
+            if (recipeMap == null) recipeMap = new TreeMap<>();
+            recipeMap.put(id, itemStack);
+            Container.RECIPE_DISPLAY_ITEMS.put(level, recipeMap);
         });
     }
     // endregion
@@ -79,17 +83,17 @@ class ItemStackLoader {
 
         // add to map
         switch (itemProperties.type()) {
-            case TIER -> push(ItemType.TIER, id, itemStack);
-            case SUBSTRATE -> push(ItemType.SUBSTRATE, id, itemStack);
-            case YEAST -> push(ItemType.YEAST, id, itemStack);
-            case OUTPUT -> push(ItemType.OUTPUT, id, itemStack);
-            case CONTAINER -> push(ItemType.CONTAINER, id, itemStack);
+            case TIER -> push(Type.TIER, id, itemStack);
+            case SUBSTRATE -> push(Type.SUBSTRATE, id, itemStack);
+            case YEAST -> push(Type.YEAST, id, itemStack);
+            case OUTPUT -> push(Type.OUTPUT, id, itemStack);
+            case CONTAINER -> push(Type.CONTAINER, id, itemStack);
         }
     }
     // endregion
 
     // region push to map
-    private void push(ItemType type, String id, ItemStack itemStack) {
+    private void push(Type type, String id, ItemStack itemStack) {
         Map<String, ItemStack> map = Container.ITEM_STACK_MAP.get(type);
         if (map == null) map = Maps.newHashMap();
         map.put(id, getItemStackWithNbtTag(type, getItemStackWithNbtTag(type, itemStack)));
@@ -98,7 +102,7 @@ class ItemStackLoader {
     // endregion
 
     // region add nbt tag
-    private ItemStack getItemStackWithNbtTag(ItemType type, ItemStack itemStack) {
+    private ItemStack getItemStackWithNbtTag(Type type, ItemStack itemStack) {
         NBTItem nbtItem = new NBTItem(itemStack);
         nbtItem.setObject("BrewingItemType", type);
         return nbtItem.getItem();
