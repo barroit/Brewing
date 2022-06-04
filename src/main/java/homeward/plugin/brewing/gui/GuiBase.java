@@ -3,84 +3,58 @@ package homeward.plugin.brewing.gui;
 import dev.triumphteam.gui.guis.BaseGui;
 
 import dev.triumphteam.gui.guis.Gui;
+import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import homeward.plugin.brewing.enumerate.Item;
-import homeward.plugin.brewing.enumerate.Title;
-import homeward.plugin.brewing.enumerate.Type;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
 @SuppressWarnings({"JavadocDeclaration", "SameParameterValue"})
 public abstract class GuiBase<C extends BaseGui> {
-    protected final Map<String, ItemStack> recipeTier;
-    protected final int recipeTierSize;
     protected final int pageSize;
     private final int rows;
     private final Set<Integer> untouchableZone;
-    private final Type guiType;
     private final Component title;
     private final List<Consumer<C>> consumer;
+    protected C gui;
 
-    protected GuiBase(Map<String, ItemStack> recipeTier, int pageSize, int rows, Type guiType) {
-        this.recipeTier = recipeTier;
-        this.recipeTierSize = recipeTier.size();
-
+    protected GuiBase(int pageSize, int rows) {
         this.pageSize = pageSize;
         this.rows = rows;
         this.untouchableZone = untouchableZone();
 
-        this.guiType = guiType;
-        this.title = getTitle();
+        this.title = title();
 
         this.consumer = consumer();
     }
 
     /**
      * get gui title
+     *
      * @return title component
      */
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
-    private Component getTitle() {
-        switch (guiType) {
-            case RECIPES_PREVIEW_GUI -> {
-                switch (recipeTier.size()) {
-                    case 1 -> {
-                        return Title.getRecipeTitle(Title.Amount.x1);
-                    }
-                    case 2 -> {
-                        return Title.getRecipeTitle(Title.Amount.x2);
-                    }
-                    case 3 -> {
-                        return Title.getRecipeTitle(Title.Amount.x3);
-                    }
-                    case 4 -> {
-                        return Title.getRecipeTitle(Title.Amount.x4);
-                    }
-                    default -> throw new IllegalStateException();
-                }
-            }
-            default -> throw new IllegalArgumentException();
-        }
-    }
+    protected abstract Component title();
 
     /**
      * get paginated builder
+     *
      * @return paginated builder
      */
     @SuppressWarnings("unchecked")
     protected PaginatedGui getPaginatedGui() {
         PaginatedGui gui = Gui.paginated().rows(rows).pageSize(pageSize).title(title).apply((Consumer<PaginatedGui>) actionAfterCreatingPaginationGui()).create();
-        for (Consumer<C> c : consumer) {
-            ((Consumer<PaginatedGui>) c).accept(gui);
+        this.gui = (C) gui;
+        if (consumer != null) {
+            for (Consumer<C> c : consumer) {
+                ((Consumer<PaginatedGui>) c).accept(gui);
+            }
         }
         return gui;
     }
@@ -89,32 +63,38 @@ public abstract class GuiBase<C extends BaseGui> {
 
     protected abstract List<Consumer<C>> consumer();
 
+    protected abstract Consumer<C> openGuiAction();
+
     /**
      * apply all action
+     *
      * @return Consumer
      */
     private Consumer<C> actionAfterCreatingPaginationGui() {
         return gui -> {
             setUntouchableZone(gui);
             setPlayerInteractGuiAction(gui);
+            openGuiAction().accept(gui);
         };
     }
 
     /**
      * set untouchable zone
+     *
      * @param gui
      */
     private void setUntouchableZone(final BaseGui gui) {
-        if (untouchableZone != null) {
-            for (int index = 0; index < 54; index++) {
-                if (untouchableZone.contains(index)) continue;
-                gui.setItem(index, Item.AIR.getGuiItem());
-            }
+        if (untouchableZone == null) return;
+        GuiItem air = Item.AIR.getGuiItem();
+        for (int index = 0; index < 54; index++) {
+            if (!untouchableZone.contains(index)) continue;
+            gui.setItem(index, air);
         }
     }
 
     /**
      * prevent click/double-click/ctrl+click/drag action
+     *
      * @param gui
      */
     private void setPlayerInteractGuiAction(final BaseGui gui) {

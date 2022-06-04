@@ -1,11 +1,18 @@
 rounding-mode: "HALF_UP"
 rounding-pattern: "#.##"
 recipe-tier:
+#  - level: 1
+#    item: "default"
   - level: 1
-    item: "default"
+    item: "first"
+  - level: 2
+    item: "second"
+  - level: 3
+    item: "third"
+#  - level: 4
+#    item: "fourth"
 item-tier:
-  COMMON:
-    text: "common"
-    color: [ 13,14,15 ]
+  COMMON: "&7&l&ocommon"
   MISE:
     text: "&6mise"
+    color: [13,14,15]

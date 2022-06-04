@@ -2,20 +2,20 @@
 
 
 ### chars: 
-> recipes preview gui: \uF114 ~ \uF117
+> gui: \uF114 ~ \uF118
 > 
 > some blank: \uF170 ~ \uF200
 
 ### custom model data
-> levels: paper(114500 ~ 114513)
+> recipe-tier: paper(15100 ~ 15199)
 > 
-> gui components: paper(114514 ~ 114599)
+> gui components: paper(15200 ~ 15299)
 > 
-> substrate: tropical_fish(114600 ~ 114699)
+> substrate: tropical_fish(15000 ~ 15099)
+> 
+> yeast: paper(15000 ~ 15099)
 >
-> potions: potion(114700 ~ 114799)
-> 
-> yeast: paper(114800 ~ 114899)
+> output: potion(15000 ~ 15099)
 
 
 # 特别鸣谢

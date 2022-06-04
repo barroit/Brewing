@@ -1,8 +1,6 @@
 package homeward.plugin.brewing;
 
 import homeward.plugin.brewing.loader.ConfigurationLoader;
-import homeward.plugin.brewing.registrant.CommandRegister;
-import homeward.plugin.brewing.registrant.ListenerRegister;
 import lombok.AccessLevel;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
@@ -15,10 +13,8 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        ConfigurationLoader.getInstance().reload();
-
-        CommandRegister.getInstance().register();
-        ListenerRegister.getInstance().register();
+        ConfigurationLoader.reload();
+        Register.registerCommand();
     }
 
     public Main() {

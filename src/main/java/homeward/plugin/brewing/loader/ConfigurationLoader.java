@@ -24,8 +24,12 @@ public class ConfigurationLoader {
 
     public static final Map<ConfigEnum, LinkedHashMap<File, YamlConfiguration>> CONFIGURATION_LIST = Maps.newHashMap();
 
+    public static void reload() {
+        ConfigurationLoader.getInstance().loadAll();
+    }
+
     // region reload
-    public void reload() {
+    public void loadAll() {
         long start = System.currentTimeMillis();
         TextComponent prefix = Component.text("[Brewing] ", NamedTextColor.AQUA);
         TextComponent startMessage = Component.text("loading plugin, please wait...", NamedTextColor.YELLOW);
@@ -138,7 +142,7 @@ public class ConfigurationLoader {
     /**
      * cannot be used when plugin main class instancing
      */
-    public static ConfigurationLoader getInstance() {
+    private static ConfigurationLoader getInstance() {
         if (instance == null) {
             synchronized (ConfigurationLoader.class) {
                 if (instance == null) {

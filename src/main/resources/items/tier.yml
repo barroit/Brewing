@@ -1,40 +1,40 @@
-#tier:
-#  ONE:
-#    provider: "vanilla"
-#    material: "paper"
-#    custom-model-data: 114501
-#    display:
-#      text: "level 1"
-#      color: [ 255,0,255 ]
-#    lore:
-#      - "tier 1 here"
-#  TWO:
-#    provider: "vanilla"
-#    material: "paper"
-#    custom-model-data: 114502
-#    display:
-#      text: "level 2"
-#      color: [ 148,0,211 ]
-#    lore:
-#      - "after tier 1"
-#  THREE:
-#    provider: "vanilla"
-#    material: "paper"
-#    custom-model-data: 114503
-#    display:
-#      text: "level 3"
-#      color: [ 0,191,255 ]
-#    lore:
-#      - text: "after tier 1 and 2"
-#        color: [ 255,0,255 ]
-#      - text: "tier 3 here"
-#        color: [ 255,0,0 ]
-#  FOUR:
-#    provider: "vanilla"
-#    material: "paper"
-#    custom-model-data: 114504
-#    display:
-#      text: "level 4"
-#      color: [ 124,252,0 ]
-#    lore:
-#      - text: "&l&cand the last one"
+tier:
+  first:
+    provider: "vanilla"
+    material: "paper"
+    custom-model-data: 15101
+    display:
+      text: "level 1"
+      color: [ 255,0,255 ]
+    lore:
+      - "tier 1 here"
+  second:
+    provider: "vanilla"
+    material: "paper"
+    custom-model-data: 15102
+    display:
+      text: "level 2"
+      color: [ 148,0,211 ]
+    lore:
+      - "after tier 1"
+  third:
+    provider: "vanilla"
+    material: "paper"
+    custom-model-data: 15103
+    display:
+      text: "level 3"
+      color: [ 0,191,255 ]
+    lore:
+      - text: "after tier 1 and 2"
+        color: [ 255,0,255 ]
+      - text: "tier 3 here"
+        color: [ 255,0,0 ]
+  fourth:
+    provider: "vanilla"
+    material: "paper"
+    custom-model-data: 15104
+    display:
+      text: "level 4"
+      color: [ 124,252,0 ]
+    lore:
+      - text: "&l&cand the last one"

@@ -16,8 +16,6 @@ public class MockRecipesPreviewTest extends CommandBase {
     @Default
     public void defaultAction(CommandSender commandSender) {
         Player player = (Player) commandSender;
-        RecipesPreviewGui.getGui().open(player);
-        // LegacyRecipesPreviewGui instance = LegacyRecipesPreviewGui.getInstance(6, 27);
-        // instance.getGui().open(player);
+        RecipesPreviewGui.open(player);
     }
 }

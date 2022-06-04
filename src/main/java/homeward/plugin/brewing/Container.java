@@ -1,9 +1,11 @@
 package homeward.plugin.brewing;
 
 import com.google.common.collect.Maps;
+import dev.triumphteam.gui.guis.PaginatedGui;
 import homeward.plugin.brewing.bean.ItemProperties;
 import homeward.plugin.brewing.bean.RecipeProperties;
 import homeward.plugin.brewing.enumerate.Type;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
@@ -39,6 +41,16 @@ public final class Container {
      * stores tier, substrate, yeast, output, container
      */
     public static final Map<Type, Map<String, ItemStack>> ITEM_STACK_MAP = Maps.newHashMap();
+
+    /**
+     * mapping of player and gui
+     */
+    public static final Map<HumanEntity, PaginatedGui> RECIPE_PREVIEW_GUI = Maps.newHashMap();
+
+    /**
+     * mapping of player and gui
+     */
+    public static final Map<HumanEntity, PaginatedGui> RECIPE_DETAIL_GUI = Maps.newHashMap();
 
     private Container() {
         throw new UnsupportedOperationException();

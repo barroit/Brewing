@@ -11,10 +11,7 @@ public enum Type implements EnumBase {
     SUBSTRATE("substrate"),
     YEAST("yeast"),
     OUTPUT("output"),
-    CONTAINER("container"),
-
-    // gui type
-    RECIPES_PREVIEW_GUI("recipes preview gui");
+    CONTAINER("container");
 
     private final String type;
 

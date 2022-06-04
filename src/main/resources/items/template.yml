@@ -2,68 +2,81 @@ tier:
   default:
     provider: "Vanilla"
     material: "paper"
-    custom-model-data: 114500
+    custom-model-data: 15100
     display:
       text: "default"
-      color: [ 255,0,255 ]
+      color: [255,192,203]
     lore:
-      - "&dthis section is the default tier"
+      - "&dthis is the default recipe tier"
     item-tier: "COMMON"
 
 substrate:
   grape:
     provider: "Vanilla"
-    display: "grape"
-    lore:
-      - text: "&1this section is the default substrate"
     material: "tropical_fish"
-    custom-model-data: 114600
+    custom-model-data: 15000
+    display:
+      text: "&7grape"
+    lore:
+      - text: "&dThe first item I created"
     item-tier: "COMMON"
     restore:
       food: 3
-    required-level: 4
-  default-substrate:
+    required-level: 1
+  pear:
     provider: "Vanilla"
-    display:
-      text: "default substrate"
-      color: [ 255,192,203 ]
-    lore:
-      - text: "&1this section is the default substrate"
     material: "tropical_fish"
-    custom-model-data: 114515
+    custom-model-data: 15001
+    display:
+      text: "&7pear"
+    lore:
+      - text: "The second item I created"
+        color: [212,242,231]
     item-tier: "COMMON"
     restore:
       food: 5
-    required-level: 4
-
+    required-level: 2
 
 yeast:
-  default-yeast:
+  brown-yeast:
     provider: "Vanilla"
     material: "paper"
-    custom-model-data: 114800
-    display:
-      text: "custom yeast"
-      color: [ 255,165,0 ]
+    custom-model-data: 15000
+    display: "&7brown yeast"
     lore:
-      - text: "this section is the default yeast"
-        color: [ 0,255,0 ]
+      - "yeast"
     item-tier: "COMMON"
-    required-level: 4
+    required-level: 1
+#  cyan-yeast:
+#    provider: "Vanilla"
+#    material: "paper"
+#    custom-model-data: 15001
+#    display: "&cyan yeast"
+#    lore:
+#      - "yeast"
+#    item-tier: "COMMON"
+#    required-level: 1
+
+container:
+  bottle:
+    provider: "Vanilla"
+    material: "glass_bottle"
+    custom-model-data: 15000
+    display: "&7empty bottle"
+    lore:
+      - "bottle"
 
 output:
-  default-output:
+  wine:
     provider: "Vanilla"
     display:
-      text: "default output"
-      color: [ 123,104,238 ]
+      text: "wine"
+      color: [ 255,0,255 ]
     lore:
-      - text: "&athis section is the default output"
-      - "&asecond line"
-      - text: "&4color codes have higher priority than RGB"
-        color: [ 0,0,255 ]
+      - text: "&lThe best wine in the world"
+        color: [220,20,60]
     material: "potion"
-    custom-model-data: 114700
+    custom-model-data: 15005
     item-tier: "COMMON"
     restore:
       food: 10 # int
