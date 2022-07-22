@@ -212,7 +212,7 @@ public class RecipesDetailGui extends GuiBase<PaginatedGui> {
     }
 
     @Override
-    void open(HumanEntity player, int openPage) {
+    protected void open(HumanEntity player, int openPage) {
         GuiUtils.paginatedGuiOpen(gui, player, openPage);
     }
 

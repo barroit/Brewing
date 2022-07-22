@@ -117,7 +117,6 @@ public class RecipesPreviewGui extends GuiBase<PaginatedGui> {
             return;
         }
 
-        GuiUtils.setRecipesShowcase(gui);
         recipeDisplayItem.forEach((key, itemStack) -> {
             GuiItem item = new GuiItem(itemStack);
             item.setAction(event -> {

@@ -46,8 +46,6 @@ public abstract class GuiBase<C extends BaseGui> {
         this.barrelLocation = barrelLocation;
     }
 
-    protected abstract Component title();
-
     @SuppressWarnings("unchecked")
     protected <E extends GuiBase<?>> E initPaginatedGui() {
         PaginatedGui gui = Gui.paginated().rows(rows).pageSize(pageSize).title(title).apply((Consumer<PaginatedGui>) actionAfterCreatingPaginationGui()).create();
@@ -63,11 +61,15 @@ public abstract class GuiBase<C extends BaseGui> {
         return (E) this;
     }
 
+    protected abstract Component title();
+
     protected abstract @Nullable Set<Integer> untouchableZone();
 
     protected abstract List<Consumer<C>> consumers();
 
     protected abstract Consumer<C> openGuiAction();
+
+    protected abstract void open(HumanEntity player, int openPage);
 
     private Consumer<C> defaultCloseGuiAction() {
         return gui -> gui.setCloseGuiAction(event -> {
@@ -160,8 +162,6 @@ public abstract class GuiBase<C extends BaseGui> {
 
         gui.setUpdating(false);
     }
-
-    abstract void open(HumanEntity player, int openPage);
 
     @Getter
     private final ItemStack

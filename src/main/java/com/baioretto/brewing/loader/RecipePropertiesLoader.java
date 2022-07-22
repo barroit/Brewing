@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 class RecipePropertiesLoader {
     private final Logger logger = Brewing.instance().getLogger();
 
-    // region load recipe properties
     public void loadRecipeProperties() {
         LinkedHashMap<File, YamlConfiguration> configurationFileList = ConfigurationLoader.CONFIGURATION_LIST.get(ConfigurationLoader.ConfigEnum.RECIPE_CONFIG);
         if (configurationFileList == null || configurationFileList.isEmpty()) return;
@@ -96,9 +95,7 @@ class RecipePropertiesLoader {
             });
         });
     }
-    // endregion
 
-    // region get level
     private String getLevel(final File file, final ConfigurationSection section) {
         String level = section.getString("level");
         if (level == null) {
@@ -106,9 +103,7 @@ class RecipePropertiesLoader {
         }
         return level;
     }
-    // endregion
 
-    // region get substrate
     private LinkedHashSet<ItemStack> getSubstrates(final File file, final ConfigurationSection section) {
         List<?> substrateList = section.getList("substrate");
         if (substrateList == null || substrateList.size() == 0) {
@@ -135,9 +130,7 @@ class RecipePropertiesLoader {
 
         return substrateList.size() == substrates.size() ? substrates : null;
     }
-    // endregion
 
-    // region get custom item
     private LinkedHashSet<RecipeProperties.CustomItem> getCustomItem(final File file, final ConfigurationSection section, String sectionName, boolean hasType) {
         List<?> customItemList = section.getList(sectionName);
         LinkedHashSet<RecipeProperties.CustomItem> customItem = new LinkedHashSet<>();
@@ -214,9 +207,7 @@ class RecipePropertiesLoader {
 
         return customItemList.size() == customItem.size() ? customItem : null;
     }
-    // endregion
 
-    // region get substrate
     private LinkedHashSet<ItemStack> getContainers(final File file, final ConfigurationSection section) {
         List<?> containerList = section.getList("container");
         if (containerList == null || containerList.size() == 0) {
@@ -243,9 +234,7 @@ class RecipePropertiesLoader {
 
         return containerList.size() == containers.size() ? containers : null;
     }
-    // endregion
 
-    // region get output
     private ItemStack getOutput(final File file, final ConfigurationSection section) {
         String outputString = section.getString("output");
         if (outputString == null) {
@@ -261,9 +250,7 @@ class RecipePropertiesLoader {
 
         return map.get(outputString);
     }
-    // endregion
 
-    // region get yield
     private int[] getYield(final File file, final ConfigurationSection section) {
         int min = section.getInt("yield.min");
         if (min < 0) {
@@ -283,9 +270,7 @@ class RecipePropertiesLoader {
 
         return new int[]{min, max};
     }
-    // endregion
 
-    // region get cycle
     private int getCycle(final File file, final ConfigurationSection section) {
         int cycle = section.getInt("cycle");
         if (cycle < 1) {
@@ -293,9 +278,7 @@ class RecipePropertiesLoader {
         }
         return cycle < 1 ? -1 : cycle;
     }
-    // endregion
 
-    // region get instance
     private volatile static RecipePropertiesLoader instance;
 
     public static RecipePropertiesLoader getInstance() {
@@ -308,5 +291,4 @@ class RecipePropertiesLoader {
         }
         return instance;
     }
-    // endregion
 }
