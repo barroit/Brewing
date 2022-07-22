@@ -1,8 +1,8 @@
 name: Brewing
 version: '${version}'
-main: homeward.plugin.brewing.Main
+main: com.baioretto.brewing.Brewing
 api-version: 1.18
-prefix: HomewardBrewing
+prefix: Brewing
 
 depend:
-  - "ProtocolLib"
+  - 'BaioLib'

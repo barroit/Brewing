@@ -1,24 +1,26 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
+    id "io.freefair.lombok" version "6.5.0.3"
 }
 
-group = 'homeward.plugin'
-
+group = 'com.baioretto'
+version = '0.2.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
-        name 'codemc-repo'
-        url 'https://repo.codemc.org/repository/maven-public/'
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/ba1oretto/baiolib")
+        credentials {
+            username = findProperty("gpr.user")
+            password = findProperty("gpr.token")
+        }
     }
     maven {
-        name 'jitpack-repo'
-        url 'https://jitpack.io'
-    }
-    maven {
-        name 'papermc-repo'
-        url 'https://papermc.io/repo/repository/maven-public/'
+        name = 'codemc-maven'
+        url = 'https://repo.codemc.org/repository/maven-public/'
     }
     maven {
         name 'sonatype'
@@ -34,89 +36,27 @@ repositories {
     }
     maven {
         name 'dmulloy2'
-        url "https://repo.dmulloy2.net/repository/public/"
+        url 'https://repo.dmulloy2.net/repository/public/'
     }
 }
 
+def minecraftVersion = '1.18.2-R0.1-SNAPSHOT'
 dependencies {
-    // Common Lang
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    // HomewardLib
+    compileOnly(group: 'com.baioretto', name: 'baiolib', version: '1.1.0')
 
-    // NBT API
-    implementation 'de.tr7zw:item-nbt-api-plugin:2.9.2'
+    // spigot api
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: "${minecraftVersion}" // codemc local
 
-    // Reflections
-    implementation 'org.reflections:reflections:0.10.2'
-
-    // Junit 5
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-
-    // Matt Framework
-    implementation "me.mattstudios.utils:matt-framework:1.4.6"
-
-    // Triumph
-    implementation "dev.triumphteam:triumph-gui:3.1.2"
-
-    // Paper Minecraft
-    compileOnly ('io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT') {
-        exclude group:"commons-lang", module:"commons-lang"
-    }
-
-    // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    testCompileOnly 'org.projectlombok:lombok:1.18.24'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
-
-    // Gson
-    implementation 'com.google.code.gson:gson:2.9.0'
-
-    // ProtocolLib
-    compileOnly "com.comphenix.protocol:ProtocolLib:4.8.0"
+    // junit test
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2' // maven local
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2' // maven local
 }
 
-def targetJavaVersion = 17
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-}
-
-shadowJar {
-    minimize()
-    archiveBaseName.set('HomewardBrewing')
-    archiveClassifier.set('')
-    archiveVersion.set('')
-}
-
-test {
+tasks.named("test") {
     useJUnitPlatform()
 }
 
-tasks.withType(JavaCompile).configureEach {
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release = targetJavaVersion
-    }
-    options.encoding = "UTF-8"
-}
+apply from: 'script/basic.gradle'
 
-processResources {
-    def props = [version: version]
-    inputs.properties props
-    filteringCharset 'UTF-8'
-    filesMatching('plugin.yml') {
-        expand props
-    }
-}
-
-tasks.withType(Jar) {
-    def serverDir = serverDirectory.toString()
-    if (!(serverDir == null || serverDir.isBlank())) {
-        destinationDirectory.set(file(serverDir))
-    } else {
-        System.err.println("you may need to set the server plugin directory in gradle.properties")
-    }
-}
+apply from: 'script/shadowJar.gradle'

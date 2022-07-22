@@ -1,0 +1,8 @@
+shadowJar {
+    minimize()
+    destinationDirectory.set new File(findProperty("server.plugin.folder"))
+    archiveBaseName.set rootProject.name
+    archiveClassifier.set ''
+    archiveVersion.set ''
+    archiveExtension.set 'jar'
+}
