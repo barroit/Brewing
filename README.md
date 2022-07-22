@@ -6,11 +6,12 @@
 <h4 align="center">为什么不让原版毫无卵用的酒桶可以酿造复杂的配方呢 ？</h4>
 
 <p align="center">
-<a href="https://www.codefactor.io/repository/github/caishangqi/homeward-webstorebridge/overview/plugin-webstore-bridge"><img src="https://www.codefactor.io/repository/github/caishangqi/homeward-webstorebridge/badge/plugin-webstore-bridge" alt="CodeFactor" /></a>
-<img alt="Lines of code" src="https://img.shields.io/tokei/lines/github/Ba1oretto/Brewing">
-<img alt="Lines of code" src="https://img.shields.io/badge/paper-1.18.2-green">
-<img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/Ba1oretto/Brewing/master?label=build">
-<img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/Ba1oretto/Brewing">
+<img alt="GitHub" src="https://img.shields.io/github/license/Ba1oretto/Brewing?color=red&style=plastic">
+<img alt="CodeFactor Grade" src="https://img.shields.io/codefactor/grade/github/Ba1oretto/Brewing?style=plastic">
+<img alt="Lines of code" src="https://img.shields.io/tokei/lines/github/Ba1oretto/Brewing?style=plastic">
+<img alt="Lines of code" src="https://img.shields.io/badge/spigot-1.18.2-green?style=plastic">
+<img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/Ba1oretto/Brewing/master?label=build&color=pink&style=plastic">
+<img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/Ba1oretto/Brewing?color=purple&style=plastic">
 </p>
 
 ## 介绍 Introduction
